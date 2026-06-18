@@ -1,2 +1,2 @@
 # molveno-resort-systeem
-A system to significantly enhance the quality of life for employees at the Molveno Resort.
+Een systeem om de levenskwaliteit van de medewerkers van het Molveno Resort aanzienlijk te verbeteren.
