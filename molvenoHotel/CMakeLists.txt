@@ -6,17 +6,36 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 qt_standard_project_setup()
 
 qt_add_executable(molvenoHotel
-    WIN32 MACOSX_BUNDLE
-    main.cpp
-    launcher.cpp
-    launcher.h
-    launcher.ui
+    WIN32
+    MACOSX_BUNDLE
+
+    main/main.cpp
+
+    launcher/launcher.cpp
+    launcher/launcher.h
+    launcher/launcher.ui
+
+    # Hotel module
+    # hotel/hotel.cpp
+    # hotel/hotel.h
+    # hotel/hotel.ui
+
+    # Restaurant module
+    # restaurant/restaurant.cpp
+    # restaurant/restaurant.h
+    # restaurant/restaurant.ui
 )
 
 target_link_libraries(molvenoHotel
     PRIVATE
         Qt::Core
         Qt::Widgets
+)
+
+target_include_directories(molvenoHotel PRIVATE
+    launcher
+    hotel
+    restaurant
 )
 
 install(TARGETS molvenoHotel
