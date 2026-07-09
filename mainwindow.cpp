@@ -3,7 +3,7 @@
 
 #include "hometab.h"
 #include "reservationstab.h"
-#include "roomstab.h"
+#include "roomswindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -15,17 +15,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Add tabs here:
     homeTab = new HomeTab(this);
     reservationsTab = new ReservationsTab(this);
-    roomsTab = new RoomsTab(this);
+    roomswindow = new RoomsWindow(this);
 
     tabWidget->addTab(homeTab, tr("Home"));
     tabWidget->addTab(reservationsTab, tr("Reservations"));
-    tabWidget->addTab(roomsTab, tr("Rooms"));
+    tabWidget->addTab(roomswindow, tr("Rooms"));
 
     connect(homeTab, &HomeTab::dataChanged,
             reservationsTab, &ReservationsTab::onDataChanged);
 
-    connect(homeTab, &HomeTab::dataChanged,
-            roomsTab, &RoomsTab::onDataChanged);
 }
 
 MainWindow::~MainWindow()
