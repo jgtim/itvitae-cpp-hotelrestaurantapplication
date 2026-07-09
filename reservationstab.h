@@ -2,6 +2,7 @@
 #define RESERVATIONSTAB_H
 
 #include <QWidget>
+#include <QStandardItemModel>
 
 namespace Ui {
 class ReservationsTab;
@@ -23,6 +24,8 @@ signals:
 
 private:
     Ui::ReservationsTab *ui;
+    QStandardItemModel *model; // For now, maybe SQL later
+    void addMockData();
 };
 
 #endif // RESERVATIONSTAB_H
