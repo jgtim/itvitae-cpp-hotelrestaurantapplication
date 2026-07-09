@@ -7,7 +7,7 @@
 // Forward declaration of tab Classes:
 class HomeTab;
 class ReservationsTab;
-class RoomsTab;
+class RoomsWindow;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainWindow;}
@@ -26,7 +26,7 @@ private:
     QTabWidget *tabWidget;
     HomeTab *homeTab;
     ReservationsTab *reservationsTab;
-    RoomsTab *roomsTab;
+    RoomsWindow *roomswindow;
 };
 
 #endif // MAINWINDOW_H
