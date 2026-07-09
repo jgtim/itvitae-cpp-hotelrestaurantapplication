@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         hometab.h hometab.cpp hometab.ui
         roomstab.h roomstab.cpp roomstab.ui
         reservationstab.h reservationstab.cpp reservationstab.ui
+        editreservationdialog.h editreservationdialog.cpp editreservationdialog.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET MolvenoLakeHotelResort APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

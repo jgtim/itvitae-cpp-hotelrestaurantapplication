@@ -18,7 +18,7 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     ui->ReservationsTabReservationsTable->setModel(model);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // For now:
+    // For now - REMOVE LATER:
     addMockData();
 
 }
@@ -33,6 +33,7 @@ void ReservationsTab::onDataChanged()
     qDebug() << "Reservations Tab received notification that data changed. Refreshing UI...";
 }
 
+// Placeholder method for adding mock data - REMOVE LATER
 void ReservationsTab::addMockData()
 {
     QList<QStandardItem*> row1;
