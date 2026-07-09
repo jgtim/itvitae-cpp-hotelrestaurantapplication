@@ -1,5 +1,8 @@
 #include "reservationstab.h"
 #include "ui_reservationstab.h"
+#include "editreservationdialog.h"
+
+#include <QMessageBox>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -31,6 +34,41 @@ ReservationsTab::~ReservationsTab()
 void ReservationsTab::onDataChanged()
 {
     qDebug() << "Reservations Tab received notification that data changed. Refreshing UI...";
+}
+
+void ReservationsTab::on_editButton_clicked()
+{
+    QModelIndex currentIndex = ui->ReservationsTabReservationsTable->currentIndex();
+
+    if (!currentIndex.isValid()) {
+        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
+        return;
+    }
+
+    int selectedRow = currentIndex.row();
+
+    QString currentName = model->item(selectedRow, 1)->text();
+    QString currentRoom = model->item(selectedRow, 2)->text();
+    QString currentCheckIn = model->item(selectedRow, 3)->text();
+    QString currentCheckOut = model->item(selectedRow, 4)->text();
+
+    EditReservationDialog dialog(this);
+    dialog.setReservationData(currentName, currentRoom, currentCheckIn, currentCheckOut);
+
+    if (dialog.exec() == QDialog::Accepted) {
+
+        QString updatedName = dialog.getGuestName();
+        QString updatedRoom = dialog.getRoomNumber();
+        QString updatedCheckIn = dialog.getCheckInDate();
+        QString updatedCheckOut = dialog.getCheckOutDate();
+
+
+        model->item(selectedRow, 1)->setText(updatedName);
+        model->item(selectedRow, 2)->setText(updatedRoom);
+        model->item(selectedRow, 3)->setText(updatedCheckIn);
+        model->item(selectedRow, 4)->setText(updatedCheckOut);
+    }
+
 }
 
 // Placeholder method for adding mock data - REMOVE LATER
