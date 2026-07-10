@@ -36,7 +36,7 @@ void ReservationsTab::onDataChanged()
     qDebug() << "Reservations Tab received notification that data changed. Refreshing UI...";
 }
 
-void ReservationsTab::on_editButton_clicked()
+void ReservationsTab::on_ReservationTabEditButton_clicked()
 {
     QModelIndex currentIndex = ui->ReservationsTabReservationsTable->currentIndex();
 

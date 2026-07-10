@@ -26,7 +26,7 @@ private:
     Ui::ReservationsTab *ui;
     QStandardItemModel *model; // For now, maybe SQL later
     void addMockData();
-    void on_editButton_clicked();
+    void on_ReservationTabEditButton_clicked();
 };
 
 #endif // RESERVATIONSTAB_H

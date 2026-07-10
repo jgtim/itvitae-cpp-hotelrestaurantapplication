@@ -13,25 +13,35 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        main/main.cpp
+
+        hotel/mainwindow.cpp
+        hotel/mainwindow.h
+        hotel/mainwindow.ui
+
+        hotel/hometab.h
+        hotel/hometab.cpp
+        hotel/hometab.ui
+
+        hotel/reservationstab/reservationstab.h
+        hotel/reservationstab/reservationstab.cpp
+        hotel/reservationstab/reservationstab.ui
+
+        hotel/reservationstab/editreservationdialog.h
+        hotel/reservationstab/editreservationdialog.cpp
+        hotel/reservationstab/editreservationdialog.ui
+
+        hotel/roomswindow/roomswindow.h
+        hotel/roomswindow/roomswindow.cpp
+        hotel/roomswindow/roomswindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MolvenoLakeHotelResort
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        hometab.h hometab.cpp hometab.ui
-        reservationstab.h reservationstab.cpp reservationstab.ui
-        roomswindow.h
-        roomswindow.cpp
-        roomswindow.ui
-        editreservationdialog.h editreservationdialog.cpp editreservationdialog.ui
-
-
     )
+
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET MolvenoLakeHotelResort APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
