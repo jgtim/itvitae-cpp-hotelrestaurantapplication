@@ -21,6 +21,8 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     ui->ReservationsTabReservationsTable->setModel(model);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::on_ReservationTabEditButton_clicked);
+
     // For now - REMOVE LATER:
     addMockData();
 
