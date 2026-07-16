@@ -25,7 +25,6 @@ ReservationsTab::ReservationsTab(QWidget *parent)
 
     // For now - REMOVE LATER:
     addMockData();
-
 }
 
 ReservationsTab::~ReservationsTab()

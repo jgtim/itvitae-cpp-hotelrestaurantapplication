@@ -17,40 +17,14 @@
    <item>
     <layout class="QHBoxLayout" name="ReservationsTabhorizontalLayoutTop">
      <item>
-      <spacer name="ReservationsTabSearchfieldSpacerLeft">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <widget class="QLineEdit" name="ReservationsTabSearchfield">
        <property name="placeholderText">
-        <string>Search on name or roomnumber...</string>
+        <string>Search on Reservation ID, Guest Name or Room Number...</string>
        </property>
        <property name="clearButtonEnabled">
         <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="ReservationsTabSearchfieldSpacerRight">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>
@@ -86,14 +60,14 @@
      <item>
       <widget class="QPushButton" name="ReservationTabEditButton">
        <property name="text">
-        <string>Edit</string>
+        <string>Edit  Reservation</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="ReservationTabCancelButton">
        <property name="text">
-        <string>Cancel</string>
+        <string>Cancel Reservation</string>
        </property>
       </widget>
      </item>
