@@ -1,5 +1,6 @@
 #include "roomswindow.h"
 #include "ui_roomswindow.h"
+#include "roomdetailsdialog.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -7,6 +8,7 @@
 #include <QBrush>
 #include <QSortFilterProxyModel>
 #include <QHeaderView>
+#include <QMessageBox>
 
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
 
@@ -120,4 +122,30 @@ void RoomsWindow::updateRoomColors()
                 housekeepingItem->setBackground(QColor(255, 200, 200));
         }
     }
+}
+
+void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
+{
+    if (!proxyIndex.isValid())
+        return;
+
+    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    int selectedRow = sourceIndex.row();
+
+
+    QList<QPair<QString, QString>> roomDetails;
+    int columnCount = model->columnCount();
+
+    for (int col = 0; col < columnCount; ++col) {
+        QString header = model->horizontalHeaderItem(col)->text();
+
+        QStandardItem *item = model->item(selectedRow, col);
+        QString value = item ? item->text() : "";
+
+        roomDetails.append(qMakePair(header, value));
+    }
+
+    RoomDetailsDialog dialog(this);
+    dialog.setDetails(roomDetails);
+    dialog.exec();
 }

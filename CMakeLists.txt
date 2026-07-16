@@ -41,6 +41,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MolvenoLakeHotelResort
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        hotel/roomswindow/roomdetailsdialog.h hotel/roomswindow/roomdetailsdialog.cpp hotel/roomswindow/roomdetailsdialog.ui
     )
 
 # Define target properties for Android with Qt 6 as:
