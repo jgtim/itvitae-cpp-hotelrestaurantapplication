@@ -13,7 +13,7 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
-    ui->roomEdit->setValidator( new QIntValidator(2, 999, this) );
+    ui->roomEdit->setValidator( new QIntValidator(0, 999, this) );
 }
 
 EditReservationDialog::~EditReservationDialog()
@@ -22,11 +22,11 @@ EditReservationDialog::~EditReservationDialog()
     delete ui;
 }
 
-void EditReservationDialog::setReservationData(const QString &name, const QString &room, const QString &checkIn, const QString &checkOut) {
+void EditReservationDialog::setReservationData(const QString &name, const QString &room, const QDate &checkIn, const QDate &checkOut) {
     ui->nameEdit->setText(name);
     ui->roomEdit->setText(room);
-    ui->checkInEdit->setText(checkIn);
-    ui->checkOutEdit->setText(checkOut);
+    ui->checkInEdit->setDate(checkIn);
+    ui->checkOutEdit->setDate(checkOut);
 }
 
 QString EditReservationDialog::getGuestName() const { return ui->nameEdit->text(); }
@@ -36,9 +36,6 @@ QString EditReservationDialog::getCheckOutDate() const { return ui->checkOutEdit
 
 void EditReservationDialog::on_EditReservationButtonBox_accepted()
 {
-    //room number has to be an int. eventually we want to select among available rooms
-    //QString newCheckIn = dialog.getCheckInDate();
-    //QString newCheckOut = dialog.getCheckOutDate();
     close();
 
 }

@@ -4,6 +4,7 @@
 
 #include <QMessageBox>
 #include <iostream>
+#include <QDate>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -52,8 +53,8 @@ void ReservationsTab::on_ReservationTabEditButton_clicked()
 
     QString currentName = model->item(selectedRow, 1)->text();
     QString currentRoom = model->item(selectedRow, 2)->text();
-    QString currentCheckIn = model->item(selectedRow, 3)->text();
-    QString currentCheckOut = model->item(selectedRow, 4)->text();
+    QDate currentCheckIn = QDate::fromString(model->item(selectedRow, 3)->text(), "ddMMyyyy");
+    QDate currentCheckOut = QDate::fromString(model->item(selectedRow, 4)->text(), "ddMMyyyy");
 
     EditReservationDialog dialog(this);
     dialog.setReservationData(currentName, currentRoom, currentCheckIn, currentCheckOut);
@@ -106,8 +107,8 @@ void ReservationsTab::addMockData()
     row1 << new QStandardItem("0001")
          << new QStandardItem("UutWijk")
          << new QStandardItem("101")
-         << new QStandardItem("12-07-2026")
-         << new QStandardItem("15-07-2026");
+         << new QStandardItem("12/07/2026")
+         << new QStandardItem("15/07/2026");
     model->appendRow(row1);
 
     QList<QStandardItem*> row2;
