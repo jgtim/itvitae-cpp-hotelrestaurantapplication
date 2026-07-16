@@ -17,7 +17,7 @@ struct RoomRecord {
     double pricePerNight;
 };
 
-void ReadKamers();
+void CheckIfRoomFileOpens();
 
 QList<RoomRecord> parseRoomFile();
 

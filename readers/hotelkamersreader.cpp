@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-void ReadKamers() // This was to test
+void CheckIfRoomFileOpens() // This was to test
 {
     qDebug() << "Working directory:" << QDir::currentPath();
 
@@ -11,7 +11,7 @@ void ReadKamers() // This was to test
         );
 
     if (!xlsx.load()) {
-        qDebug() << "Failed to open file";
+        qDebug() << "Failed to open room file";
         return;
     }
 

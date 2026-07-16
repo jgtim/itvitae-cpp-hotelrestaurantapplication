@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 
     // Testing File reading
 /////////////////////////////////////////////////
-    ReadKamers();
+    CheckIfRoomFileOpens();
 
     std::cout << std::endl;
 
