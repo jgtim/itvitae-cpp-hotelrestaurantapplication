@@ -2,6 +2,7 @@
 #include "ui_editreservationdialog.h"
 
 #include <iostream>
+#include <QIntValidator>
 
 EditReservationDialog::EditReservationDialog(QWidget *parent)
     : QDialog(parent)
@@ -11,6 +12,8 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
 
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
+    ui->roomEdit->setValidator( new QIntValidator(2, 999, this) );
 }
 
 EditReservationDialog::~EditReservationDialog()
