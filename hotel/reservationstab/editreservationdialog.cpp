@@ -33,8 +33,9 @@ QString EditReservationDialog::getCheckOutDate() const { return ui->checkOutEdit
 
 void EditReservationDialog::on_EditReservationButtonBox_accepted()
 {
-    //delete this;
-    std::cout << "TESTING" << std::endl;
+    //room number has to be an int. eventually we want to select among available rooms
+    //QString newCheckIn = dialog.getCheckInDate();
+    //QString newCheckOut = dialog.getCheckOutDate();
     close();
 
 }

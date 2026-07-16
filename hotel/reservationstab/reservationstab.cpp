@@ -142,3 +142,10 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
 }
 
 
+
+
+void ReservationsTab::on_ReservationsTabNewReservationButton_clicked(bool checked)
+{
+
+}
+
