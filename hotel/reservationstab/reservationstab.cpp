@@ -18,6 +18,7 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     model->setHeaderData(3, Qt::Horizontal, "Check-In Date");
     model->setHeaderData(4, Qt::Horizontal, "Check-Out Date");
 
+    ui->ReservationsTabReservationsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->ReservationsTabReservationsTable->setModel(model);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
