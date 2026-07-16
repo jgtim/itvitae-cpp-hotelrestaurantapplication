@@ -15,11 +15,14 @@ public:
     explicit EditReservationDialog(QWidget *parent = nullptr);
     ~EditReservationDialog();
 
-    void setReservationData(const QString &name, const QString &room, const QString &checkIn, const QString &checkOut);
+    void setReservationData(const QString &name, const QString &room, const QDate &checkIn, const QDate &checkOut);
     QString getGuestName() const;
     QString getRoomNumber() const;
     QString getCheckInDate() const;
     QString getCheckOutDate() const;
+
+private slots:
+    void on_EditReservationButtonBox_accepted();
 
 private:
     Ui::EditReservationDialog *ui;
