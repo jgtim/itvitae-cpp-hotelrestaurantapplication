@@ -3,7 +3,7 @@
 #include "editreservationdialog.h"
 
 #include <QMessageBox>
-#include <iostream>
+#include <QDebug>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -12,18 +12,26 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     ui->setupUi(this);
 
     model = new QStandardItemModel(0, 5, this);
-
     model->setHeaderData(0, Qt::Horizontal, "Reservation ID");
     model->setHeaderData(1, Qt::Horizontal, "Guest Name");
     model->setHeaderData(2, Qt::Horizontal, "Room Number");
     model->setHeaderData(3, Qt::Horizontal, "Check-In Date");
     model->setHeaderData(4, Qt::Horizontal, "Check-Out Date");
 
+    proxyModel = new QSortFilterProxyModel(this);
+    proxyModel->setSourceModel(model);
+    proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    proxyModel->setFilterKeyColumn(-1);
+
     ui->ReservationsTabReservationsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->ReservationsTabReservationsTable->setModel(model);
+    ui->ReservationsTabReservationsTable->setModel(proxyModel);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    connect(ui->ReservationsTabSearchfield, &QLineEdit::textChanged,
+            proxyModel, &QSortFilterProxyModel::setFilterFixedString);
+
     connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::on_ReservationTabEditButton_clicked);
+    connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::on_ReservationTabCancelButton_clicked);
 
     // For now - REMOVE LATER:
     addMockData();
@@ -41,14 +49,15 @@ void ReservationsTab::onDataChanged()
 
 void ReservationsTab::on_ReservationTabEditButton_clicked()
 {
-    QModelIndex currentIndex = ui->ReservationsTabReservationsTable->currentIndex();
+    QModelIndex proxyIndex = ui->ReservationsTabReservationsTable->currentIndex();
 
-    if (!currentIndex.isValid()) {
+    if (!proxyIndex.isValid()) {
         QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
         return;
     }
 
-    int selectedRow = currentIndex.row();
+    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    int selectedRow = sourceIndex.row();
 
     QString currentName = model->item(selectedRow, 1)->text();
     QString currentRoom = model->item(selectedRow, 2)->text();
@@ -76,14 +85,16 @@ void ReservationsTab::on_ReservationTabEditButton_clicked()
 
 void ReservationsTab::on_ReservationTabCancelButton_clicked()
 {
-    QModelIndex currentIndex = ui->ReservationsTabReservationsTable->currentIndex();
+    QModelIndex proxyIndex = ui->ReservationsTabReservationsTable->currentIndex();
 
-    if (!currentIndex.isValid()) {
+    if (!proxyIndex.isValid()) {
         QMessageBox::warning(this, "No Selection", "Please click on a reservation first to cancel it.");
         return;
     }
 
-    int selectedRow = currentIndex.row();
+    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    int selectedRow = sourceIndex.row();
+
     QString guestName = model->item(selectedRow, 1)->text();
 
     QMessageBox::StandardButton reply;
