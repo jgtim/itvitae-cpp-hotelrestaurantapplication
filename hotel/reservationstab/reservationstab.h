@@ -18,6 +18,7 @@ public:
 
 public slots:
     void onDataChanged();
+    void on_ReservationTabCancelButton_clicked();
 
 signals:
     void dataChanged();
