@@ -3,6 +3,7 @@
 #include "editreservationdialog.h"
 
 #include <QMessageBox>
+#include <iostream>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -141,3 +142,29 @@ void ReservationsTab::addMockData()
          << new QStandardItem("18-08-2026");
     model->appendRow(row5);
 }
+void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
+{
+
+    EditReservationDialog dialog(this);
+
+    if (dialog.exec() == QDialog::Accepted) {
+
+        //TODO set new ID; get last number from existing database and add 1
+        QString newID = QString::number(6);
+        QString newName = dialog.getGuestName();
+        QString newRoom = dialog.getRoomNumber();
+        QString newCheckIn = dialog.getCheckInDate();
+        QString newCheckOut = dialog.getCheckOutDate();
+
+        QList<QStandardItem*> newRow;
+        newRow << new QStandardItem(newID)
+             << new QStandardItem(newName)
+             << new QStandardItem(newRoom)
+             << new QStandardItem(newCheckIn)
+             << new QStandardItem(newCheckOut);
+        model->appendRow(newRow);
+
+    }
+}
+
+
