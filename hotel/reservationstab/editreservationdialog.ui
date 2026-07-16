@@ -41,18 +41,12 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="checkInEdit"/>
-   </item>
    <item row="3" column="0">
     <widget class="QLabel" name="checkOutDateLabel">
      <property name="text">
       <string>Check-Out date:</string>
      </property>
     </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="checkOutEdit"/>
    </item>
    <item row="4" column="1">
     <widget class="QDialogButtonBox" name="EditReservationButtonBox">
@@ -66,6 +60,12 @@
       <bool>true</bool>
      </property>
     </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QDateEdit" name="checkInEdit"/>
+   </item>
+   <item row="3" column="1">
+    <widget class="QDateEdit" name="checkOutEdit"/>
    </item>
   </layout>
  </widget>
