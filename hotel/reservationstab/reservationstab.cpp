@@ -70,7 +70,6 @@ void ReservationsTab::on_ReservationTabEditButton_clicked()
     dialog.setReservationData(currentName, currentRoom, currentCheckIn, currentCheckOut);
 
     if (dialog.exec() == QDialog::Accepted) {
-        std::cout << "DIALOG ACCEPTED" <<std::endl;
 
         QString updatedName = dialog.getGuestName();
         QString updatedRoom = dialog.getRoomNumber();
