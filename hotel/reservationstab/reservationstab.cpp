@@ -3,11 +3,7 @@
 #include "editreservationdialog.h"
 
 #include <QMessageBox>
-<<<<<<< HEAD
 #include <QDebug>
-=======
-#include <iostream>
->>>>>>> main
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
