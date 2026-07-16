@@ -58,7 +58,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
-
+    ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,
