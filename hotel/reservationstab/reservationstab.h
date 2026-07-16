@@ -21,6 +21,7 @@ public slots:
 
 signals:
     void dataChanged();
+    void dataChangedNotification();
 
 private:
     Ui::ReservationsTab *ui;
