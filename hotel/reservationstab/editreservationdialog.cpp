@@ -1,6 +1,8 @@
 #include "editreservationdialog.h"
 #include "ui_editreservationdialog.h"
 
+#include <iostream>
+
 EditReservationDialog::EditReservationDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::EditReservationDialog)
@@ -10,6 +12,7 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
 
 EditReservationDialog::~EditReservationDialog()
 {
+    //is dit wat we willen? volgens mij verwijderd dit de gehele window, niet alleen de popup
     delete ui;
 }
 
@@ -24,3 +27,12 @@ QString EditReservationDialog::getGuestName() const { return ui->nameEdit->text(
 QString EditReservationDialog::getRoomNumber() const { return ui->roomEdit->text(); }
 QString EditReservationDialog::getCheckInDate() const { return ui->checkInEdit->text(); }
 QString EditReservationDialog::getCheckOutDate() const { return ui->checkOutEdit->text(); }
+
+void EditReservationDialog::on_EditReservationButtonBox_accepted()
+{
+    //delete this;
+    std::cout << "TESTING" << std::endl;
+    close();
+
+}
+
