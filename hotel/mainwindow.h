@@ -5,7 +5,6 @@
 #include <QTabWidget>
 
 // Forward declaration of tab Classes:
-class HomeTab;
 class ReservationsTab;
 class RoomsWindow;
 
@@ -24,9 +23,15 @@ public:
 private:
     Ui::MainWindow *ui;
     QTabWidget *tabWidget;
-    HomeTab *homeTab;
     ReservationsTab *reservationsTab;
     RoomsWindow *roomswindow;
+
+private slots:
+    void onTabChanged(int index);
+    void handleDataChangedInMainWindow();
+
+signals:
+    void dataChangedNotification();
 };
 
 #endif // MAINWINDOW_H
