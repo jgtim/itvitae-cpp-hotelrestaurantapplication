@@ -25,6 +25,11 @@ signals:
     void dataChanged();
     void dataChangedNotification();
 
+private slots:
+    void on_ReservationsTabNewReservationButton_clicked();
+
+    void on_ReservationsTabNewReservationButton_clicked(bool checked);
+
 private:
     Ui::ReservationsTab *ui;
     QStandardItemModel *model; // For now, maybe SQL later

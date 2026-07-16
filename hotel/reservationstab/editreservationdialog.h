@@ -21,6 +21,9 @@ public:
     QString getCheckInDate() const;
     QString getCheckOutDate() const;
 
+private slots:
+    void on_EditReservationButtonBox_accepted();
+
 private:
     Ui::EditReservationDialog *ui;
 };
