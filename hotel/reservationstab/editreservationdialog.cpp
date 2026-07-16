@@ -36,19 +36,25 @@ void EditReservationDialog::setReservationData(const QString &name, const QStrin
 QString EditReservationDialog::getGuestName() const { return ui->nameEdit->text(); }
 QString EditReservationDialog::getRoomNumber() const { return ui->roomEdit->text(); }
 QString EditReservationDialog::getCheckInDate() const { return ui->checkInEdit->date().toString("dd/MM/yyyy"); }
-QString EditReservationDialog::getCheckOutDate() const { return ui->checkInEdit->date().toString("dd/MM/yyyy"); }
+QString EditReservationDialog::getCheckOutDate() const { return ui->checkOutEdit->date().toString("dd/MM/yyyy"); }
 
 void EditReservationDialog::on_EditReservationButtonBox_accepted()
 {
-    // if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
-    //     //TODO reservatie word nog steeds aangemaakt
-    //     event->ignore();
-    //     QMessageBox::warning(this, "Invalid selection", "checkout date cannot be before checkin date.");
-    //     return;
-    // }
-    close();
+
+    //close();
 
 }
+
+void EditReservationDialog::accept(){
+
+    if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
+        //TODO reservatie word nog steeds aangemaakt
+        QMessageBox::warning(this, "Invalid selection", "checkout date cannot be before checkin date.");
+        return;
+    }else{
+        QDialog::accept();
+    }
+};
 
 // void EditReservationDialog::closeEvent(QCloseEvent *event)
 // {

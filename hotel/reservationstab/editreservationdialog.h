@@ -23,6 +23,7 @@ public:
 
 private slots:
     void on_EditReservationButtonBox_accepted();
+    void accept() override;
 
 private:
     Ui::EditReservationDialog *ui;
