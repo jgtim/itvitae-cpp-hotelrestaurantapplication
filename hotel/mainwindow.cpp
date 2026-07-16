@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include "hometab.h"
 #include "reservationstab/reservationstab.h"
 #include "roomswindow/roomswindow.h"
 
@@ -13,20 +12,30 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setCentralWidget(tabWidget);
 
     // Add tabs here:
-    homeTab = new HomeTab(this);
     reservationsTab = new ReservationsTab(this);
     roomswindow = new RoomsWindow(this);
 
-    tabWidget->addTab(homeTab, tr("Home"));
     tabWidget->addTab(reservationsTab, tr("Reservations"));
     tabWidget->addTab(roomswindow, tr("Rooms"));
 
-    connect(homeTab, &HomeTab::dataChanged,
-            reservationsTab, &ReservationsTab::onDataChanged);
-
+    connect(tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onTabChanged);
+    connect(reservationsTab, &ReservationsTab::dataChangedNotification, this, &MainWindow::handleDataChangedInMainWindow);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::onTabChanged(int index)
+{
+    // Check if the newly selected tab is the Reservations Tab (index 0)
+    if (index == 0) {
+        reservationsTab->onDataChanged();
+    }
+}
+
+void MainWindow::handleDataChangedInMainWindow()
+{
+    qDebug() << "MainWindow was notified that reservation data was edited!";
 }

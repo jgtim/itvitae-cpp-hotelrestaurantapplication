@@ -19,9 +19,9 @@ set(PROJECT_SOURCES
         hotel/mainwindow.h
         hotel/mainwindow.ui
 
-        hotel/hometab.h
-        hotel/hometab.cpp
-        hotel/hometab.ui
+
+
+
 
         hotel/reservationstab/reservationstab.h
         hotel/reservationstab/reservationstab.cpp

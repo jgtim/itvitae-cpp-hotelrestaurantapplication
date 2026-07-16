@@ -21,6 +21,7 @@ public slots:
 
 signals:
     void dataChanged();
+    void dataChangedNotification();
 
 private slots:
     void on_ReservationsTabNewReservationButton_clicked();

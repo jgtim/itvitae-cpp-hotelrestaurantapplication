@@ -8,6 +8,9 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     , ui(new Ui::EditReservationDialog)
 {
     ui->setupUi(this);
+
+    connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 EditReservationDialog::~EditReservationDialog()
