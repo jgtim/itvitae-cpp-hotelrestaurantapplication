@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QEvent>
 #include <QCloseEvent>
+#include <QDate>
 
 EditReservationDialog::EditReservationDialog(QWidget *parent)
     : QDialog(parent)
@@ -34,23 +35,24 @@ void EditReservationDialog::setReservationData(const QString &name, const QStrin
 
 QString EditReservationDialog::getGuestName() const { return ui->nameEdit->text(); }
 QString EditReservationDialog::getRoomNumber() const { return ui->roomEdit->text(); }
-QString EditReservationDialog::getCheckInDate() const { return ui->checkInEdit->text(); }
-QString EditReservationDialog::getCheckOutDate() const { return ui->checkOutEdit->text(); }
+QString EditReservationDialog::getCheckInDate() const { return ui->checkInEdit->date().toString("dd/MM/yyyy"); }
+QString EditReservationDialog::getCheckOutDate() const { return ui->checkInEdit->date().toString("dd/MM/yyyy"); }
 
-void EditReservationDialog::on_EditReservationButtonBox_accepted(QCloseEvent *event)
+void EditReservationDialog::on_EditReservationButtonBox_accepted()
 {
-    if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
-        //TODO reservatie word nog steeds aangemaakt
-        event->ignore();
-        QMessageBox::warning(this, "Invalid selection", "checkout date cannot be before checkin date.");
-        return;
-    }
+    // if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
+    //     //TODO reservatie word nog steeds aangemaakt
+    //     event->ignore();
+    //     QMessageBox::warning(this, "Invalid selection", "checkout date cannot be before checkin date.");
+    //     return;
+    // }
+    close();
 
 }
 
-void EditReservationDialog::closeEvent(QCloseEvent *event)
-{
+// void EditReservationDialog::closeEvent(QCloseEvent *event)
+// {
 
-    event->ignore();
-}
+//     event->ignore();
+// }
 
