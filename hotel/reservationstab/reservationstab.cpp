@@ -53,8 +53,8 @@ void ReservationsTab::on_ReservationTabEditButton_clicked()
 
     QString currentName = model->item(selectedRow, 1)->text();
     QString currentRoom = model->item(selectedRow, 2)->text();
-    QDate currentCheckIn = QDate::fromString(model->item(selectedRow, 3)->text(), "ddMMyyyy");
-    QDate currentCheckOut = QDate::fromString(model->item(selectedRow, 4)->text(), "ddMMyyyy");
+    QDate currentCheckIn = QDate::fromString(model->item(selectedRow, 3)->text(), "dd/MM/yyyy");
+    QDate currentCheckOut = QDate::fromString(model->item(selectedRow, 4)->text(), "dd/MM/yyyy");
 
     EditReservationDialog dialog(this);
     dialog.setReservationData(currentName, currentRoom, currentCheckIn, currentCheckOut);
@@ -115,32 +115,32 @@ void ReservationsTab::addMockData()
     row2 << new QStandardItem("0002")
          << new QStandardItem("Zuensai")
          << new QStandardItem("102")
-         << new QStandardItem("14-07-2026")
-         << new QStandardItem("20-07-2026");
+         << new QStandardItem("14/07/2026")
+         << new QStandardItem("20/07/2026");
     model->appendRow(row2);
 
     QList<QStandardItem*> row3;
     row3 << new QStandardItem("0003")
          << new QStandardItem("DoubleVegetaMickeyMouse")
          << new QStandardItem("103")
-         << new QStandardItem("21-08-2026")
-         << new QStandardItem("25-08-2026");
+         << new QStandardItem("21/08/2026")
+         << new QStandardItem("25/08/2026");
     model->appendRow(row3);
 
     QList<QStandardItem*> row4;
     row4 << new QStandardItem("0004")
          << new QStandardItem("jochemvdsteen")
          << new QStandardItem("104")
-         << new QStandardItem("10-06-2026")
-         << new QStandardItem("20-06-2026");
+         << new QStandardItem("10/06/2026")
+         << new QStandardItem("20/06/2026");
     model->appendRow(row4);
 
     QList<QStandardItem*> row5;
     row5 << new QStandardItem("0005")
          << new QStandardItem("IanSchaafstra")
          << new QStandardItem("105")
-         << new QStandardItem("08-08-2026")
-         << new QStandardItem("18-08-2026");
+         << new QStandardItem("08/08/2026")
+         << new QStandardItem("18/08/2026");
     model->appendRow(row5);
 }
 void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
