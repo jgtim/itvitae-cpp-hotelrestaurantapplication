@@ -132,14 +132,19 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
     QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
     int selectedRow = sourceIndex.row();
 
-    QString roomNum      = model->item(selectedRow, 0)->text();
-    QString roomType     = model->item(selectedRow, 1)->text();
-    QString adults       = model->item(selectedRow, 2)->text();
-    QString price        = model->item(selectedRow, 7)->text();
-    QString status       = model->item(selectedRow, 8)->text();
-    QString housekeeping = model->item(selectedRow, 9)->text();
+
+    QMap<QString, QString> roomDetails;
+    int columnCount = model->columnCount();
+
+    for (int col = 0; col < columnCount; ++col) {
+        QString header = model->horizontalHeaderItem(col)->text();
+        QStandardItem *item = model->item(selectedRow, col);
+        QString value = item ? item->text() : "";
+
+        roomDetails.insert(header, value);
+    }
 
     RoomDetailsDialog dialog(this);
-
+    dialog.setDetails(roomDetails);
     dialog.exec();
 }
