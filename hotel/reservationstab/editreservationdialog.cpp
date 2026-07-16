@@ -48,3 +48,9 @@ void EditReservationDialog::on_EditReservationButtonBox_accepted(QCloseEvent *ev
 
 }
 
+void EditReservationDialog::closeEvent(QCloseEvent *event)
+{
+
+    event->ignore();
+}
+

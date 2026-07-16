@@ -23,6 +23,7 @@ public:
 
 private slots:
     void on_EditReservationButtonBox_accepted(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::EditReservationDialog *ui;

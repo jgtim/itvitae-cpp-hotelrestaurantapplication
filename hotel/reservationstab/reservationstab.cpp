@@ -3,12 +3,9 @@
 #include "editreservationdialog.h"
 
 #include <QMessageBox>
-<<<<<<< HEAD
 #include <iostream>
 #include <QDate>
-=======
 #include <QDebug>
->>>>>>> main
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -182,13 +179,5 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         model->appendRow(newRow);
 
     }
-}
-
-
-
-
-void ReservationsTab::on_ReservationsTabNewReservationButton_clicked(bool checked)
-{
-
 }
 
