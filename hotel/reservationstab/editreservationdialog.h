@@ -22,7 +22,7 @@ public:
     QString getCheckOutDate() const;
 
 private slots:
-    void on_EditReservationButtonBox_accepted(QEvent *event);
+    void on_EditReservationButtonBox_accepted(QCloseEvent *event);
 
 private:
     Ui::EditReservationDialog *ui;

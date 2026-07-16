@@ -5,6 +5,7 @@
 #include <QIntValidator>
 #include <QMessageBox>
 #include <QEvent>
+#include <QCloseEvent>
 
 EditReservationDialog::EditReservationDialog(QWidget *parent)
     : QDialog(parent)
@@ -36,15 +37,13 @@ QString EditReservationDialog::getRoomNumber() const { return ui->roomEdit->text
 QString EditReservationDialog::getCheckInDate() const { return ui->checkInEdit->text(); }
 QString EditReservationDialog::getCheckOutDate() const { return ui->checkOutEdit->text(); }
 
-void EditReservationDialog::on_EditReservationButtonBox_accepted(QEvent *event)
+void EditReservationDialog::on_EditReservationButtonBox_accepted(QCloseEvent *event)
 {
     if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
-        //TODO hij word nog steeds aangemaakt
+        //TODO reservatie word nog steeds aangemaakt
         event->ignore();
         QMessageBox::warning(this, "Invalid selection", "checkout date cannot be before checkin date.");
         return;
-    }else{
-        close();
     }
 
 }
