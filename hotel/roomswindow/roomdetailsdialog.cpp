@@ -22,15 +22,15 @@ RoomDetailsDialog::~RoomDetailsDialog()
     delete ui;
 }
 
-void RoomDetailsDialog::setDetails(const QMap<QString, QString> &details)
+void RoomDetailsDialog::setDetails(const QList<QPair<QString, QString>> &details)
 {
     QLayout *currentLayout = layout();
 
-    // Iterating through the details and Header -> Value
-    for (auto it = details.constBegin(); it != details.constEnd(); ++it) {
-        QString cleanHeader = it.key().trimmed();
 
-        QLabel *valueLabel = new QLabel(it.value(), this);
+    for (const QPair<QString, QString> &pair : details) {
+        QString cleanHeader = pair.first.trimmed();
+
+        QLabel *valueLabel = new QLabel(pair.second, this);
         valueLabel->setStyleSheet("font-weight: bold;");
 
         if (auto formLayout = qobject_cast<QFormLayout*>(currentLayout)) {

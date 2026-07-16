@@ -15,7 +15,7 @@ public:
     explicit RoomDetailsDialog(QWidget *parent = nullptr);
     ~RoomDetailsDialog();
 
-    void setDetails(const QMap<QString, QString> &details);
+    void setDetails(const QList<QPair<QString, QString>> &details);
 
 private:
     Ui::RoomDetailsDialog *ui;

@@ -133,15 +133,16 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
     int selectedRow = sourceIndex.row();
 
 
-    QMap<QString, QString> roomDetails;
+    QList<QPair<QString, QString>> roomDetails;
     int columnCount = model->columnCount();
 
     for (int col = 0; col < columnCount; ++col) {
         QString header = model->horizontalHeaderItem(col)->text();
+
         QStandardItem *item = model->item(selectedRow, col);
         QString value = item ? item->text() : "";
 
-        roomDetails.insert(header, value);
+        roomDetails.append(qMakePair(header, value));
     }
 
     RoomDetailsDialog dialog(this);
