@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 
 namespace Ui {
 class ReservationsTab;
@@ -27,11 +28,11 @@ signals:
 private slots:
     void on_ReservationsTabNewReservationButton_clicked();
 
-    void on_ReservationsTabNewReservationButton_clicked(bool checked);
-
 private:
     Ui::ReservationsTab *ui;
     QStandardItemModel *model; // For now, maybe SQL later
+    QSortFilterProxyModel *proxyModel;
+
     void addMockData();
     void on_ReservationTabEditButton_clicked();
 };

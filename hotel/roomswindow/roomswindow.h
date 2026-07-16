@@ -18,6 +18,7 @@ public:
     explicit RoomsWindow(QWidget *parent = nullptr);
     ~RoomsWindow();
 
+
 private:
     Ui::RoomsWindow *ui;
     QStandardItemModel *model;
@@ -25,6 +26,10 @@ private:
 
     void updateRoomColors();
     void filterRooms(const QString &text);
+
+private slots:
+    void on_roomsTableView_doubleClicked(const QModelIndex &index);
+
 };
 
 #endif // ROOMSWINDOW_H
