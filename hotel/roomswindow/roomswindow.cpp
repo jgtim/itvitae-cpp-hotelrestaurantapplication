@@ -26,26 +26,27 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     model->setHorizontalHeaderLabels({
         "Room Number",
-        "Floor",
         "Room type",
-        "Capacity",
+        "Adults",
+        "View     ",        //spaties om het vakje groter te maken
+        "Babybed",
+        "Bed type",
+        "Comments        ", //spaties om het vakje groter te maken
+        "Price per night",
         "Status",
         "Housekeeping"
     });
 
     model->setItem(0, 0, new QStandardItem("1.01"));
-    model->setItem(0, 1, new QStandardItem("1"));
-    model->setItem(0, 2, new QStandardItem("Economy"));
-    model->setItem(0, 3, new QStandardItem("2"));
-    model->setItem(0, 4, new QStandardItem("Available"));
-    model->setItem(0, 5, new QStandardItem("Clean"));
-
-    model->setItem(1, 0, new QStandardItem("2.02"));
-    model->setItem(1, 1, new QStandardItem("2"));
-    model->setItem(1, 2, new QStandardItem("Luxurious"));
-    model->setItem(1, 3, new QStandardItem("4"));
-    model->setItem(1, 4, new QStandardItem("Occupied"));
-    model->setItem(1, 5, new QStandardItem("Needs Cleaning"));
+    model->setItem(0, 1, new QStandardItem("Economy"));
+    model->setItem(0, 2, new QStandardItem("2"));
+    model->setItem(0, 3, new QStandardItem("Normal"));
+    model->setItem(0, 4, new QStandardItem("Yes"));
+    model->setItem(0, 5, new QStandardItem("Twin"));
+    model->setItem(0, 6, new QStandardItem(""));
+    model->setItem(0, 7, new QStandardItem("89.00"));
+    model->setItem(0, 8, new QStandardItem("Available"));
+    model->setItem(0, 9, new QStandardItem("Clean"));
 
 
     proxyModel = new QSortFilterProxyModel(this);
@@ -55,8 +56,9 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     ui->roomsTableView->setModel(proxyModel);
 
-    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
+    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
+    ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,
@@ -79,8 +81,10 @@ void RoomsWindow::updateRoomColors()
 {
     for (int row = 0; row < model->rowCount(); row++)
     {
-        // Status kolom = 4
-        QStandardItem *statusItem = model->item(row, 4);
+        // Status kolom = 8
+        QStandardItem *statusItem = model->item(row, 8);
+        statusItem->setForeground(QBrush(QColor(0, 0, 0)));
+
 
         if (statusItem)
         {
@@ -100,12 +104,14 @@ void RoomsWindow::updateRoomColors()
         }
 
 
-        // Housekeeping kolom = 5
-        QStandardItem *housekeepingItem = model->item(row, 5);
+        // Housekeeping kolom = 9
+        QStandardItem *housekeepingItem = model->item(row, 9);
 
         if (housekeepingItem)
         {
             QString housekeeping = housekeepingItem->text();
+            housekeepingItem->setForeground(QBrush(QColor(0, 0, 0)));
+
 
             if (housekeeping == "Clean")
                 housekeepingItem->setBackground(QColor(200, 255, 200));
