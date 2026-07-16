@@ -68,8 +68,8 @@ target_link_libraries(MolvenoLakeHotelResort PRIVATE
 
 add_custom_command(TARGET MolvenoLakeHotelResort POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_SOURCE_DIR}/data"
-    "$<TARGET_FILE_DIR:MolvenoLakeHotelResort>/data"
+    "${CMAKE_SOURCE_DIR}/resources"
+    "$<TARGET_FILE_DIR:MolvenoLakeHotelResort>/resources"
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

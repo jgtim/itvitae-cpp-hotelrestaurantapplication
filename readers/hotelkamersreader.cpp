@@ -7,7 +7,7 @@ void ReadKamers() // This was to test
     qDebug() << "Working directory:" << QDir::currentPath();
 
     QXlsx::Document xlsx(
-        QStringLiteral("data/Hotel kamers plus prices v0.4.xlsx")
+        QStringLiteral("resources/Hotel kamers plus prices v0.4.xlsx")
         );
 
     if (!xlsx.load()) {
@@ -20,7 +20,7 @@ void ReadKamers() // This was to test
 
 QList<RoomRecord> parseRoomFile(){
     QXlsx::Document xlsx(
-        QStringLiteral("data/Hotel kamers plus prices v0.4.xlsx")
+        QStringLiteral("resources/Hotel kamers plus prices v0.4.xlsx")
         );
     QList<RoomRecord> rooms;
 
