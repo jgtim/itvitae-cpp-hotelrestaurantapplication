@@ -18,6 +18,7 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     model->setHeaderData(3, Qt::Horizontal, "Check-In Date");
     model->setHeaderData(4, Qt::Horizontal, "Check-Out Date");
 
+    ui->ReservationsTabReservationsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->ReservationsTabReservationsTable->setModel(model);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -70,6 +71,31 @@ void ReservationsTab::on_ReservationTabEditButton_clicked()
         model->item(selectedRow, 4)->setText(updatedCheckOut);
     }
 
+}
+
+void ReservationsTab::on_ReservationTabCancelButton_clicked()
+{
+    QModelIndex currentIndex = ui->ReservationsTabReservationsTable->currentIndex();
+
+    if (!currentIndex.isValid()) {
+        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to cancel it.");
+        return;
+    }
+
+    int selectedRow = currentIndex.row();
+    QString guestName = model->item(selectedRow, 1)->text();
+
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(this,
+                                  "Confirm Cancellation",
+                                  QString("Are you sure you want to cancel the reservation for %1?").arg(guestName),
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes) {
+        model->removeRow(selectedRow);
+
+        emit dataChangedNotification();
+    }
 }
 
 // Placeholder method for adding mock data - REMOVE LATER
