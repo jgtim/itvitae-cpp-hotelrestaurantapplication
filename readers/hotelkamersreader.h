@@ -17,8 +17,8 @@ struct RoomRecord {
     double pricePerNight;
 };
 
-void CheckIfRoomFileOpens();
+void CheckIfFileOpens(const QString& filePath);
 
-QList<RoomRecord> parseRoomFile();
+std::optional<QList<RoomRecord>> parseRoomFile(); // Optional so in case it fails to open the file it will return explicit failure state instead of just being empty
 
 #endif

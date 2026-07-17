@@ -1,27 +1,30 @@
 #include "hotelkamersreader.h"
 
 #include <QDebug>
+#include <optional>
 
-void CheckIfRoomFileOpens() // This was to test
+void CheckIfRoomFileOpens(const QString& filePath)
 {
     qDebug() << "Working directory:" << QDir::currentPath();
 
-    QXlsx::Document xlsx(
-        QStringLiteral("resources/Hotel kamers plus prices v0.4.xlsx")
-        );
+    QXlsx::Document xlsx(filePath);
 
-    if (!xlsx.load()) {
-        qDebug() << "Failed to open room file";
+    if (!xlsx.isLoadPackage()) {
+        qDebug() << "Failed to open file";
         return;
     }
 
-    qDebug() << xlsx.read(QStringLiteral("A1")).toString();
+    qDebug() << "Succesfully opened file at: " << filePath;
 }
 
-QList<RoomRecord> parseRoomFile(){
-    QXlsx::Document xlsx(
-        QStringLiteral("resources/Hotel kamers plus prices v0.4.xlsx")
-        );
+std::optional<QList<RoomRecord>> parseRoomFile(){
+    // Built-in QXlsx way to check if file opened successfully
+    QXlsx::Document xlsx(QStringLiteral("resources/Hotel kamers plus prices v0.4.xlsx"));
+    if (!xlsx.isLoadPackage()) {
+        qDebug() << "Failed to parse: File could not be loaded.";
+        return std::nullopt; // Returns explicit failure state
+    }
+
     QList<RoomRecord> rooms;
 
     int currentFloor = 1;
@@ -68,7 +71,7 @@ QList<RoomRecord> parseRoomFile(){
         room.comments = xlsx.read(row, 7).toString();
 
         // Turn price into double
-        QString priceStr = xlsx.read(row, 9).toString();
+        QString priceStr = xlsx.read(row, 8).toString();
         room.pricePerNight = priceStr.remove(QChar(0x20AC)).trimmed().toDouble();
 
         rooms.append(room);
