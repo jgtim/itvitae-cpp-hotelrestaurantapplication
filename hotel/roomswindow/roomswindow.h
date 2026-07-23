@@ -29,6 +29,7 @@ private:
 
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);
+    void doSomething(int row);
 
 };
 
