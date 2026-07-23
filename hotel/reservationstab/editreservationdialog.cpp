@@ -101,8 +101,13 @@ void EditReservationDialog::on_EditReservationButtonBox_accepted()
 
 void EditReservationDialog::accept(){
 
+    // Name filled in check
+    if (ui->nameEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a guest name.");
+        return;
+    }
+
     if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
-        //TODO reservatie word nog steeds aangemaakt
         QMessageBox::warning(this, "Invalid selection", "Check-out date cannot be before check-in date.");
         return;
     }
@@ -118,6 +123,31 @@ void EditReservationDialog::accept(){
 
     QDialog::accept();
 };
+
+void EditReservationDialog::setReadOnly(bool readOnly)
+{
+    ui->nameEdit->setReadOnly(readOnly);
+    ui->phoneNumberEdit->setReadOnly(readOnly);
+    ui->dateOfBirthEdit->setReadOnly(readOnly);
+    ui->genderComboBox->setEnabled(!readOnly);
+
+    ui->addressEdit1->setReadOnly(readOnly);
+    ui->addressEdit2->setReadOnly(readOnly);
+    ui->addressEdit3->setReadOnly(readOnly);
+    ui->addressEdit4->setReadOnly(readOnly);
+    ui->addressEdit5->setReadOnly(readOnly);
+    ui->addressEdit6->setReadOnly(readOnly);
+
+    ui->guestNumEdit->setReadOnly(readOnly);
+    ui->roomEdit->setReadOnly(readOnly);
+    ui->checkInEdit->setReadOnly(readOnly);
+    ui->checkOutEdit->setReadOnly(readOnly);
+
+    if (readOnly) {
+        this->setWindowTitle("View Reservation Details");
+        ui->EditReservationButtonBox->setStandardButtons(QDialogButtonBox::Ok);
+    }
+}
 
 // void EditReservationDialog::closeEvent(QCloseEvent *event)
 // {

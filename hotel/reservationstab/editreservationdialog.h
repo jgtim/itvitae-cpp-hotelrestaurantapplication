@@ -18,6 +18,7 @@ public:
 
     void setReservationData(const Reservation &res);
     Reservation getReservationData() const;
+    void setReadOnly(bool readOnly);
 
 private slots:
     void on_EditReservationButtonBox_accepted();

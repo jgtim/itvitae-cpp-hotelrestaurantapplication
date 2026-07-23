@@ -29,6 +29,7 @@ signals:
 
 private slots:
     void on_ReservationsTabNewReservationButton_clicked();
+    void handleViewReservation(const QModelIndex &index);
 
 private:
     Ui::ReservationsTab *ui;
