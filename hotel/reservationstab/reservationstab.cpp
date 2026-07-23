@@ -23,6 +23,7 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    // Search all columns
     proxyModel->setFilterKeyColumn(-1);
 
     ui->ReservationsTabReservationsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -32,8 +33,8 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     connect(ui->ReservationsTabSearchfield, &QLineEdit::textChanged,
             proxyModel, &QSortFilterProxyModel::setFilterFixedString);
 
-    connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::on_ReservationTabEditButton_clicked);
-    connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::on_ReservationTabCancelButton_clicked);
+    connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::handleEditReservation);
+    connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::handleCancelReservation);
 
     // For now - REMOVE LATER:
     addMockData();
@@ -49,7 +50,7 @@ void ReservationsTab::onDataChanged()
     qDebug() << "Reservations Tab received notification that data changed. Refreshing UI...";
 }
 
-void ReservationsTab::on_ReservationTabEditButton_clicked()
+void ReservationsTab::handleEditReservation()
 {
     QModelIndex proxyIndex = ui->ReservationsTabReservationsTable->currentIndex();
 
@@ -85,7 +86,7 @@ void ReservationsTab::on_ReservationTabEditButton_clicked()
 
 }
 
-void ReservationsTab::on_ReservationTabCancelButton_clicked()
+void ReservationsTab::handleCancelReservation()
 {
     QModelIndex proxyIndex = ui->ReservationsTabReservationsTable->currentIndex();
 

@@ -19,7 +19,7 @@ public:
 
 public slots:
     void onDataChanged();
-    void on_ReservationTabCancelButton_clicked();
+    void handleCancelReservation();
 
 signals:
     void dataChanged();
@@ -34,7 +34,7 @@ private:
     QSortFilterProxyModel *proxyModel;
 
     void addMockData();
-    void on_ReservationTabEditButton_clicked();
+    void handleEditReservation();
 };
 
 #endif // RESERVATIONSTAB_H
