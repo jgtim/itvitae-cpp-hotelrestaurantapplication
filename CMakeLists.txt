@@ -41,6 +41,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         hotel/roomswindow/roomdetailsdialog.h hotel/roomswindow/roomdetailsdialog.cpp hotel/roomswindow/roomdetailsdialog.ui
+
+        hotel/reservationstab/Reservation/reservation.h
+        hotel/reservationstab/Reservation/address.h
+        hotel/reservationstab/Reservation/gender.h
     )
 
 # Define target properties for Android with Qt 6 as:
