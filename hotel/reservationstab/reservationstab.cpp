@@ -209,18 +209,27 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
 {
     EditReservationDialog dialog(this);
 
-    if (dialog.exec() == QDialog::Accepted) {
-        // Retrieving the filled Reservation struct directly from the dialog
-        Reservation newRes = dialog.getReservationData();
+    Reservation newRes;
+    newRes.checkIn = QDate::currentDate();
+    newRes.checkOut = QDate::currentDate().addDays(1);
+    newRes.dateOfBirth = QDate::currentDate().addYears(-20);
+    newRes.numberOfGuests = 1;
+    newRes.roomNumber = 0;
 
-        // Temporary ID logic until database integration
+    dialog.setReservationData(newRes);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        // Retrieve filled struct from dialog
+        newRes = dialog.getReservationData();
+
+        // Generate a temporary ID
         newRes.ReservationID = QString::number(model->rowCount() + 1);
 
-        // Add the struct to the model
+        // Add to table model
         addReservationToModel(newRes);
 
-        // Notify other listeners
         emit dataChangedNotification();
     }
+
 }
 
