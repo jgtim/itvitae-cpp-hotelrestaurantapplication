@@ -5,6 +5,8 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 
+#include "Reservation/reservation.h"
+
 namespace Ui {
 class ReservationsTab;
 }
@@ -19,7 +21,7 @@ public:
 
 public slots:
     void onDataChanged();
-    void on_ReservationTabCancelButton_clicked();
+    void handleCancelReservation();
 
 signals:
     void dataChanged();
@@ -33,8 +35,11 @@ private:
     QStandardItemModel *model; // For now, maybe SQL later
     QSortFilterProxyModel *proxyModel;
 
+    void addReservationToModel(const Reservation &res);
+    Reservation getReservationFromIndex(const QModelIndex &index);
+
     void addMockData();
-    void on_ReservationTabEditButton_clicked();
+    void handleEditReservation();
 };
 
 #endif // RESERVATIONSTAB_H

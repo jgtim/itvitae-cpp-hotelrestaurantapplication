@@ -12,16 +12,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+add_subdirectory(QXlsx)
+
 set(PROJECT_SOURCES
         main/main.cpp
 
         hotel/mainwindow.cpp
         hotel/mainwindow.h
         hotel/mainwindow.ui
-
-
-
-
 
         hotel/reservationstab/reservationstab.h
         hotel/reservationstab/reservationstab.cpp
@@ -34,6 +32,9 @@ set(PROJECT_SOURCES
         hotel/roomswindow/roomswindow.h
         hotel/roomswindow/roomswindow.cpp
         hotel/roomswindow/roomswindow.ui
+
+        readers/hotelkamersreader.h
+        readers/hotelkamersreader.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -41,8 +42,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         hotel/roomswindow/roomdetailsdialog.h hotel/roomswindow/roomdetailsdialog.cpp hotel/roomswindow/roomdetailsdialog.ui
-        hotel/roomswindow/delegate.h
-        hotel/roomswindow/delegate.cpp
+
+        hotel/reservationstab/Reservation/reservation.h
+        hotel/reservationstab/Reservation/address.h
+        hotel/reservationstab/Reservation/gender.h
+        hotel/reservationstab/Reservation/address.cpp
     )
 
 # Define target properties for Android with Qt 6 as:
@@ -63,7 +67,16 @@ else()
     endif()
 endif()
 
-target_link_libraries(MolvenoLakeHotelResort PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(MolvenoLakeHotelResort PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    QXlsx::QXlsx
+)
+
+add_custom_command(TARGET MolvenoLakeHotelResort POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_SOURCE_DIR}/resources"
+    "$<TARGET_FILE_DIR:MolvenoLakeHotelResort>/resources"
+)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

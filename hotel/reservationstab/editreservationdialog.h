@@ -2,6 +2,7 @@
 #define EDITRESERVATIONDIALOG_H
 
 #include <QDialog>
+#include "Reservation/reservation.h"
 
 namespace Ui {
 class EditReservationDialog;
@@ -15,11 +16,8 @@ public:
     explicit EditReservationDialog(QWidget *parent = nullptr);
     ~EditReservationDialog();
 
-    void setReservationData(const QString &name, const QString &room, const QDate &checkIn, const QDate &checkOut);
-    QString getGuestName() const;
-    QString getRoomNumber() const;
-    QString getCheckInDate() const;
-    QString getCheckOutDate() const;
+    void setReservationData(const Reservation &res);
+    Reservation getReservationData() const;
 
 private slots:
     void on_EditReservationButtonBox_accepted();
@@ -27,6 +25,7 @@ private slots:
 
 private:
     Ui::EditReservationDialog *ui;
+    Reservation m_currentReservation;
 };
 
 #endif // EDITRESERVATIONDIALOG_H

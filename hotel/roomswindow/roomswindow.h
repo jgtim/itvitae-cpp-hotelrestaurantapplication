@@ -26,6 +26,7 @@ private:
 
     void updateRoomColors();
     void filterRooms(const QString &text);
+    void importExcelRooms();
 
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);

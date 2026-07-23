@@ -1,6 +1,7 @@
 #include "roomswindow.h"
 #include "ui_roomswindow.h"
 #include "roomdetailsdialog.h"
+#include "../../readers/hotelkamersreader.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -42,6 +43,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
         //"More Information" //for if we add button here later
     });
 
+<<<<<<< HEAD
 
     model->setItem(0, 0, new QStandardItem("101"));
     model->setItem(0, 1, new QStandardItem("Economy"));
@@ -57,6 +59,9 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     //model->setItem(0, 5, new QStandardItem("TEST"));
 
 
+=======
+    importExcelRooms();
+>>>>>>> main
 
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(model);
@@ -130,6 +135,34 @@ void RoomsWindow::updateRoomColors()
             else if (housekeeping == "Needs Cleaning")
                 housekeepingItem->setBackground(QColor(255, 200, 200));
         }
+    }
+}
+
+void RoomsWindow::importExcelRooms(){
+    std::optional<QList<RoomRecord>> roomList = parseRoomFile();
+
+    if (roomList.has_value()) {
+        for(int i = 0; i < roomList->size(); i++) {
+            model->setItem(i, 0, new QStandardItem(roomList->at(i).roomNumber));
+            model->setItem(i, 1, new QStandardItem(roomList->at(i).category));
+            // turn int into string
+            QString adultAmount = QString::number(roomList->at(i).adults);
+            model->setItem(i, 2, new QStandardItem(adultAmount));
+            model->setItem(i, 3, new QStandardItem(roomList->at(i).view));
+            // turn bool into string
+            QString babyBedString = (roomList->at(i).babyBedPossible) ? "Yes" : "No";
+            model->setItem(i, 4, new QStandardItem(babyBedString));
+            model->setItem(i, 5, new QStandardItem(roomList->at(i).bed));
+            model->setItem(i, 6, new QStandardItem(roomList->at(i).comments));
+            // turn double into string
+            QString priceString = QString::number(roomList->at(i).pricePerNight);
+            model->setItem(i, 7, new QStandardItem(QString("€ %1").arg(priceString)));
+            // No value for these yet
+            model->setItem(i, 8, new QStandardItem("Available"));
+            model->setItem(i, 9, new QStandardItem("Clean"));
+        }
+    } else {
+        qDebug() << "Could not import room data";
     }
 }
 
