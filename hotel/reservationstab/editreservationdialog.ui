@@ -84,23 +84,55 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="addressEdit1"/>
-   </item>
    <item row="7" column="1">
-    <widget class="QLineEdit" name="addressEdit6"/>
+    <widget class="QLineEdit" name="addressEdit6">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Country...</string>
+     </property>
+    </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QLineEdit" name="addressEdit5"/>
+    <widget class="QLineEdit" name="addressEdit5">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Postal code...</string>
+     </property>
+    </widget>
    </item>
    <item row="5" column="1">
-    <widget class="QLineEdit" name="addressEdit4"/>
+    <widget class="QLineEdit" name="addressEdit4">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>State, region or province...</string>
+     </property>
+    </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QLineEdit" name="addressEdit3"/>
+    <widget class="QLineEdit" name="addressEdit3">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>City...</string>
+     </property>
+    </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="addressEdit2"/>
+    <widget class="QLineEdit" name="addressEdit2">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Optional house information...</string>
+     </property>
+    </widget>
    </item>
    <item row="8" column="0">
     <widget class="QLabel" name="dateOfBirthLabel">
@@ -121,6 +153,16 @@
    </item>
    <item row="8" column="1">
     <widget class="QDateEdit" name="dateOfBirthEdit"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="addressEdit1">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Street and number...</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
