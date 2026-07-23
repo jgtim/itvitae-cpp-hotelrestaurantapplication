@@ -45,6 +45,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         hotel/reservationstab/Reservation/reservation.h
         hotel/reservationstab/Reservation/address.h
         hotel/reservationstab/Reservation/gender.h
+        hotel/reservationstab/Reservation/address.cpp
     )
 
 # Define target properties for Android with Qt 6 as:

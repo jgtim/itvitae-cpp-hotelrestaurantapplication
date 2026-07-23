@@ -10,7 +10,7 @@ struct Address {
     QString city;
     QString stateRegion;
     QString postalCode;
-    QString Country;
+    QString country;
 
 
     QString toFormattedString() const;
