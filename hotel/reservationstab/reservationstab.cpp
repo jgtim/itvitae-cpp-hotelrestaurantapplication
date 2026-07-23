@@ -6,6 +6,7 @@
 #include <iostream>
 #include <QDate>
 #include <QDebug>
+#include <QString>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -15,16 +16,15 @@ ReservationsTab::ReservationsTab(QWidget *parent)
 
     model = new QStandardItemModel(0, 5, this);
     model->setHeaderData(0, Qt::Horizontal, "Reservation ID");
-    model->setHeaderData(1, Qt::Horizontal, "Guest Name");
-    model->setHeaderData(2, Qt::Horizontal, "Room Number");
-    model->setHeaderData(3, Qt::Horizontal, "Check-In Date");
-    model->setHeaderData(4, Qt::Horizontal, "Check-Out Date");
+    model->setHeaderData(1, Qt::Horizontal, "Check-In Date");
+    model->setHeaderData(2, Qt::Horizontal, "Check-Out Date");
+    model->setHeaderData(3, Qt::Horizontal, "Room Number");
+    model->setHeaderData(4, Qt::Horizontal, "Guest Name");
 
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    // Search all columns
-    proxyModel->setFilterKeyColumn(-1);
+    proxyModel->setFilterKeyColumn(-1);  // Search all columns
 
     ui->ReservationsTabReservationsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->ReservationsTabReservationsTable->setModel(proxyModel);
@@ -50,6 +50,7 @@ void ReservationsTab::onDataChanged()
     qDebug() << "Reservations Tab received notification that data changed. Refreshing UI...";
 }
 
+// EDIT BUTTON LOGIC
 void ReservationsTab::handleEditReservation()
 {
     QModelIndex proxyIndex = ui->ReservationsTabReservationsTable->currentIndex();
@@ -59,31 +60,31 @@ void ReservationsTab::handleEditReservation()
         return;
     }
 
-    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
-    int selectedRow = sourceIndex.row();
-
-    QString currentName = model->item(selectedRow, 1)->text();
-    QString currentRoom = model->item(selectedRow, 2)->text();
-    QDate currentCheckIn = QDate::fromString(model->item(selectedRow, 3)->text(), "dd/MM/yyyy");
-    QDate currentCheckOut = QDate::fromString(model->item(selectedRow, 4)->text(), "dd/MM/yyyy");
-
+    Reservation currentRes = getReservationFromIndex(proxyIndex);
     EditReservationDialog dialog(this);
-    dialog.setReservationData(currentName, currentRoom, currentCheckIn, currentCheckOut);
+
+    dialog.setReservationData(currentRes);
 
     if (dialog.exec() == QDialog::Accepted) {
+        // Get updated struct from dialog
+        Reservation updatedRes = dialog.getReservationData();
 
-        QString updatedName = dialog.getGuestName();
-        QString updatedRoom = dialog.getRoomNumber();
-        QString updatedCheckIn = dialog.getCheckInDate();
-        QString updatedCheckOut = dialog.getCheckOutDate();
+        // Find underlying source row index
+        QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+        int selectedRow = sourceIndex.row();
 
+        model->item(selectedRow, 0)->setText(updatedRes.ReservationID);
+        model->item(selectedRow, 1)->setText(updatedRes.checkIn.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 2)->setText(updatedRes.checkOut.toString("dd/MM/yyyy"));
 
-        model->item(selectedRow, 1)->setText(updatedName);
-        model->item(selectedRow, 2)->setText(updatedRoom);
-        model->item(selectedRow, 3)->setText(updatedCheckIn);
-        model->item(selectedRow, 4)->setText(updatedCheckOut);
+        model->item(selectedRow, 3)->setData(updatedRes.roomNumber, Qt::DisplayRole);
+        model->item(selectedRow, 4)->setText(updatedRes.GuestName);
+
+        // Re-store the full updated struct in Column 0!
+        model->item(selectedRow, 0)->setData(QVariant::fromValue(updatedRes), Qt::UserRole);
+
+        emit dataChangedNotification();
     }
-
 }
 
 void ReservationsTab::handleCancelReservation()
@@ -95,89 +96,131 @@ void ReservationsTab::handleCancelReservation()
         return;
     }
 
-    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
-    int selectedRow = sourceIndex.row();
-
-    QString guestName = model->item(selectedRow, 1)->text();
+    Reservation res = getReservationFromIndex(proxyIndex);
 
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this,
                                   "Confirm Cancellation",
-                                  QString("Are you sure you want to cancel the reservation for %1?").arg(guestName),
+                                  QString("Are you sure you want to cancel reservation #%1 for %2?")
+                                      .arg(res.ReservationID, res.GuestName),
                                   QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
-        model->removeRow(selectedRow);
+        // Clear table selection FIRST so Qt doesn't auto-trigger the adjacent row
+        ui->ReservationsTabReservationsTable->clearSelection();
+        ui->ReservationsTabReservationsTable->setCurrentIndex(QModelIndex());
+
+        // Remove row from underlying source model
+        QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+        model->removeRow(sourceIndex.row());
 
         emit dataChangedNotification();
     }
 }
 
+void ReservationsTab::addReservationToModel(const Reservation &res) {
+
+    QList<QStandardItem*> row;
+
+    QStandardItem *idItem = new QStandardItem(res.ReservationID);
+    QStandardItem *checkInItem = new QStandardItem(res.checkIn.toString("dd/MM/yyyy"));
+    QStandardItem *checkOutItem = new QStandardItem(res.checkOut.toString("dd/MM/yyyy"));
+    QStandardItem *roomItem = new QStandardItem();
+    roomItem->setData(res.roomNumber, Qt::DisplayRole);
+    QStandardItem *nameItem = new QStandardItem(res.GuestName);
+
+    // Saving the whole struct in Column 0
+    idItem->setData(QVariant::fromValue(res), Qt::UserRole);
+
+    row << idItem << checkInItem << checkOutItem << roomItem << nameItem;
+    model->appendRow(row);
+
+}
+
+Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
+{
+    // Map from proxy index back to source index
+    QModelIndex sourceIndex = proxyModel->mapToSource(index);
+
+    // Get item from Column 0 of that row
+    QStandardItem *item = model->item(sourceIndex.row(), 0);
+
+    // Retrieve full Reservation struct stored in Qt::UserRole
+    return item->data(Qt::UserRole).value<Reservation>();
+}
+
 // Placeholder method for adding mock data - REMOVE LATER
 void ReservationsTab::addMockData()
 {
-    QList<QStandardItem*> row1;
-    row1 << new QStandardItem("0001")
-         << new QStandardItem("Giovanni Falegname")
-         << new QStandardItem("302")
-         << new QStandardItem("12/07/2026")
-         << new QStandardItem("15/07/2026");
-    model->appendRow(row1);
+    Reservation r1;
+    r1.ReservationID = "1";
+    r1.GuestName = "Giovanni Falegname";
+    r1.GuestPhoneNumber = "31 6 12345678";
+    r1.address = {"Maasdijk 68", "", "Veen", "Noord-Brabant", "4356AB", "Netherlands"};
+    r1.dateOfBirth = QDate(1991, 10, 1);
+    r1.gender = Gender::Male;
+    r1.numberOfGuests = 2;
+    r1.roomNumber = 101;
+    r1.checkIn = QDate(2026, 8, 12);
+    r1.checkOut = QDate(2026, 8, 15);
 
-    QList<QStandardItem*> row2;
-    row2 << new QStandardItem("0002")
-         << new QStandardItem("Giovane Principe")
-         << new QStandardItem("111")
-         << new QStandardItem("14/07/2026")
-         << new QStandardItem("20/07/2026");
-    model->appendRow(row2);
+    Reservation r2;
+    r2.ReservationID = "2";
+    r2.GuestName = "Gualtiero Gaykemani";
+    r2.GuestPhoneNumber = "31 6 12345678";
+    r2.address = {"Maasdijk 69", "", "Veen", "Noord-Brabant", "4356AB", "Netherlands"};
+    r2.dateOfBirth = QDate(1992, 10, 1);
+    r2.gender = Gender::Male;
+    r2.numberOfGuests = 3;
+    r2.roomNumber = 102;
+    r2.checkIn = QDate(2026, 9, 12);
+    r2.checkOut = QDate(2026, 9, 15);
 
-    QList<QStandardItem*> row3;
-    row3 << new QStandardItem("0003")
-         << new QStandardItem("Gualtiero Gaykemani")
-         << new QStandardItem("109")
-         << new QStandardItem("21/08/2026")
-         << new QStandardItem("25/08/2026");
-    model->appendRow(row3);
+    addReservationToModel(r1);
+    addReservationToModel(r2);
 
-    QList<QStandardItem*> row4;
-    row4 << new QStandardItem("0004")
-         << new QStandardItem("Gioacchino della Pietra")
-         << new QStandardItem("108")
-         << new QStandardItem("10/06/2026")
-         << new QStandardItem("20/06/2026");
-    model->appendRow(row4);
+    // QList<QStandardItem*> row2;
+    // row2 << new QStandardItem("0002")
+    //      << new QStandardItem("Giovane Principe")
+    //      << new QStandardItem("111")
+    //      << new QStandardItem("14/07/2026")
+    //      << new QStandardItem("20/07/2026");
+    // model->appendRow(row2);
 
-    QList<QStandardItem*> row5;
-    row5 << new QStandardItem("0005")
-         << new QStandardItem("Giovanni Pialla")
-         << new QStandardItem("201")
-         << new QStandardItem("08/08/2026")
-         << new QStandardItem("18/08/2026");
-    model->appendRow(row5);
+    // QList<QStandardItem*> row4;
+    // row4 << new QStandardItem("0004")
+    //      << new QStandardItem("Gioacchino della Pietra")
+    //      << new QStandardItem("108")
+    //      << new QStandardItem("10/06/2026")
+    //      << new QStandardItem("20/06/2026");
+    // model->appendRow(row4);
+
+    // QList<QStandardItem*> row5;
+    // row5 << new QStandardItem("0005")
+    //      << new QStandardItem("Giovanni Pialla")
+    //      << new QStandardItem("201")
+    //      << new QStandardItem("08/08/2026")
+    //      << new QStandardItem("18/08/2026");
+    // model->appendRow(row5);
 }
+
+
 void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
 {
-
     EditReservationDialog dialog(this);
 
     if (dialog.exec() == QDialog::Accepted) {
+        // Retrieving the filled Reservation struct directly from the dialog
+        Reservation newRes = dialog.getReservationData();
 
-        //TODO set new ID; get last number from existing database and add 1
-        QString newID = QString::number(6);
-        QString newName = dialog.getGuestName();
-        QString newRoom = dialog.getRoomNumber();
-        QString newCheckIn = dialog.getCheckInDate();
-        QString newCheckOut = dialog.getCheckOutDate();
+        // Temporary ID logic until database integration
+        newRes.ReservationID = QString::number(model->rowCount() + 1);
 
-        QList<QStandardItem*> newRow;
-        newRow << new QStandardItem(newID)
-             << new QStandardItem(newName)
-             << new QStandardItem(newRoom)
-             << new QStandardItem(newCheckIn)
-             << new QStandardItem(newCheckOut);
-        model->appendRow(newRow);
+        // Add the struct to the model
+        addReservationToModel(newRes);
 
+        // Notify other listeners
+        emit dataChangedNotification();
     }
 }
 

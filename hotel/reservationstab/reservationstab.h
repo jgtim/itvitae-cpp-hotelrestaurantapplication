@@ -5,6 +5,8 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 
+#include "Reservation/reservation.h"
+
 namespace Ui {
 class ReservationsTab;
 }
@@ -32,6 +34,9 @@ private:
     Ui::ReservationsTab *ui;
     QStandardItemModel *model; // For now, maybe SQL later
     QSortFilterProxyModel *proxyModel;
+
+    void addReservationToModel(const Reservation &res);
+    Reservation getReservationFromIndex(const QModelIndex &index);
 
     void addMockData();
     void handleEditReservation();
