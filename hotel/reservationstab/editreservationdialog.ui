@@ -24,31 +24,31 @@
    <item row="0" column="1">
     <widget class="QLineEdit" name="nameEdit"/>
    </item>
-   <item row="10" column="0">
+   <item row="11" column="0">
     <widget class="QLabel" name="roomNumberLabel">
      <property name="text">
       <string>Room Number:</string>
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="11" column="1">
     <widget class="QLineEdit" name="roomEdit"/>
    </item>
-   <item row="11" column="0">
+   <item row="12" column="0">
     <widget class="QLabel" name="checkInDateLabel">
      <property name="text">
       <string>Check-In date:</string>
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
+   <item row="13" column="0">
     <widget class="QLabel" name="checkOutDateLabel">
      <property name="text">
       <string>Check-Out date:</string>
      </property>
     </widget>
    </item>
-   <item row="13" column="1">
+   <item row="14" column="1">
     <widget class="QDialogButtonBox" name="EditReservationButtonBox">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
@@ -61,10 +61,10 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1">
+   <item row="12" column="1">
     <widget class="QDateEdit" name="checkInEdit"/>
    </item>
-   <item row="12" column="1">
+   <item row="13" column="1">
     <widget class="QDateEdit" name="checkOutEdit"/>
    </item>
    <item row="1" column="1">
@@ -141,15 +141,12 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
+   <item row="10" column="0">
     <widget class="QLabel" name="guestNumLabel">
      <property name="text">
       <string>Number of Guests:</string>
      </property>
     </widget>
-   </item>
-   <item row="9" column="1">
-    <widget class="QLineEdit" name="guestNumEdit"/>
    </item>
    <item row="8" column="1">
     <widget class="QDateEdit" name="dateOfBirthEdit"/>
@@ -163,6 +160,19 @@
       <string>Street and number...</string>
      </property>
     </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QLineEdit" name="guestNumEdit"/>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="genderLabel">
+     <property name="text">
+      <string>Gender:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QComboBox" name="genderComboBox"/>
    </item>
   </layout>
  </widget>

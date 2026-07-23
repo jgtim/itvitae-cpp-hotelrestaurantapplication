@@ -17,8 +17,15 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
-    ui->roomEdit->setValidator( new QIntValidator(0, 999, this) );
+    ui->roomEdit->setValidator( new QIntValidator(0, 30, this) );
     ui->guestNumEdit->setValidator(new QIntValidator(1, 20, this));
+
+    ui->genderComboBox->clear();
+    ui->genderComboBox->addItem("Unspecified", QVariant::fromValue(Gender::Unspecified));
+    ui->genderComboBox->addItem("Male",        QVariant::fromValue(Gender::Male));
+    ui->genderComboBox->addItem("Female",      QVariant::fromValue(Gender::Female));
+    ui->genderComboBox->addItem("Non-Binary",  QVariant::fromValue(Gender::NonBinary));
+    ui->genderComboBox->addItem("Other",       QVariant::fromValue(Gender::Other));
 }
 
 EditReservationDialog::~EditReservationDialog()
@@ -48,6 +55,11 @@ void EditReservationDialog::setReservationData(const Reservation &res) {
     ui->checkInEdit->setDate(res.checkIn);
     ui->checkOutEdit->setDate(res.checkOut);
 
+    int genderIndex = ui->genderComboBox->findData(QVariant::fromValue(res.gender));
+    if (genderIndex != -1) {
+        ui->genderComboBox->setCurrentIndex(genderIndex);
+    }
+
 }
 
 Reservation EditReservationDialog::getReservationData() const
@@ -75,6 +87,8 @@ Reservation EditReservationDialog::getReservationData() const
     res.checkIn = ui->checkInEdit->date();
     res.checkOut = ui->checkOutEdit->date();
 
+    res.gender = ui->genderComboBox->currentData().value<Gender>();
+
     return res;
 }
 
@@ -92,6 +106,16 @@ void EditReservationDialog::accept(){
         QMessageBox::warning(this, "Invalid selection", "Check-out date cannot be before check-in date.");
         return;
     }
+
+    // Checking if reservation holder is at least 18
+    QDate dob = ui->dateOfBirthEdit->date();
+    QDate today = QDate::currentDate();
+
+    if (dob.addYears(18) > today) {
+        QMessageBox::warning(this, "Invalid Age", "The reservation holder must be at least 18 years old.");
+        return;
+    }
+
     QDialog::accept();
 };
 
