@@ -17,8 +17,15 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
-    ui->roomEdit->setValidator( new QIntValidator(0, 999, this) );
+    ui->roomEdit->setValidator( new QIntValidator(0, 30, this) );
     ui->guestNumEdit->setValidator(new QIntValidator(1, 20, this));
+
+    ui->genderComboBox->clear();
+    ui->genderComboBox->addItem("Unspecified", QVariant::fromValue(Gender::Unspecified));
+    ui->genderComboBox->addItem("Male",        QVariant::fromValue(Gender::Male));
+    ui->genderComboBox->addItem("Female",      QVariant::fromValue(Gender::Female));
+    ui->genderComboBox->addItem("Non-Binary",  QVariant::fromValue(Gender::NonBinary));
+    ui->genderComboBox->addItem("Other",       QVariant::fromValue(Gender::Other));
 }
 
 EditReservationDialog::~EditReservationDialog()
@@ -48,6 +55,11 @@ void EditReservationDialog::setReservationData(const Reservation &res) {
     ui->checkInEdit->setDate(res.checkIn);
     ui->checkOutEdit->setDate(res.checkOut);
 
+    int genderIndex = ui->genderComboBox->findData(QVariant::fromValue(res.gender));
+    if (genderIndex != -1) {
+        ui->genderComboBox->setCurrentIndex(genderIndex);
+    }
+
 }
 
 Reservation EditReservationDialog::getReservationData() const
@@ -75,6 +87,8 @@ Reservation EditReservationDialog::getReservationData() const
     res.checkIn = ui->checkInEdit->date();
     res.checkOut = ui->checkOutEdit->date();
 
+    res.gender = ui->genderComboBox->currentData().value<Gender>();
+
     return res;
 }
 
@@ -87,13 +101,53 @@ void EditReservationDialog::on_EditReservationButtonBox_accepted()
 
 void EditReservationDialog::accept(){
 
+    // Name filled in check
+    if (ui->nameEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a guest name.");
+        return;
+    }
+
     if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
-        //TODO reservatie word nog steeds aangemaakt
         QMessageBox::warning(this, "Invalid selection", "Check-out date cannot be before check-in date.");
         return;
     }
+
+    // Checking if reservation holder is at least 18
+    QDate dob = ui->dateOfBirthEdit->date();
+    QDate today = QDate::currentDate();
+
+    if (dob.addYears(18) > today) {
+        QMessageBox::warning(this, "Invalid Age", "The reservation holder must be at least 18 years old.");
+        return;
+    }
+
     QDialog::accept();
 };
+
+void EditReservationDialog::setReadOnly(bool readOnly)
+{
+    ui->nameEdit->setReadOnly(readOnly);
+    ui->phoneNumberEdit->setReadOnly(readOnly);
+    ui->dateOfBirthEdit->setReadOnly(readOnly);
+    ui->genderComboBox->setEnabled(!readOnly);
+
+    ui->addressEdit1->setReadOnly(readOnly);
+    ui->addressEdit2->setReadOnly(readOnly);
+    ui->addressEdit3->setReadOnly(readOnly);
+    ui->addressEdit4->setReadOnly(readOnly);
+    ui->addressEdit5->setReadOnly(readOnly);
+    ui->addressEdit6->setReadOnly(readOnly);
+
+    ui->guestNumEdit->setReadOnly(readOnly);
+    ui->roomEdit->setReadOnly(readOnly);
+    ui->checkInEdit->setReadOnly(readOnly);
+    ui->checkOutEdit->setReadOnly(readOnly);
+
+    if (readOnly) {
+        this->setWindowTitle("View Reservation Details");
+        ui->EditReservationButtonBox->setStandardButtons(QDialogButtonBox::Ok);
+    }
+}
 
 // void EditReservationDialog::closeEvent(QCloseEvent *event)
 // {

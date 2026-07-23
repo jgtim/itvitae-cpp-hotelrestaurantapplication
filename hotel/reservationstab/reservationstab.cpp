@@ -33,6 +33,9 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     connect(ui->ReservationsTabSearchfield, &QLineEdit::textChanged,
             proxyModel, &QSortFilterProxyModel::setFilterFixedString);
 
+    connect(ui->ReservationsTabReservationsTable, &QTableView::doubleClicked,
+            this, &ReservationsTab::handleViewReservation);
+
     connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::handleEditReservation);
     connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::handleCancelReservation);
 
@@ -202,6 +205,21 @@ void ReservationsTab::addMockData()
     //      << new QStandardItem("08/08/2026")
     //      << new QStandardItem("18/08/2026");
     // model->appendRow(row5);
+}
+
+void ReservationsTab::handleViewReservation(const QModelIndex &index)
+{
+    if (!index.isValid())
+        return;
+
+    Reservation res = getReservationFromIndex(index);
+
+    // Open dialog in Read-Only mode
+    EditReservationDialog dialog(this);
+    dialog.setReservationData(res);
+    dialog.setReadOnly(true);
+
+    dialog.exec();
 }
 
 
