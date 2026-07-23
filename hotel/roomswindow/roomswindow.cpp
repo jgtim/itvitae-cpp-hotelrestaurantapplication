@@ -33,36 +33,18 @@ RoomsWindow::RoomsWindow(QWidget *parent)
         "Room Number",
         "Room type",
         "Capacity",
-        // "View     ",        //spaties om het vakje groter te maken
-        // "Babybed",
-        // "Bed type",
-        // "Comments        ", //spaties om het vakje groter te maken
-        // "Price per night",
+        "View     ",        //spaties om het vakje groter te maken
+        "Babybed",
+        "Bed type",
+        "Comments        ", //spaties om het vakje groter te maken
+        "Price per night",
         "Status",
         "Housekeeping",
         //"More Information" //for if we add button here later
     });
 
-<<<<<<< HEAD
 
-    model->setItem(0, 0, new QStandardItem("101"));
-    model->setItem(0, 1, new QStandardItem("Economy"));
-    model->setItem(0, 2, new QStandardItem("2"));
-    // model->setItem(0, 3, new QStandardItem("Normal"));
-    // model->setItem(0, 4, new QStandardItem("Yes"));
-    // model->setItem(0, 5, new QStandardItem("Twin"));
-    // model->setItem(0, 6, new QStandardItem(""));
-    // model->setItem(0, 7, new QStandardItem("89.00"));
-    model->setItem(0, 3, new QStandardItem("Available"));
-    model->setItem(0, 4, new QStandardItem("Clean"));
-    //NOTE: room numbers also have to reflect this in updateRoomColors
-    //model->setItem(0, 5, new QStandardItem("TEST"));
-
-
-=======
     importExcelRooms();
->>>>>>> main
-
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -194,6 +176,16 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 
 void RoomsWindow::on_seeRoomDetails_clicked()
 {
+
+    //just copy stuff from ReservationsTab::handleEditReservation()
+    QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
+
+    if (!proxyIndex.isValid()) {
+        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
+        return;
+    }
+
+
     ui->roomStack->setCurrentIndex(1);
 }
 
