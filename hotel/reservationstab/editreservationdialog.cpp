@@ -18,6 +18,7 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
     ui->roomEdit->setValidator( new QIntValidator(0, 999, this) );
+    ui->guestNumEdit->setValidator(new QIntValidator(1, 20, this));
 }
 
 EditReservationDialog::~EditReservationDialog()
@@ -29,42 +30,50 @@ EditReservationDialog::~EditReservationDialog()
 void EditReservationDialog::setReservationData(const Reservation &res) {
     m_currentReservation = res;
 
-    // Populate UI inputs from struct fields
     ui->nameEdit->setText(res.GuestName);
-    // ui->phoneLineEdit->setText(res.GuestPhoneNumber);
+    ui->phoneNumberEdit->setText(res.GuestPhoneNumber);
+
+    ui->addressEdit1->setText(res.address.streetLine1);
+    ui->addressEdit2->setText(res.address.streetLine2);
+    ui->addressEdit3->setText(res.address.city);
+    ui->addressEdit4->setText(res.address.stateRegion);
+    ui->addressEdit5->setText(res.address.postalCode);
+    ui->addressEdit6->setText(res.address.country);
+
+    ui->dateOfBirthEdit->setDate(res.dateOfBirth);
+
+    ui->guestNumEdit->setText(QString::number(res.numberOfGuests));
+    ui->roomEdit->setText(QString::number(res.roomNumber));
+
     ui->checkInEdit->setDate(res.checkIn);
     ui->checkOutEdit->setDate(res.checkOut);
 
-    // ui->guestsSpinBox->setValue(res.numberOfGuests);
-    // ui->roomNumberEdit->setValue(res.roomNumber);
-
-    // ui->streetLineEdit->setText(res.address.streetLine1);
-    // ui->cityLineEdit->setText(res.address.city);
-    // ui->postalCodeLineEdit->setText(res.address.postalCode);
-    // ui->countryLineEdit->setText(res.address.country);
-
-    // ui->genderComboBox->setCurrentText(genderToString(res.gender));
 }
 
 Reservation EditReservationDialog::getReservationData() const
 {
     Reservation res = m_currentReservation;
 
-    // Pull modified values from UI widgets
     res.GuestName = ui->nameEdit->text();
-    // res.GuestPhoneNumber = ui->phoneLineEdit->text();
+    res.GuestPhoneNumber = ui->phoneNumberEdit->text();
+
+    res.address.streetLine1 = ui->addressEdit1->text();
+    res.address.streetLine2 = ui->addressEdit2->text();
+    res.address.city = ui->addressEdit3->text();
+    res.address.stateRegion = ui->addressEdit4->text();
+    res.address.postalCode = ui->addressEdit5->text();
+    res.address.country = ui->addressEdit6->text();
+
+    // 3. Date of Birth
+    res.dateOfBirth = QDate::fromString(ui->dateOfBirthEdit->text(), "dd/MM/yyyy");
+
+    // 4. Details
+    res.numberOfGuests = ui->guestNumEdit->text().toInt();
+    res.roomNumber = ui->roomEdit->text().toInt();
+
+    // 5. Dates
     res.checkIn = ui->checkInEdit->date();
     res.checkOut = ui->checkOutEdit->date();
-
-    // res.numberOfGuests = ui->guestsSpinBox->value();
-    // res.roomNumber = ui->roomNumberEdit->value();
-
-    // res.address.streetLine1 = ui->streetLineEdit->text();
-    // res.address.city = ui->cityLineEdit->text();
-    // res.address.postalCode = ui->postalCodeLineEdit->text();
-    // res.address.country = ui->countryLineEdit->text();
-
-    // res.gender = genderFromString(ui->genderComboBox->currentText());
 
     return res;
 }
@@ -80,11 +89,10 @@ void EditReservationDialog::accept(){
 
     if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
         //TODO reservatie word nog steeds aangemaakt
-        QMessageBox::warning(this, "Invalid selection", "checkout date cannot be before checkin date.");
+        QMessageBox::warning(this, "Invalid selection", "Check-out date cannot be before check-in date.");
         return;
-    }else{
-        QDialog::accept();
     }
+    QDialog::accept();
 };
 
 // void EditReservationDialog::closeEvent(QCloseEvent *event)
