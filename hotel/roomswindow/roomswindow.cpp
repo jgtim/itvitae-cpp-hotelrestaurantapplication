@@ -14,6 +14,10 @@
 
 #include <iostream>
 
+#include "delegate.h"
+
+
+
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
 
 RoomsWindow::RoomsWindow(QWidget *parent)
@@ -41,10 +45,10 @@ RoomsWindow::RoomsWindow(QWidget *parent)
         // "Price per night",
         "Status",
         "Housekeeping",
-        "More Information"
+        //"More Information"
     });
 
-    QSignalMapper *signalMapper = new QSignalMapper(this);
+    //QSignalMapper *signalMapper = new QSignalMapper(this);
 
 
 
@@ -62,14 +66,18 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     //NOTE: room numbers also have to reflect this in updateRoomColors
     //model->setItem(0, 5, new QStandardItem("TEST"));
 
-    QPushButton* helpButton = new QPushButton("Help");
+    //QPushButton* helpButton = new QPushButton("Help");
 
-    ui->roomsTableView->setIndexWidget(model->index(0, 5), helpButton);
-    helpButton->show();
-    signalMapper->setMapping(helpButton, 0);
-    connect(helpButton, SIGNAL(clicked(bool)), signalMapper, SLOT(map()));
-    //this part below goes after the for loop that iterates over rows
-    connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(doSomething(int)));
+    // ui->roomsTableView->setIndexWidget(model->index(0, 5), helpButton);
+    //helpButton->show();
+    // signalMapper->setMapping(helpButton, 0);
+    // connect(helpButton, SIGNAL(clicked(bool)), signalMapper, SLOT(map()));
+    // //this part below goes after the for loop that iterates over rows
+    //connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(doSomething(int)));
+
+    // //alternate ways of connecting that also don't do anything
+    //connect(helpButton, SIGNAL(clicked(bool)), this, SLOT(doSomething(int 0)));
+    //helpButton->clicked()->connect(doSomething(0));
 
 
     proxyModel = new QSortFilterProxyModel(this);
@@ -77,11 +85,16 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     proxyModel->setFilterKeyColumn(-1);
 
+
     ui->roomsTableView->setModel(proxyModel);
 
     ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+
+    // MyDelegate delegate;
+    // ui->roomsTableView->setItemDelegate(&delegate);
 
 
 
@@ -176,3 +189,8 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 void RoomsWindow::doSomething(int row){
     std::cout << "I did something" << std::endl;
 }
+void RoomsWindow::on_seeRoomDetails_clicked()
+{
+    ui->roomStack->setCurrentIndex(1);
+}
+
