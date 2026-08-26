@@ -21,15 +21,21 @@ public:
     Reservation getReservationData() const;
     void setReadOnly(bool readOnly);
     void setAvailableRooms(const QList<RoomRecord> &rooms);
+    void setExistingReservations(const QList<Reservation> &reservations);
 
 private slots:
     void on_EditReservationButtonBox_accepted();
     void accept() override;
+    void updateRoomAvailability();
 
 private:
     Ui::EditReservationDialog *ui;
     Reservation m_currentReservation;
-    QList<QString> m_availableRoomNumbers;
+    // QList<QString> m_availableRoomNumbers;
+    QList<RoomRecord> m_allRooms;
+    QList<Reservation> m_allReservations;
+
+    void populateRoomDropdown(const QList<RoomRecord> &rooms);
 };
 
 #endif // EDITRESERVATIONDIALOG_H

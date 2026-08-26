@@ -17,6 +17,13 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
 
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+
+    connect(ui->checkInEdit, &QDateEdit::dateChanged,
+            this, &EditReservationDialog::updateRoomAvailability);
+
+    connect(ui->checkOutEdit, &QDateEdit::dateChanged,
+            this, &EditReservationDialog::updateRoomAvailability);
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
     ui->guestNumEdit->setValidator(new QIntValidator(1, 20, this));
 
@@ -66,23 +73,46 @@ void EditReservationDialog::setReservationData(const Reservation &res) {
 
 void EditReservationDialog::setAvailableRooms(const QList<RoomRecord> &rooms)
 {
+    m_allRooms = rooms;
+    populateRoomDropdown(rooms);
+
+}
+
+void EditReservationDialog::setExistingReservations(const QList<Reservation> &reservations)
+{
+    m_allReservations = reservations;
+}
+
+void EditReservationDialog::populateRoomDropdown(const QList<RoomRecord> &rooms)
+{
     ui->roomEdit->clear();
     ui->roomEdit->addItem("-- Select a room --", -1);
 
-    m_availableRoomNumbers.clear();
-
     for (const RoomRecord &room : rooms) {
-        // "1.01" -> "101" -> 101 (int)
         QString roomStr = room.roomNumber;
         int roomAsInt = roomStr.remove(".").toInt();
-
-        // Zichtbaar in dropdown: "1.01" (mooi leesbaar)
-        // Data erachter: 101 (int, makkelijk te vergelijken)
         ui->roomEdit->addItem(room.roomNumber, roomAsInt);
-
-        m_availableRoomNumbers.append(room.roomNumber);
     }
 }
+// void EditReservationDialog::setAvailableRooms(const QList<RoomRecord> &rooms)
+// {
+//     ui->roomEdit->clear();
+//     ui->roomEdit->addItem("-- Select a room --", -1);
+
+//     m_availableRoomNumbers.clear();
+
+//     for (const RoomRecord &room : rooms) {
+//         // "1.01" -> "101" -> 101 (int)
+//         QString roomStr = room.roomNumber;
+//         int roomAsInt = roomStr.remove(".").toInt();
+
+//         // Zichtbaar in dropdown: "1.01" (mooi leesbaar)
+//         // Data erachter: 101 (int, makkelijk te vergelijken)
+//         ui->roomEdit->addItem(room.roomNumber, roomAsInt);
+
+//         m_availableRoomNumbers.append(room.roomNumber);
+//     }
+// }
 
 Reservation EditReservationDialog::getReservationData() const
 {
@@ -171,6 +201,54 @@ void EditReservationDialog::setReadOnly(bool readOnly)
     }
 }
 
+
+void EditReservationDialog::updateRoomAvailability()
+{
+    QDate checkIn = ui->checkInEdit->date();
+    QDate checkOut = ui->checkOutEdit->date();
+
+    int previouslySelected = ui->roomEdit->currentData().toInt();
+
+    QList<RoomRecord> availableRooms;
+
+    for (const RoomRecord &room : m_allRooms) {
+        QString roomStr = room.roomNumber;
+        int roomAsInt = roomStr.remove(".").toInt();
+
+        bool isTaken = false;
+
+        for (const Reservation &res : m_allReservations) {
+
+            // Sla de reservering over die we nu zelf aan het bewerken zijn
+            if (!m_currentReservation.ReservationID.isEmpty() &&
+                res.ReservationID == m_currentReservation.ReservationID) {
+                continue;
+            }
+
+            if (res.roomNumber == roomAsInt) {
+
+                // Controleer of de reserveringen elkaar overlappen
+                if (checkIn < res.checkOut && res.checkIn < checkOut) {
+                    isTaken = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isTaken) {
+            availableRooms.append(room);
+        }
+    }
+
+    populateRoomDropdown(availableRooms);
+
+    // Probeer de eerder geselecteerde kamer opnieuw te selecteren
+    int idx = ui->roomEdit->findData(previouslySelected);
+
+    if (idx != -1) {
+        ui->roomEdit->setCurrentIndex(idx);
+    }
+}
 // void EditReservationDialog::closeEvent(QCloseEvent *event)
 // {
 

@@ -7,6 +7,7 @@
 #include "../../readers/hotelkamersreader.h"
 #include "Reservation/reservation.h"
 
+
 namespace Ui {
 class ReservationsTab;
 }
@@ -38,6 +39,7 @@ private:
 
     void addReservationToModel(const Reservation &res);
     Reservation getReservationFromIndex(const QModelIndex &index);
+    QList<Reservation> getAllReservations() const;
 
     void addMockData();
     void handleEditReservation();

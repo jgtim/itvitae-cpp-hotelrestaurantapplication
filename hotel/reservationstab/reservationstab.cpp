@@ -73,9 +73,9 @@ void ReservationsTab::handleEditReservation()
     Reservation currentRes = getReservationFromIndex(proxyIndex);
     EditReservationDialog dialog(this);
 
-    dialog.setReservationData(currentRes);
-
     dialog.setAvailableRooms(m_availableRooms);
+    dialog.setExistingReservations(getAllReservations());
+    dialog.setReservationData(currentRes);
 
     if (dialog.exec() == QDialog::Accepted) {
         // Get updated struct from dialog
@@ -161,6 +161,22 @@ Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
     return item->data(Qt::UserRole).value<Reservation>();
 }
 
+QList<Reservation> ReservationsTab::getAllReservations() const
+{
+    QList<Reservation> reservations;
+
+    for (int row = 0; row < model->rowCount(); ++row) {
+        QStandardItem *item = model->item(row, 0);
+
+        if (item) {
+            reservations.append(
+                item->data(Qt::UserRole).value<Reservation>()
+                );
+        }
+    }
+
+    return reservations;
+}
 // Placeholder method for adding mock data - REMOVE LATER
 void ReservationsTab::addMockData()
 {
@@ -243,9 +259,9 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
     newRes.numberOfGuests = 1;
     newRes.roomNumber = 0;
 
-    dialog.setReservationData(newRes);
-
     dialog.setAvailableRooms(m_availableRooms);
+    dialog.setExistingReservations(getAllReservations());
+    dialog.setReservationData(newRes);
 
     if (dialog.exec() == QDialog::Accepted) {
         // Retrieve filled struct from dialog
