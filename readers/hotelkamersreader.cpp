@@ -1,6 +1,8 @@
 #include "hotelkamersreader.h"
+#include "..\hotel\roomswindow\Room\room.h"
 
 #include <QDebug>
+#include <QDir>
 #include <optional>
 
 void CheckIfRoomFileOpens(const QString& filePath)
