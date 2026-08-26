@@ -107,7 +107,7 @@ inline QString houseKeepingStatusToString(HouseKeepingStatus status) {
 // ---------------------------------------------------------------------
 
 struct Room {
-    int roomNumber;
+    QString roomNumber;
     RoomType roomType;
     int adults;
     RoomView roomView;
@@ -127,7 +127,7 @@ inline void appendRoom(QList<Room>& roomList, const Room& room) {
 }
 
 inline void appendRoom(QList<Room>& roomList,
-                       int roomNumber,
+                       QString roomNumber,
                        RoomType roomType,
                        int adults,
                        RoomView roomView,

@@ -123,7 +123,7 @@ void RoomsWindow::importExcelRooms(){
         const Room& room = roomList->at(i);
 
         // Column 0: Room Number
-        model->setItem(i, 0, new QStandardItem(QString::number(room.roomNumber)));
+        model->setItem(i, 0, new QStandardItem(room.roomNumber));
         // Column 1: Room Type (Enum -> String)
         model->setItem(i, 1, new QStandardItem(roomTypeToString(room.roomType)));
         // Column 2: Adults

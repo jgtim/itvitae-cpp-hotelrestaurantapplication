@@ -67,7 +67,7 @@ std::optional<QList<Room>> parseRoomFile() {
 
         appendRoom(
             rooms,
-            cellA.toInt(),                                           // roomNumber
+            cellA,                                                   // roomNumber
             stringToRoomType(xlsx.read(row, 2).toString()),          // roomType
             xlsx.read(row, 3).toInt(),                               // adults
             stringToRoomView(xlsx.read(row, 4).toString()),          // roomView
