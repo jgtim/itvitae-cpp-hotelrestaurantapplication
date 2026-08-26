@@ -66,34 +66,45 @@ void ReservationsTab::handleEditReservation()
     QModelIndex proxyIndex = ui->ReservationsTabReservationsTable->currentIndex();
 
     if (!proxyIndex.isValid()) {
-        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
+        QMessageBox::warning(this, "No Selection",
+                             "Please click on a reservation first to edit it.");
         return;
     }
 
     Reservation currentRes = getReservationFromIndex(proxyIndex);
+
     EditReservationDialog dialog(this);
 
+    // Eerst alle kamers inladen
     dialog.setAvailableRooms(m_availableRooms);
+
+    // Daarna alle bestaande reserveringen meegeven
     dialog.setExistingReservations(getAllReservations());
+
+    // ALS LAATSTE de huidige reservering instellen.
+    // Hierdoor wordt de huidige kamer geselecteerd.
     dialog.setReservationData(currentRes);
 
     if (dialog.exec() == QDialog::Accepted) {
-        // Get updated struct from dialog
+
         Reservation updatedRes = dialog.getReservationData();
 
-        // Find underlying source row index
         QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
         int selectedRow = sourceIndex.row();
 
         model->item(selectedRow, 0)->setText(updatedRes.ReservationID);
-        model->item(selectedRow, 1)->setText(updatedRes.checkIn.toString("dd/MM/yyyy"));
-        model->item(selectedRow, 2)->setText(updatedRes.checkOut.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 1)->setText(
+            updatedRes.checkIn.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 2)->setText(
+            updatedRes.checkOut.toString("dd/MM/yyyy"));
 
-        model->item(selectedRow, 3)->setData(updatedRes.roomNumber, Qt::DisplayRole);
+        model->item(selectedRow, 3)->setData(
+            updatedRes.roomNumber, Qt::DisplayRole);
+
         model->item(selectedRow, 4)->setText(updatedRes.GuestName);
 
-        // Re-store the full updated struct in Column 0!
-        model->item(selectedRow, 0)->setData(QVariant::fromValue(updatedRes), Qt::UserRole);
+        model->item(selectedRow, 0)->setData(
+            QVariant::fromValue(updatedRes), Qt::UserRole);
 
         emit dataChangedNotification();
     }
@@ -239,14 +250,14 @@ void ReservationsTab::handleViewReservation(const QModelIndex &index)
 
     Reservation res = getReservationFromIndex(index);
 
-    // Open dialog in Read-Only mode
     EditReservationDialog dialog(this);
+
+    dialog.setAvailableRooms(m_availableRooms);
+    dialog.setExistingReservations(getAllReservations());
     dialog.setReservationData(res);
-    dialog.setReadOnly(true);
 
     dialog.exec();
 }
-
 
 void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
 {

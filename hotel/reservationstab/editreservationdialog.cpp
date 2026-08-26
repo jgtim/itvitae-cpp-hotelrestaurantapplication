@@ -41,7 +41,8 @@ EditReservationDialog::~EditReservationDialog()
     delete ui;
 }
 
-void EditReservationDialog::setReservationData(const Reservation &res) {
+void EditReservationDialog::setReservationData(const Reservation &res)
+{
     m_currentReservation = res;
 
     ui->nameEdit->setText(res.GuestName);
@@ -57,17 +58,21 @@ void EditReservationDialog::setReservationData(const Reservation &res) {
     ui->dateOfBirthEdit->setDate(res.dateOfBirth);
 
     ui->guestNumEdit->setText(QString::number(res.numberOfGuests));
-    int roomIndex = ui->roomEdit->findData(res.roomNumber);
-    if (roomIndex != -1) {
-        ui->roomEdit->setCurrentIndex(roomIndex);
-    }
 
     ui->checkInEdit->setDate(res.checkIn);
     ui->checkOutEdit->setDate(res.checkOut);
 
-    int genderIndex = ui->genderComboBox->findData(QVariant::fromValue(res.gender));
-    if (genderIndex != -1) {
-        ui->genderComboBox->setCurrentIndex(genderIndex);
+    int genderIndex =
+        ui->genderComboBox->findData(QVariant::fromValue(res.gender));
+
+    // Update the room list based on the dates.
+    updateRoomAvailability();
+
+    // Select the room of the reservation being edited.
+    int roomIndex = ui->roomEdit->findData(res.roomNumber);
+
+    if (roomIndex != -1) {
+        ui->roomEdit->setCurrentIndex(roomIndex);
     }
 }
 
@@ -208,7 +213,9 @@ void EditReservationDialog::updateRoomAvailability()
     QDate checkOut = ui->checkOutEdit->date();
 
     int previouslySelected = ui->roomEdit->currentData().toInt();
-
+    if (previouslySelected == -1 && !m_currentReservation.ReservationID.isEmpty()) {
+        previouslySelected = m_currentReservation.roomNumber;
+    }
     QList<RoomRecord> availableRooms;
 
     for (const RoomRecord &room : m_allRooms) {
