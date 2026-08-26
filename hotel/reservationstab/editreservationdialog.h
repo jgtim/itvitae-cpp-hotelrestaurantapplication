@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "Reservation/reservation.h"
+#include "../../readers/hotelkamersreader.h"
 
 namespace Ui {
 class EditReservationDialog;
@@ -19,6 +20,7 @@ public:
     void setReservationData(const Reservation &res);
     Reservation getReservationData() const;
     void setReadOnly(bool readOnly);
+    void setAvailableRooms(const QList<RoomRecord> &rooms);
 
 private slots:
     void on_EditReservationButtonBox_accepted();
@@ -27,6 +29,7 @@ private slots:
 private:
     Ui::EditReservationDialog *ui;
     Reservation m_currentReservation;
+    QList<QString> m_availableRoomNumbers;
 };
 
 #endif // EDITRESERVATIONDIALOG_H

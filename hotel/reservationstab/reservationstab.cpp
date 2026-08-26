@@ -41,6 +41,13 @@ ReservationsTab::ReservationsTab(QWidget *parent)
 
     // For now - REMOVE LATER:
     addMockData();
+    auto roomsOptional = parseRoomFile();
+    if (roomsOptional.has_value()) {
+        m_availableRooms = roomsOptional.value();
+        qDebug() << "Geladen:" << m_availableRooms.size() << "kamers uit Excel";
+    } else {
+        qWarning() << "Kon Excel kamers niet laden!";
+    }
 }
 
 ReservationsTab::~ReservationsTab()
@@ -67,6 +74,8 @@ void ReservationsTab::handleEditReservation()
     EditReservationDialog dialog(this);
 
     dialog.setReservationData(currentRes);
+
+    dialog.setAvailableRooms(m_availableRooms);
 
     if (dialog.exec() == QDialog::Accepted) {
         // Get updated struct from dialog
@@ -235,6 +244,8 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
     newRes.roomNumber = 0;
 
     dialog.setReservationData(newRes);
+
+    dialog.setAvailableRooms(m_availableRooms);
 
     if (dialog.exec() == QDialog::Accepted) {
         // Retrieve filled struct from dialog

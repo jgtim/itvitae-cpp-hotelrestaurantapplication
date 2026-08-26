@@ -7,6 +7,7 @@
 #include <QEvent>
 #include <QCloseEvent>
 #include <QDate>
+#include <QComboBox>
 
 EditReservationDialog::EditReservationDialog(QWidget *parent)
     : QDialog(parent)
@@ -17,7 +18,6 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
-    ui->roomEdit->setValidator( new QIntValidator(0, 30, this) );
     ui->guestNumEdit->setValidator(new QIntValidator(1, 20, this));
 
     ui->genderComboBox->clear();
@@ -50,7 +50,10 @@ void EditReservationDialog::setReservationData(const Reservation &res) {
     ui->dateOfBirthEdit->setDate(res.dateOfBirth);
 
     ui->guestNumEdit->setText(QString::number(res.numberOfGuests));
-    ui->roomEdit->setText(QString::number(res.roomNumber));
+    int roomIndex = ui->roomEdit->findData(res.roomNumber);
+    if (roomIndex != -1) {
+        ui->roomEdit->setCurrentIndex(roomIndex);
+    }
 
     ui->checkInEdit->setDate(res.checkIn);
     ui->checkOutEdit->setDate(res.checkOut);
@@ -59,7 +62,26 @@ void EditReservationDialog::setReservationData(const Reservation &res) {
     if (genderIndex != -1) {
         ui->genderComboBox->setCurrentIndex(genderIndex);
     }
+}
 
+void EditReservationDialog::setAvailableRooms(const QList<RoomRecord> &rooms)
+{
+    ui->roomEdit->clear();
+    ui->roomEdit->addItem("-- Select a room --", -1);
+
+    m_availableRoomNumbers.clear();
+
+    for (const RoomRecord &room : rooms) {
+        // "1.01" -> "101" -> 101 (int)
+        QString roomStr = room.roomNumber;
+        int roomAsInt = roomStr.remove(".").toInt();
+
+        // Zichtbaar in dropdown: "1.01" (mooi leesbaar)
+        // Data erachter: 101 (int, makkelijk te vergelijken)
+        ui->roomEdit->addItem(room.roomNumber, roomAsInt);
+
+        m_availableRoomNumbers.append(room.roomNumber);
+    }
 }
 
 Reservation EditReservationDialog::getReservationData() const
@@ -81,7 +103,7 @@ Reservation EditReservationDialog::getReservationData() const
 
     // 4. Details
     res.numberOfGuests = ui->guestNumEdit->text().toInt();
-    res.roomNumber = ui->roomEdit->text().toInt();
+    res.roomNumber = ui->roomEdit->currentData().toInt();
 
     // 5. Dates
     res.checkIn = ui->checkInEdit->date();
@@ -139,7 +161,7 @@ void EditReservationDialog::setReadOnly(bool readOnly)
     ui->addressEdit6->setReadOnly(readOnly);
 
     ui->guestNumEdit->setReadOnly(readOnly);
-    ui->roomEdit->setReadOnly(readOnly);
+    ui->roomEdit->setEnabled(!readOnly);
     ui->checkInEdit->setReadOnly(readOnly);
     ui->checkOutEdit->setReadOnly(readOnly);
 

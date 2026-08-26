@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
-
+#include "../../readers/hotelkamersreader.h"
 #include "Reservation/reservation.h"
 
 namespace Ui {
@@ -41,6 +41,7 @@ private:
 
     void addMockData();
     void handleEditReservation();
+    QList<RoomRecord> m_availableRooms;
 };
 
 #endif // RESERVATIONSTAB_H
