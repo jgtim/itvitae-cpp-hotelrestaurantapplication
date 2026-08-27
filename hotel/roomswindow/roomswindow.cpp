@@ -88,7 +88,7 @@ void RoomsWindow::updateRoomColors()
                 statusItem->setBackground(QColor(255, 200, 200));
             else if (status == "Reserved")
                 statusItem->setBackground(QColor(200, 220, 255));
-            else if (status == "Maintanace")
+            else if (status == "Maintenace")
                 statusItem->setBackground(QColor(200, 200, 200));
         }
 
