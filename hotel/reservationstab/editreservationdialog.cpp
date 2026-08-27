@@ -1,7 +1,6 @@
 #include "editreservationdialog.h"
 #include "ui_editreservationdialog.h"
 
-#include <iostream>
 #include <QIntValidator>
 #include <QMessageBox>
 #include <QEvent>
@@ -49,17 +48,17 @@ void EditReservationDialog::setReservationData(const Reservation &res)
 {
     m_currentReservation = res;
 
-    ui->nameEdit->setText(res.GuestName);
-    ui->phoneNumberEdit->setText(res.GuestPhoneNumber);
+    ui->nameEdit->setText(res.guest.name);
+    ui->phoneNumberEdit->setText(res.guest.phoneNumber);
 
-    ui->addressEdit1->setText(res.address.streetLine1);
-    ui->addressEdit2->setText(res.address.streetLine2);
-    ui->addressEdit3->setText(res.address.city);
-    ui->addressEdit4->setText(res.address.stateRegion);
-    ui->addressEdit5->setText(res.address.postalCode);
-    ui->addressEdit6->setText(res.address.country);
+    ui->addressEdit1->setText(res.guest.address.streetLine1);
+    ui->addressEdit2->setText(res.guest.address.streetLine2);
+    ui->addressEdit3->setText(res.guest.address.city);
+    ui->addressEdit4->setText(res.guest.address.stateRegion);
+    ui->addressEdit5->setText(res.guest.address.postalCode);
+    ui->addressEdit6->setText(res.guest.address.country);
 
-    ui->dateOfBirthEdit->setDate(res.dateOfBirth);
+    ui->dateOfBirthEdit->setDate(res.guest.dateOfBirth);
 
     ui->guestNumEdit->setText(QString::number(res.numberOfGuests));
 
@@ -67,7 +66,7 @@ void EditReservationDialog::setReservationData(const Reservation &res)
     ui->checkOutEdit->setDate(res.checkOut);
 
     int genderIndex =
-        ui->genderComboBox->findData(QVariant::fromValue(res.gender));
+        ui->genderComboBox->findData(QVariant::fromValue(res.guest.gender));
 
     // Update the room list based on the dates.
     updateRoomAvailability();
@@ -127,18 +126,18 @@ Reservation EditReservationDialog::getReservationData() const
 {
     Reservation res = m_currentReservation;
 
-    res.GuestName = ui->nameEdit->text();
-    res.GuestPhoneNumber = ui->phoneNumberEdit->text();
+    res.guest.name = ui->nameEdit->text();
+    res.guest.phoneNumber = ui->phoneNumberEdit->text();
 
-    res.address.streetLine1 = ui->addressEdit1->text();
-    res.address.streetLine2 = ui->addressEdit2->text();
-    res.address.city = ui->addressEdit3->text();
-    res.address.stateRegion = ui->addressEdit4->text();
-    res.address.postalCode = ui->addressEdit5->text();
-    res.address.country = ui->addressEdit6->text();
+    res.guest.address.streetLine1 = ui->addressEdit1->text();
+    res.guest.address.streetLine2 = ui->addressEdit2->text();
+    res.guest.address.city = ui->addressEdit3->text();
+    res.guest.address.stateRegion = ui->addressEdit4->text();
+    res.guest.address.postalCode = ui->addressEdit5->text();
+    res.guest.address.country = ui->addressEdit6->text();
 
     // 3. Date of Birth
-    res.dateOfBirth = QDate::fromString(ui->dateOfBirthEdit->text(), "dd/MM/yyyy");
+    res.guest.dateOfBirth = QDate::fromString(ui->dateOfBirthEdit->text(), "dd/MM/yyyy");
 
     // 4. Details
     res.numberOfGuests = ui->guestNumEdit->text().toInt();
@@ -148,7 +147,7 @@ Reservation EditReservationDialog::getReservationData() const
     res.checkIn = ui->checkInEdit->date();
     res.checkOut = ui->checkOutEdit->date();
 
-    res.gender = ui->genderComboBox->currentData().value<Gender>();
+    res.guest.gender = ui->genderComboBox->currentData().value<Gender>();
 
     return res;
 }

@@ -3,17 +3,12 @@
 
 #include <QString>
 #include <QDate>
-#include "address.h"
-#include "gender.h"
+#include "../Guest/guest.h"
 
 struct Reservation {
     QString ReservationID;
 
-    QString GuestName;
-    QString GuestPhoneNumber;
-    Address address;
-    QDate dateOfBirth;
-    Gender gender;  // Has serialization and deserialization methods now
+    Guest guest;
 
     int numberOfGuests;
     int roomNumber; // temporary int; change with Room objects later
