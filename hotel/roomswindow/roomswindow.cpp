@@ -1,6 +1,7 @@
 #include "roomswindow.h"
 #include "ui_roomswindow.h"
 #include "roomdetailsdialog.h"
+#include "confirmdialog.h"
 #include "../../readers/hotelkamersreader.h"
 
 #include <QStandardItemModel>
@@ -24,6 +25,9 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     model = new QStandardItemModel(this);
     ui->roomStack->setCurrentIndex(0);
     ui->CancelButton->setVisible(false);
+    ui->RoomNumEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
+    ui->CapacityEdit->setValidator(new QIntValidator(0, 100, this));
+    //ui->RoomTypeEdit->addItems(["A", "B"]);
 
     // --- later voor SQL aanzetten ---
     //QSqlTableModel *model = new QSqlTableModel(this);
@@ -32,6 +36,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     // model->select();
 
     model->setHorizontalHeaderLabels({
+        //NOTE IF YOU CHANGE ANYTHING: these names are used in on_seeRoomDetails_clicked()
         "Room Number",
         "Room type",
         "Capacity",
@@ -173,8 +178,15 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 
     RoomDetailsDialog dialog(this);
     dialog.setDetails(roomDetails);
-<<<<<<< HEAD
-    dialog.exec();
+    if (dialog.exec() == QDialog::Accepted) {
+        QList<QPair<QString, QString>> updatedDetails = dialog.getDetails();
+        for (int col = 0; col < updatedDetails.size(); ++col) {
+            QStandardItem *item = model->item(selectedRow, col);
+            if (item) {
+                item->setText(updatedDetails[col].second);
+            }
+        }
+    }
 }
 
 void RoomsWindow::on_seeRoomDetails_clicked()
@@ -187,6 +199,29 @@ void RoomsWindow::on_seeRoomDetails_clicked()
         QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
         return;
     }
+    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    int selectedRow = sourceIndex.row();
+    int columnCount = model->columnCount();
+
+    for (int col = 0; col < columnCount; ++col) {
+        QString header = model->horizontalHeaderItem(col)->text();
+        QStandardItem *item = model->item(selectedRow, col);
+        QString value = item ? item->text() : "";
+        if(header == "Room Number"){
+            ui->RoomNumEdit->setText(value);
+        }else if(header == "Room type"){
+            //ui->RoomTypeEdit->setText(value);
+            //TODO set to right value
+        }else if(header == "Capacity"){
+            ui->CapacityEdit->setText(value);
+        }else if(header == "Status"){
+            ui->StatusEdit->setText(value);
+        }else if(header == "Housekeeping"){
+            ui->CleaningEdit->setText(value);
+        }else if(header == "Comments"){
+            ui->NotesEdit->setText(value);
+        }
+    }
 
     ui->roomStack->setCurrentIndex(1);
 }
@@ -194,34 +229,47 @@ void RoomsWindow::on_seeRoomDetails_clicked()
 
 void RoomsWindow::on_ReturnButton_clicked()
 {
-    //TODO make popup window
+    ConfirmDialog dialog(this);
+    dialog.changeText("leave without saving changes?");
+    if (dialog.exec() == QDialog::Rejected) {
+        return;
+    }
     ui->roomStack->setCurrentIndex(0);
+}
+
+void RoomsWindow::setEditMode(bool readMode){
+    const QString newEditButtonText = (readMode) ? "Edit" : "Save";
+    ui->EditButton->setText(newEditButtonText);
+    ui->CancelButton->setVisible(!readMode);
+    ui->RoomNumEdit->setReadOnly(readMode);
+    ui->RoomTypeEdit->setEditable(readMode);
+    ui->CapacityEdit->setReadOnly(readMode);
+    ui->StatusEdit->setReadOnly(readMode);
+    ui->CleaningEdit->setReadOnly(readMode);
+    ui->NotesEdit->setReadOnly(readMode);
 }
 
 
 void RoomsWindow::on_EditButton_clicked()
 {
     bool editingNow =  ui->CancelButton->isVisible();
-    const QString newEditButtonText = (editingNow) ? "Edit" : "Save";
-    ui->EditButton->setText(newEditButtonText);
-    ui->CancelButton->setVisible(!editingNow);
-    ui->RoomNumEdit->setReadOnly(editingNow);
-    ui->RoomTypeEdit->setReadOnly(editingNow);
-    ui->CapacityEdit->setReadOnly(editingNow);
-    ui->StatusEdit->setReadOnly(editingNow);
-    ui->CleaningEdit->setReadOnly(editingNow);
-    ui->NotesEdit->setReadOnly(editingNow);
-}
-
-=======
-if (dialog.exec() == QDialog::Accepted) {
-    QList<QPair<QString, QString>> updatedDetails = dialog.getDetails();
-    for (int col = 0; col < updatedDetails.size(); ++col) {
-        QStandardItem *item = model->item(selectedRow, col);
-        if (item) {
-            item->setText(updatedDetails[col].second);
+    if(editingNow){
+        ConfirmDialog dialog(this);
+        dialog.changeText("save changes?");
+        if (dialog.exec() == QDialog::Rejected) {
+            return;
         }
     }
+    setEditMode(editingNow);
 }
+
+
+void RoomsWindow::on_CancelButton_clicked()
+{
+    ConfirmDialog dialog(this);
+    dialog.changeText("revert changes?");
+    if (dialog.exec() == QDialog::Accepted) {
+        setEditMode(true);
+    }
 }
->>>>>>> main
+

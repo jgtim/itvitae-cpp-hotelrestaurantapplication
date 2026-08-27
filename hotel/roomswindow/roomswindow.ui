@@ -235,19 +235,6 @@
          <bool>true</bool>
         </property>
        </widget>
-       <widget class="QLineEdit" name="RoomTypeEdit">
-        <property name="geometry">
-         <rect>
-          <x>320</x>
-          <y>100</y>
-          <width>211</width>
-          <height>26</height>
-         </rect>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
        <widget class="QLineEdit" name="CapacityEdit">
         <property name="geometry">
          <rect>
@@ -298,6 +285,19 @@
         </property>
         <property name="readOnly">
          <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="RoomTypeEdit">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>100</y>
+          <width>211</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="editable">
+         <bool>false</bool>
         </property>
        </widget>
       </widget>

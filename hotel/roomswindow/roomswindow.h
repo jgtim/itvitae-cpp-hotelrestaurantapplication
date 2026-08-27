@@ -17,6 +17,7 @@ class RoomsWindow : public QMainWindow
 public:
     explicit RoomsWindow(QWidget *parent = nullptr);
     ~RoomsWindow();
+    void setEditMode(bool b);
 
 
 private:
@@ -33,6 +34,7 @@ private slots:
     void on_seeRoomDetails_clicked();
     void on_ReturnButton_clicked();
     void on_EditButton_clicked();
+    void on_CancelButton_clicked();
 };
 
 #endif // ROOMSWINDOW_H
