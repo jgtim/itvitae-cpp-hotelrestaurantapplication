@@ -1,6 +1,9 @@
 #include "reservationserializer.h"
 #include "../hotel/reservationstab/Reservation/gender.h"
 
+#include <QJsonObject>
+#include <QJsonDocument>
+
 QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
     QVariantMap map;
 
@@ -21,10 +24,24 @@ QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
     map[QStringLiteral("number_of_guests")]  = res.numberOfGuests;
     map[QStringLiteral("room_number")]       = res.roomNumber;
 
-    // Still need to do the Address struct
+
+    // This might be unneccessary but I couldn't find another way to get everything into one class to use.
+    // Putting the Address struct in a JSON for single column representation
+    QJsonObject addressObj;
+    addressObj[QStringLiteral("street1")]       = res.address.streetLine1;
+    addressObj[QStringLiteral("street2")]       = res.address.streetLine2;
+    addressObj[QStringLiteral("city")]          = res.address.city;
+    addressObj[QStringLiteral("state")]         = res.address.stateRegion;
+    addressObj[QStringLiteral("postal_code")]   = res.address.postalCode;
+    addressObj[QStringLiteral("country")]       = res.address.country;
+
+    // Convert JSON Object to String for SQLite to put in single colums
+    map[QStringLiteral("address")] = QString::fromUtf8(QJsonDocument(addressObj).toJson(QJsonDocument::Compact));
 
     return map;
 }
+
+
 
 Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
     Reservation res;
@@ -45,7 +62,21 @@ Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
     res.numberOfGuests    = map.value(QStringLiteral("number_of_guests")).toInt();
     res.roomNumber        = map.value(QStringLiteral("room_number")).toInt();
 
-    // Still need to do the Address struct
+
+    // This might be unneccessary but I couldn't find another way to get everything into one class to use.
+    // Putting SQLite Strings into JSON object, then into Address struct
+    QString addressJsonStr = map.value(QStringLiteral("address")).toString();
+    QJsonDocument doc = QJsonDocument::fromJson(addressJsonStr.toUtf8());
+
+    if (doc.isObject()) {
+        QJsonObject addressObj = doc.object();
+        res.address.streetLine1 = addressObj.value(QStringLiteral("street1")).toString();
+        res.address.streetLine2 = addressObj.value(QStringLiteral("street2")).toString();
+        res.address.city        = addressObj.value(QStringLiteral("city")).toString();
+        res.address.stateRegion = addressObj.value(QStringLiteral("state")).toString();
+        res.address.postalCode  = addressObj.value(QStringLiteral("postal_code")).toString();
+        res.address.country     = addressObj.value(QStringLiteral("country")).toString();
+    }
 
     return res;
 }
