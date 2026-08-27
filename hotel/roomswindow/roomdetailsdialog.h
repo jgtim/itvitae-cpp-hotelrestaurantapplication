@@ -17,8 +17,12 @@ public:
 
     void setDetails(const QList<QPair<QString, QString>> &details);
 
+    QList<QPair<QString, QString>> getDetails() const;
+
 private:
     Ui::RoomDetailsDialog *ui;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
 };
 
 #endif // ROOMDETAILSDIALOG_H
