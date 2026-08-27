@@ -22,6 +22,8 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->setupUi(this);
 
     model = new QStandardItemModel(this);
+    ui->roomStack->setCurrentIndex(0);
+    ui->CancelButton->setVisible(false);
 
     // --- later voor SQL aanzetten ---
     //QSqlTableModel *model = new QSqlTableModel(this);
@@ -177,7 +179,7 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 void RoomsWindow::on_seeRoomDetails_clicked()
 {
 
-    //just copy stuff from ReservationsTab::handleEditReservation()
+
     QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
 
     if (!proxyIndex.isValid()) {
@@ -185,7 +187,28 @@ void RoomsWindow::on_seeRoomDetails_clicked()
         return;
     }
 
-
     ui->roomStack->setCurrentIndex(1);
+}
+
+
+void RoomsWindow::on_ReturnButton_clicked()
+{
+    //TODO make popup window
+    ui->roomStack->setCurrentIndex(0);
+}
+
+
+void RoomsWindow::on_EditButton_clicked()
+{
+    bool editingNow =  ui->CancelButton->isVisible();
+    const QString newEditButtonText = (editingNow) ? "Edit" : "Save";
+    ui->EditButton->setText(newEditButtonText);
+    ui->CancelButton->setVisible(!editingNow);
+    ui->RoomNumEdit->setReadOnly(editingNow);
+    ui->RoomTypeEdit->setReadOnly(editingNow);
+    ui->CapacityEdit->setReadOnly(editingNow);
+    ui->StatusEdit->setReadOnly(editingNow);
+    ui->CleaningEdit->setReadOnly(editingNow);
+    ui->NotesEdit->setReadOnly(editingNow);
 }
 

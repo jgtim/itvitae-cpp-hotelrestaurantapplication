@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="roomStack">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="allRooms">
        <widget class="QPushButton" name="seeRoomDetails">
@@ -69,7 +69,7 @@
        </widget>
       </widget>
       <widget class="QWidget" name="roomDetails">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="ReturnButton">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -82,7 +82,7 @@
          <string>Return</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="EditButton">
         <property name="geometry">
          <rect>
           <x>90</x>
@@ -95,7 +95,7 @@
          <string>Edit</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="CancelButton">
         <property name="geometry">
          <rect>
           <x>180</x>
@@ -131,7 +131,7 @@
          </property>
         </widget>
        </widget>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="ReservationsLabel">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -144,7 +144,7 @@
          <string>Reservations</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="NotesLabel">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -157,7 +157,7 @@
          <string>Notes</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="RoomNumLabel">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -170,7 +170,7 @@
          <string>Room Number</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="RoomTypeLabel">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -183,7 +183,7 @@
          <string>Room Type</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_6">
+       <widget class="QLabel" name="CapacityLabel">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -196,7 +196,7 @@
          <string>Capacity</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_7">
+       <widget class="QLabel" name="StatusLabel">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -209,7 +209,7 @@
          <string>Status</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_8">
+       <widget class="QLabel" name="CleaningLabel">
         <property name="geometry">
          <rect>
           <x>200</x>
@@ -222,7 +222,7 @@
          <string>Cleaning</string>
         </property>
        </widget>
-       <widget class="QTextEdit" name="textEdit">
+       <widget class="QTextEdit" name="NotesEdit">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -231,8 +231,11 @@
           <height>75</height>
          </rect>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="RoomTypeEdit">
         <property name="geometry">
          <rect>
           <x>320</x>
@@ -241,8 +244,11 @@
           <height>26</height>
          </rect>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="CapacityEdit">
         <property name="geometry">
          <rect>
           <x>320</x>
@@ -251,8 +257,11 @@
           <height>26</height>
          </rect>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
-       <widget class="QLineEdit" name="lineEdit_4">
+       <widget class="QLineEdit" name="StatusEdit">
         <property name="geometry">
          <rect>
           <x>320</x>
@@ -261,8 +270,11 @@
           <height>26</height>
          </rect>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
-       <widget class="QLineEdit" name="lineEdit_5">
+       <widget class="QLineEdit" name="CleaningEdit">
         <property name="geometry">
          <rect>
           <x>320</x>
@@ -271,8 +283,11 @@
           <height>26</height>
          </rect>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="RoomNumEdit">
         <property name="geometry">
          <rect>
           <x>320</x>
@@ -280,6 +295,9 @@
           <width>211</width>
           <height>26</height>
          </rect>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </widget>

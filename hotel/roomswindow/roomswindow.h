@@ -31,6 +31,8 @@ private:
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);
     void on_seeRoomDetails_clicked();
+    void on_ReturnButton_clicked();
+    void on_EditButton_clicked();
 };
 
 #endif // ROOMSWINDOW_H
