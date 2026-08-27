@@ -76,70 +76,73 @@ void RoomsWindow::updateRoomColors()
     {
         // Status kolom = 8
         QStandardItem *statusItem = model->item(row, 8);
-        statusItem->setForeground(QBrush(QColor(0, 0, 0)));
-
 
         if (statusItem)
         {
+            statusItem->setForeground(QBrush(QColor(0, 0, 0)));
             QString status = statusItem->text();
 
             if (status == "Available")
                 statusItem->setBackground(QColor(200, 255, 200));
-
             else if (status == "Occupied")
                 statusItem->setBackground(QColor(255, 200, 200));
-
             else if (status == "Reserved")
                 statusItem->setBackground(QColor(200, 220, 255));
-
-            else if (status == "Out of Order")
+            else if (status == "Maintenace")
                 statusItem->setBackground(QColor(200, 200, 200));
         }
 
 
         // Housekeeping kolom = 9
         QStandardItem *housekeepingItem = model->item(row, 9);
-
         if (housekeepingItem)
         {
-            QString housekeeping = housekeepingItem->text();
             housekeepingItem->setForeground(QBrush(QColor(0, 0, 0)));
-
+            QString housekeeping = housekeepingItem->text();
 
             if (housekeeping == "Clean")
                 housekeepingItem->setBackground(QColor(200, 255, 200));
-
-            else if (housekeeping == "Needs Cleaning")
+            else if (housekeeping == "Dirty")
                 housekeepingItem->setBackground(QColor(255, 200, 200));
         }
     }
 }
 
 void RoomsWindow::importExcelRooms(){
-    std::optional<QList<RoomRecord>> roomList = parseRoomFile();
+    std::optional<QList<Room>> roomList = parseRoomFile();
 
-    if (roomList.has_value()) {
-        for(int i = 0; i < roomList->size(); i++) {
-            model->setItem(i, 0, new QStandardItem(roomList->at(i).roomNumber));
-            model->setItem(i, 1, new QStandardItem(roomList->at(i).category));
-            // turn int into string
-            QString adultAmount = QString::number(roomList->at(i).adults);
-            model->setItem(i, 2, new QStandardItem(adultAmount));
-            model->setItem(i, 3, new QStandardItem(roomList->at(i).view));
-            // turn bool into string
-            QString babyBedString = (roomList->at(i).babyBedPossible) ? "Yes" : "No";
-            model->setItem(i, 4, new QStandardItem(babyBedString));
-            model->setItem(i, 5, new QStandardItem(roomList->at(i).bed));
-            model->setItem(i, 6, new QStandardItem(roomList->at(i).comments));
-            // turn double into string
-            QString priceString = QString::number(roomList->at(i).pricePerNight);
-            model->setItem(i, 7, new QStandardItem(QString("€ %1").arg(priceString)));
-            // No value for these yet
-            model->setItem(i, 8, new QStandardItem("Available"));
-            model->setItem(i, 9, new QStandardItem("Clean"));
-        }
-    } else {
+    if (!roomList.has_value()) {
         qDebug() << "Could not import room data";
+        QMessageBox::warning(this, "Import Error", "Failed to load room data from Excel.");
+        return;
+    }
+
+    model->removeRows(0, model->rowCount()); // Clear any existing items
+
+    for (int i = 0; i < roomList->size(); ++i) {
+        const Room& room = roomList->at(i);
+
+        // Column 0: Room Number
+        model->setItem(i, 0, new QStandardItem(room.roomNumber));
+        // Column 1: Room Type (Enum -> String)
+        model->setItem(i, 1, new QStandardItem(roomTypeToString(room.roomType)));
+        // Column 2: Adults
+        model->setItem(i, 2, new QStandardItem(QString::number(room.adults)));
+        // Column 3: Room View (Enum -> String)
+        model->setItem(i, 3, new QStandardItem(roomViewToString(room.roomView)));
+        // Column 4: Baby Bed (Bool -> String)
+        model->setItem(i, 4, new QStandardItem(room.babyBed ? "Yes" : "No"));
+        // Column 5: Bed Type
+        model->setItem(i, 5, new QStandardItem(room.beds));
+        // Column 6: Comments
+        model->setItem(i, 6, new QStandardItem(room.comments));
+        // Column 7: Price per Night (2 decimal places)
+        QString priceString = QString("€ %1").arg(room.pricePerNight, 0, 'f', 2);
+        model->setItem(i, 7, new QStandardItem(priceString));
+        // Column 8: Room Status
+        model->setItem(i, 8, new QStandardItem(roomStatusToString(room.roomStatus)));
+        // Column 9: Housekeeping Status
+        model->setItem(i, 9, new QStandardItem(houseKeepingStatusToString(room.houseKeepingStatus)));
     }
 }
 

@@ -37,5 +37,5 @@ void MainWindow::onTabChanged(int index)
 
 void MainWindow::handleDataChangedInMainWindow()
 {
-    qDebug() << "MainWindow was notified that reservation data was edited!";
+    // qDebug() << "MainWindow was notified that reservation data was edited!";
 }
