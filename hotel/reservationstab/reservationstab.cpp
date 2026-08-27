@@ -255,11 +255,11 @@ void ReservationsTab::handleViewReservation(const QModelIndex &index)
     dialog.setAvailableRooms(m_availableRooms);
     dialog.setExistingReservations(getAllReservations());
     dialog.setReservationData(res);
+    dialog.setReadOnly(false);
 
     if (dialog.exec() == QDialog::Accepted) {
 
         Reservation updatedRes = dialog.getReservationData();
-
         QModelIndex sourceIndex = proxyModel->mapToSource(index);
         int selectedRow = sourceIndex.row();
 
