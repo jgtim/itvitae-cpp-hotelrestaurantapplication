@@ -33,11 +33,21 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     connect(ui->ReservationsTabSearchfield, &QLineEdit::textChanged,
             proxyModel, &QSortFilterProxyModel::setFilterFixedString);
 
+    connect(ui->ReservationsTabReservationsTable, &QTableView::doubleClicked,
+            this, &ReservationsTab::handleViewReservation);
+
     connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::handleEditReservation);
     connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::handleCancelReservation);
 
     // For now - REMOVE LATER:
     addMockData();
+    auto roomsOptional = parseRoomFile();
+    if (roomsOptional.has_value()) {
+        m_availableRooms = roomsOptional.value();
+        qDebug() << "Geladen:" << m_availableRooms.size() << "kamers uit Excel";
+    } else {
+        qWarning() << "Kon Excel kamers niet laden!";
+    }
 }
 
 ReservationsTab::~ReservationsTab()
@@ -56,32 +66,45 @@ void ReservationsTab::handleEditReservation()
     QModelIndex proxyIndex = ui->ReservationsTabReservationsTable->currentIndex();
 
     if (!proxyIndex.isValid()) {
-        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
+        QMessageBox::warning(this, "No Selection",
+                             "Please click on a reservation first to edit it.");
         return;
     }
 
     Reservation currentRes = getReservationFromIndex(proxyIndex);
+
     EditReservationDialog dialog(this);
 
+    // Eerst alle kamers inladen
+    dialog.setAvailableRooms(m_availableRooms);
+
+    // Daarna alle bestaande reserveringen meegeven
+    dialog.setExistingReservations(getAllReservations());
+
+    // ALS LAATSTE de huidige reservering instellen.
+    // Hierdoor wordt de huidige kamer geselecteerd.
     dialog.setReservationData(currentRes);
 
     if (dialog.exec() == QDialog::Accepted) {
-        // Get updated struct from dialog
+
         Reservation updatedRes = dialog.getReservationData();
 
-        // Find underlying source row index
         QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
         int selectedRow = sourceIndex.row();
 
         model->item(selectedRow, 0)->setText(updatedRes.ReservationID);
-        model->item(selectedRow, 1)->setText(updatedRes.checkIn.toString("dd/MM/yyyy"));
-        model->item(selectedRow, 2)->setText(updatedRes.checkOut.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 1)->setText(
+            updatedRes.checkIn.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 2)->setText(
+            updatedRes.checkOut.toString("dd/MM/yyyy"));
 
-        model->item(selectedRow, 3)->setData(updatedRes.roomNumber, Qt::DisplayRole);
+        model->item(selectedRow, 3)->setData(
+            updatedRes.roomNumber, Qt::DisplayRole);
+
         model->item(selectedRow, 4)->setText(updatedRes.GuestName);
 
-        // Re-store the full updated struct in Column 0!
-        model->item(selectedRow, 0)->setData(QVariant::fromValue(updatedRes), Qt::UserRole);
+        model->item(selectedRow, 0)->setData(
+            QVariant::fromValue(updatedRes), Qt::UserRole);
 
         emit dataChangedNotification();
     }
@@ -149,6 +172,22 @@ Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
     return item->data(Qt::UserRole).value<Reservation>();
 }
 
+QList<Reservation> ReservationsTab::getAllReservations() const
+{
+    QList<Reservation> reservations;
+
+    for (int row = 0; row < model->rowCount(); ++row) {
+        QStandardItem *item = model->item(row, 0);
+
+        if (item) {
+            reservations.append(
+                item->data(Qt::UserRole).value<Reservation>()
+                );
+        }
+    }
+
+    return reservations;
+}
 // Placeholder method for adding mock data - REMOVE LATER
 void ReservationsTab::addMockData()
 {
@@ -204,6 +243,42 @@ void ReservationsTab::addMockData()
     // model->appendRow(row5);
 }
 
+void ReservationsTab::handleViewReservation(const QModelIndex &index)
+{
+    if (!index.isValid())
+        return;
+
+    Reservation res = getReservationFromIndex(index);
+
+    EditReservationDialog dialog(this);
+
+    dialog.setAvailableRooms(m_availableRooms);
+    dialog.setExistingReservations(getAllReservations());
+    dialog.setReservationData(res);
+
+    if (dialog.exec() == QDialog::Accepted) {
+
+        Reservation updatedRes = dialog.getReservationData();
+
+        QModelIndex sourceIndex = proxyModel->mapToSource(index);
+        int selectedRow = sourceIndex.row();
+
+        model->item(selectedRow, 0)->setText(updatedRes.ReservationID);
+        model->item(selectedRow, 1)->setText(
+            updatedRes.checkIn.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 2)->setText(
+            updatedRes.checkOut.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 3)->setData(
+            updatedRes.roomNumber, Qt::DisplayRole);
+        model->item(selectedRow, 4)->setText(updatedRes.GuestName);
+
+        model->item(selectedRow, 0)->setData(
+            QVariant::fromValue(updatedRes), Qt::UserRole);
+
+        emit dataChangedNotification();
+    }
+}
+
 
 void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
 {
@@ -216,6 +291,8 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
     newRes.numberOfGuests = 1;
     newRes.roomNumber = 0;
 
+    dialog.setAvailableRooms(m_availableRooms);
+    dialog.setExistingReservations(getAllReservations());
     dialog.setReservationData(newRes);
 
     if (dialog.exec() == QDialog::Accepted) {

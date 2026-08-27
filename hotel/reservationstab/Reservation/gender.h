@@ -1,6 +1,8 @@
 #ifndef GENDER_H
 #define GENDER_H
 
+#include <QMetaType>
+
 enum class Gender {
     Unspecified,
     Male,
@@ -8,5 +10,7 @@ enum class Gender {
     NonBinary,
     Other
 };
+
+Q_DECLARE_METATYPE(Gender)
 
 #endif // GENDER_H

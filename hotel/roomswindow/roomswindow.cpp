@@ -173,6 +173,7 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 
     RoomDetailsDialog dialog(this);
     dialog.setDetails(roomDetails);
+<<<<<<< HEAD
     dialog.exec();
 }
 
@@ -212,3 +213,15 @@ void RoomsWindow::on_EditButton_clicked()
     ui->NotesEdit->setReadOnly(editingNow);
 }
 
+=======
+if (dialog.exec() == QDialog::Accepted) {
+    QList<QPair<QString, QString>> updatedDetails = dialog.getDetails();
+    for (int col = 0; col < updatedDetails.size(); ++col) {
+        QStandardItem *item = model->item(selectedRow, col);
+        if (item) {
+            item->setText(updatedDetails[col].second);
+        }
+    }
+}
+}
+>>>>>>> main

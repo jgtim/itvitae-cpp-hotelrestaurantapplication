@@ -4,8 +4,9 @@
 #include <QWidget>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
-
+#include "../../readers/hotelkamersreader.h"
 #include "Reservation/reservation.h"
+
 
 namespace Ui {
 class ReservationsTab;
@@ -29,6 +30,7 @@ signals:
 
 private slots:
     void on_ReservationsTabNewReservationButton_clicked();
+    void handleViewReservation(const QModelIndex &index);
 
 private:
     Ui::ReservationsTab *ui;
@@ -37,9 +39,11 @@ private:
 
     void addReservationToModel(const Reservation &res);
     Reservation getReservationFromIndex(const QModelIndex &index);
+    QList<Reservation> getAllReservations() const;
 
     void addMockData();
     void handleEditReservation();
+    QList<RoomRecord> m_availableRooms;
 };
 
 #endif // RESERVATIONSTAB_H
