@@ -60,7 +60,7 @@ enum class RoomStatus {
     Available,
     Occupied,
     Reserved,
-    Maintanance
+    Maintenance
 };
 
 inline RoomStatus stringToRoomStatus (const QString& str) {
@@ -68,7 +68,7 @@ inline RoomStatus stringToRoomStatus (const QString& str) {
     if (lower == "available") return RoomStatus::Available;
     if (lower == "occupied") return RoomStatus::Occupied;
     if (lower == "reserved") return RoomStatus::Reserved;
-    if (lower == "maintanance") return RoomStatus::Maintanance;
+    if (lower == "maintenance") return RoomStatus::Maintenance;
     return RoomStatus::Available;
 }
 
@@ -77,7 +77,7 @@ inline QString roomStatusToString(RoomStatus status) {
     case RoomStatus::Available:   return "Available";
     case RoomStatus::Occupied:    return "Occupied";
     case RoomStatus::Reserved:    return "Reserved";
-    case RoomStatus::Maintanance: return "Maintanance";
+    case RoomStatus::Maintenance: return "Maintenance";
     default:                      return "Available";
     }
 }
