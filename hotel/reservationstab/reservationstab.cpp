@@ -169,18 +169,20 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
     row << idItem << checkInItem << checkOutItem << roomItem << nameItem;
     model->appendRow(row);
 
-    query.prepare("insert into reservations values (:reservationID, :name, :phoneNumber, :address, :dateOfBirth, :gender, :numberOfGuests, :roomNumber, :checkInDate, :checkOutDate);");
-    query.bindValue(":reservationID", res.ReservationID);
-    query.bindValue(":name", res.GuestName);
-    query.bindValue(":phoneNumber", res.GuestPhoneNumber);
-    query.bindValue(":address", res.address.toFormattedString());
-    query.bindValue(":dateOfBirth", res.dateOfBirth);
-    query.bindValue(":gender", "male"); // temporary placeholder until a .toString() is implemented for gender
-    query.bindValue(":numberOfGuests", res.numberOfGuests);
-    query.bindValue(":roomNumber", res.roomNumber);
-    query.bindValue(":checkInDate", res.checkIn.toString());
-    query.bindValue(":checkOutDate", res.checkOut.toString());
-    query.exec();
+    if (!isReservationInDatabase(res)) {
+        query.prepare("insert into reservations values (:reservationID, :name, :phoneNumber, :address, :dateOfBirth, :gender, :numberOfGuests, :roomNumber, :checkInDate, :checkOutDate);");
+        query.bindValue(":reservationID", res.ReservationID);
+        query.bindValue(":name", res.GuestName);
+        query.bindValue(":phoneNumber", res.GuestPhoneNumber);
+        query.bindValue(":address", res.address.toFormattedString());
+        query.bindValue(":dateOfBirth", res.dateOfBirth);
+        query.bindValue(":gender", "male"); // temporary placeholder until a .toString() is implemented for gender
+        query.bindValue(":numberOfGuests", res.numberOfGuests);
+        query.bindValue(":roomNumber", res.roomNumber);
+        query.bindValue(":checkInDate", res.checkIn.toString());
+        query.bindValue(":checkOutDate", res.checkOut.toString());
+        query.exec();
+    }
 }
 
 Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
@@ -211,6 +213,20 @@ QList<Reservation> ReservationsTab::getAllReservations() const
 
     return reservations;
 }
+
+bool ReservationsTab::isReservationInDatabase(const Reservation &res) {
+    bool status = false;
+    query.prepare("SELECT ReservationID FROM reservations WHERE ReservationID = :id;");
+    query.bindValue(":id", res.ReservationID);
+    if (query.exec()) {
+        if (query.next()) {
+            status = true;
+        }
+    }
+    // we can potentially add more uniqueness checks later
+    return status;
+}
+
 // Placeholder method for adding mock data - REMOVE LATER
 void ReservationsTab::addMockData()
 {
