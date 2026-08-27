@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QString>
 #include <QSqlError>
+#include <QSqlRecord>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -197,9 +198,14 @@ Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
     return item->data(Qt::UserRole).value<Reservation>();
 }
 
-QList<Reservation> ReservationsTab::getAllReservations() const
+QList<Reservation> ReservationsTab::getAllReservations()
 {
     QList<Reservation> reservations;
+    query.prepare("SELECT * FROM reservations;");
+    int indexID = query.record().indexOf("ReservationID");
+    int indexName = query.record().indexOf("GuestName");
+    int indexPhoneNumber = query.record().indexOf("GuestPhoneNumber");
+    int indexAddress = query.record().indexOf("Address");
 
     for (int row = 0; row < model->rowCount(); ++row) {
         QStandardItem *item = model->item(row, 0);
