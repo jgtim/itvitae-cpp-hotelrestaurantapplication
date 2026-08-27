@@ -94,12 +94,10 @@ void EditReservationDialog::setExistingReservations(const QList<Reservation> &re
 void EditReservationDialog::populateRoomDropdown(const QList<Room> &rooms)
 {
     ui->roomEdit->clear();
-    ui->roomEdit->addItem("-- Select a room --", -1);
+    ui->roomEdit->addItem("-- Select a room --", QString(""));
 
     for (const Room &room : rooms) {
-        QString roomStr = room.roomNumber;
-        int roomAsInt = roomStr.remove(".").toInt();
-        ui->roomEdit->addItem(room.roomNumber, roomAsInt);
+        ui->roomEdit->addItem(room.roomNumber, room.roomNumber);
     }
 }
 // void EditReservationDialog::setAvailableRooms(const QList<RoomRecord> &rooms)
@@ -141,7 +139,7 @@ Reservation EditReservationDialog::getReservationData() const
 
     // 4. Details
     res.numberOfGuests = ui->guestNumEdit->text().toInt();
-    res.roomNumber = ui->roomEdit->currentData().toInt();
+    res.roomNumber = ui->roomEdit->currentData().toString();
 
     // 5. Dates
     res.checkIn = ui->checkInEdit->date();
@@ -215,29 +213,27 @@ void EditReservationDialog::updateRoomAvailability()
     QDate checkIn = ui->checkInEdit->date();
     QDate checkOut = ui->checkOutEdit->date();
 
-    int previouslySelected = ui->roomEdit->currentData().toInt();
-    if (previouslySelected == -1 && !m_currentReservation.ReservationID.isEmpty()) {
+    QString previouslySelected = ui->roomEdit->currentData().toString();
+
+    if (previouslySelected.isEmpty() && !m_currentReservation.ReservationID.isEmpty()) {
         previouslySelected = m_currentReservation.roomNumber;
     }
+
     QList<Room> availableRooms;
 
     for (const Room &room : m_allRooms) {
-        QString roomStr = room.roomNumber;
-        int roomAsInt = roomStr.remove(".").toInt();
-
         bool isTaken = false;
 
         for (const Reservation &res : m_allReservations) {
-
-            // Sla de reservering over die we nu zelf aan het bewerken zijn
+            // Skip checking against the reservation currently being edited
             if (!m_currentReservation.ReservationID.isEmpty() &&
                 res.ReservationID == m_currentReservation.ReservationID) {
                 continue;
             }
 
-            if (res.roomNumber == roomAsInt) {
-
-                // Controleer of de reserveringen elkaar overlappen
+            // Direct QString comparison:
+            if (res.roomNumber == room.roomNumber) {
+                // Check if dates overlap
                 if (checkIn < res.checkOut && res.checkIn < checkOut) {
                     isTaken = true;
                     break;
@@ -254,7 +250,6 @@ void EditReservationDialog::updateRoomAvailability()
 
     // Probeer de eerder geselecteerde kamer opnieuw te selecteren
     int idx = ui->roomEdit->findData(previouslySelected);
-
     if (idx != -1) {
         ui->roomEdit->setCurrentIndex(idx);
     }

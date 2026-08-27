@@ -199,7 +199,7 @@ void ReservationsTab::addMockData()
     r1.guest.dateOfBirth = QDate(1991, 10, 1);
     r1.guest.gender = Gender::Male;
     r1.numberOfGuests = 2;
-    r1.roomNumber = 101;
+    r1.roomNumber = "1.01";
     r1.checkIn = QDate(2026, 8, 12);
     r1.checkOut = QDate(2026, 8, 15);
 
@@ -211,7 +211,7 @@ void ReservationsTab::addMockData()
     r2.guest.dateOfBirth = QDate(1992, 10, 1);
     r2.guest.gender = Gender::Male;
     r2.numberOfGuests = 3;
-    r2.roomNumber = 102;
+    r2.roomNumber = "1.02";
     r2.checkIn = QDate(2026, 9, 12);
     r2.checkOut = QDate(2026, 9, 15);
 

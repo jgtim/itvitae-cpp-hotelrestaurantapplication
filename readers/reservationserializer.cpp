@@ -60,7 +60,7 @@ Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
 
     // Converting back to Int automatically
     res.numberOfGuests     = map.value(QStringLiteral("number_of_guests")).toInt();
-    res.roomNumber         = map.value(QStringLiteral("room_number")).toInt();
+    res.roomNumber         = map.value(QStringLiteral("room_number")).toString();
 
 
     // This might be unneccessary but I couldn't find another way to get everything into one class to use.
