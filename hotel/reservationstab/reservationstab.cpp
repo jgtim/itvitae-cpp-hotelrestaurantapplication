@@ -256,8 +256,29 @@ void ReservationsTab::handleViewReservation(const QModelIndex &index)
     dialog.setExistingReservations(getAllReservations());
     dialog.setReservationData(res);
 
-    dialog.exec();
+    if (dialog.exec() == QDialog::Accepted) {
+
+        Reservation updatedRes = dialog.getReservationData();
+
+        QModelIndex sourceIndex = proxyModel->mapToSource(index);
+        int selectedRow = sourceIndex.row();
+
+        model->item(selectedRow, 0)->setText(updatedRes.ReservationID);
+        model->item(selectedRow, 1)->setText(
+            updatedRes.checkIn.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 2)->setText(
+            updatedRes.checkOut.toString("dd/MM/yyyy"));
+        model->item(selectedRow, 3)->setData(
+            updatedRes.roomNumber, Qt::DisplayRole);
+        model->item(selectedRow, 4)->setText(updatedRes.GuestName);
+
+        model->item(selectedRow, 0)->setData(
+            QVariant::fromValue(updatedRes), Qt::UserRole);
+
+        emit dataChangedNotification();
+    }
 }
+
 
 void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
 {
