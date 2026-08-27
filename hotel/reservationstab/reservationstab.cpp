@@ -7,10 +7,13 @@
 #include <QDate>
 #include <QDebug>
 #include <QString>
+#include <QSqlError>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::ReservationsTab)
+    , ui(new Ui::ReservationsTab),
+    db(QSqlDatabase::database()),
+    query(QSqlQuery(db))
 {
     ui->setupUi(this);
 
@@ -39,12 +42,20 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::handleEditReservation);
     connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::handleCancelReservation);
 
+    db.setDatabaseName("model.db");
+    db.open();
+    if (!db.open()) {
+        qDebug() << "WARNING: ReservationsTab was unable to open the database";
+        qDebug() << db.lastError().text();
+    }
+
     // For now - REMOVE LATER:
     addMockData();
 }
 
 ReservationsTab::~ReservationsTab()
 {
+    db.close();
     delete ui;
 }
 
@@ -138,6 +149,18 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
     row << idItem << checkInItem << checkOutItem << roomItem << nameItem;
     model->appendRow(row);
 
+    query.prepare("insert into reservations values (:reservationID, :name, :phoneNumber, :address, :dateOfBirth, :gender, :numberOfGuests, :roomNumber, :checkInDate, :checkOutDate);");
+    query.bindValue(":reservationID", res.ReservationID);
+    query.bindValue(":name", res.GuestName);
+    query.bindValue(":phoneNumber", res.GuestPhoneNumber);
+    query.bindValue(":address", res.address.toFormattedString());
+    query.bindValue(":dateOfBirth", res.dateOfBirth);
+    query.bindValue(":gender", "male"); // temporary placeholder until a .toString() is implemented for gender
+    query.bindValue(":numberOfGuests", res.numberOfGuests);
+    query.bindValue(":roomNumber", res.roomNumber);
+    query.bindValue(":checkInDate", res.checkIn.toString());
+    query.bindValue(":checkOutDate", res.checkOut.toString());
+    query.exec();
 }
 
 Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)

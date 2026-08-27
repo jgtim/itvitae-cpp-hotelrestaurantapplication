@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 #include "Reservation/reservation.h"
 
@@ -35,6 +37,8 @@ private:
     Ui::ReservationsTab *ui;
     QStandardItemModel *model; // For now, maybe SQL later
     QSortFilterProxyModel *proxyModel;
+    QSqlDatabase db;
+    QSqlQuery query;
 
     void addReservationToModel(const Reservation &res);
     Reservation getReservationFromIndex(const QModelIndex &index);
