@@ -13,7 +13,7 @@ struct Reservation {
     QString GuestPhoneNumber;
     Address address;
     QDate dateOfBirth;
-    Gender gender;
+    Gender gender;  // Has serialization and deserialization methods now
 
     int numberOfGuests;
     int roomNumber; // temporary int; change with Room objects later
