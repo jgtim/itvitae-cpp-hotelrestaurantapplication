@@ -24,6 +24,10 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
 
     connect(ui->checkOutEdit, &QDateEdit::dateChanged,
             this, &EditReservationDialog::updateRoomAvailability);
+
+    connect(ui->guestNumEdit, &QLineEdit::textChanged,
+            this, &EditReservationDialog::updateRoomAvailability);
+
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
     ui->guestNumEdit->setValidator(new QIntValidator(1, 20, this));
 
@@ -242,7 +246,7 @@ void EditReservationDialog::updateRoomAvailability()
             }
         }
 
-        if (!isTaken) {
+        if (!isTaken && room.adults >= ui->guestNumEdit->text().toInt()) {
             availableRooms.append(room);
         }
     }
