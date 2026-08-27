@@ -43,7 +43,7 @@ private:
 
     void addMockData();
     void handleEditReservation();
-    QList<RoomRecord> m_availableRooms;
+    QList<Room> m_availableRooms;
 };
 
 #endif // RESERVATIONSTAB_H
