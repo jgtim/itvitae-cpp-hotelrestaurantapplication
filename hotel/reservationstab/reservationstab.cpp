@@ -1,6 +1,7 @@
 #include "reservationstab.h"
 #include "ui_reservationstab.h"
 #include "editreservationdialog.h"
+#include "../../readers/reservationserializer.h"
 
 #include <QMessageBox>
 #include <iostream>
@@ -9,6 +10,7 @@
 #include <QString>
 #include <QSqlError>
 #include <QSqlRecord>
+#include <QJsonObject>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
@@ -50,8 +52,8 @@ ReservationsTab::ReservationsTab(QWidget *parent)
         qDebug() << db.lastError().text();
     }
 
-    // For now - REMOVE LATER:
-    addMockData();
+    // addMockData();
+    populateReservationList();
     auto roomsOptional = parseRoomFile();
     if (roomsOptional.has_value()) {
         m_availableRooms = roomsOptional.value();
@@ -171,17 +173,19 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
     model->appendRow(row);
 
     if (!isReservationInDatabase(res)) {
+        ReservationSerializer serializer;
+        auto map = serializer.toVariantMap(res);
         query.prepare("insert into reservations values (:reservationID, :name, :phoneNumber, :address, :dateOfBirth, :gender, :numberOfGuests, :roomNumber, :checkInDate, :checkOutDate);");
-        query.bindValue(":reservationID", res.ReservationID);
-        query.bindValue(":name", res.GuestName);
-        query.bindValue(":phoneNumber", res.GuestPhoneNumber);
-        query.bindValue(":address", res.address.toFormattedString());
-        query.bindValue(":dateOfBirth", res.dateOfBirth);
-        query.bindValue(":gender", "male"); // temporary placeholder until a .toString() is implemented for gender
-        query.bindValue(":numberOfGuests", res.numberOfGuests);
-        query.bindValue(":roomNumber", res.roomNumber);
-        query.bindValue(":checkInDate", res.checkIn.toString());
-        query.bindValue(":checkOutDate", res.checkOut.toString());
+        query.bindValue(":reservationID", map.value("reservation_id"));
+        query.bindValue(":name", map.value("guest_name"));
+        query.bindValue(":phoneNumber", map.value("guest_phone"));
+        query.bindValue(":address", map.value("address"));
+        query.bindValue(":dateOfBirth", map.value("date_of_birth"));
+        query.bindValue(":gender", map.value("gender")); // temporary placeholder until a .toString() is implemented for gender
+        query.bindValue(":numberOfGuests", map.value("number_of_guests"));
+        query.bindValue(":roomNumber", map.value("room_number"));
+        query.bindValue(":checkInDate", map.value("check_in"));
+        query.bindValue(":checkOutDate", map.value("check_out"));
         query.exec();
     }
 }
@@ -200,22 +204,46 @@ Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
 
 QList<Reservation> ReservationsTab::getAllReservations()
 {
+    ReservationSerializer serializer;
     QList<Reservation> reservations;
-    query.prepare("SELECT * FROM reservations;");
+    QSqlQuery selectQuery("SELECT * FROM reservations;");
     int indexID = query.record().indexOf("ReservationID");
     int indexName = query.record().indexOf("GuestName");
     int indexPhoneNumber = query.record().indexOf("GuestPhoneNumber");
     int indexAddress = query.record().indexOf("Address");
+    int indexDateOfBirth = query.record().indexOf("DateOfBirth");
+    int indexGender = query.record().indexOf("Gender");
+    int indexNumberOfGuests = query.record().indexOf("NumberOfGuests");
+    int indexRoomNumber = query.record().indexOf("RoomNumber");
+    int indexCheckIn = query.record().indexOf("CheckInDate");
+    int indexCheckOut = query.record().indexOf("CheckOutDate");
 
-    for (int row = 0; row < model->rowCount(); ++row) {
-        QStandardItem *item = model->item(row, 0);
+    while (selectQuery.next()) {
+        QVariantMap resMap;
+        resMap[QStringLiteral("reservation_id")] = selectQuery.value(0).toString();
+        resMap[QStringLiteral("guest_name")] = selectQuery.value(1).toString();
+        resMap[QStringLiteral("guest_phone")] = selectQuery.value(2).toString();
+        resMap[QStringLiteral("address")] = selectQuery.value(3).toString();
+        resMap[QStringLiteral("date_of_birth")] = selectQuery.value(4).toString();
+        resMap[QStringLiteral("gender")] = selectQuery.value(5).toString();
+        resMap[QStringLiteral("number_of_guests")] = selectQuery.value(6).toString();
+        resMap[QStringLiteral("room_number")] = selectQuery.value(7).toString();
+        resMap[QStringLiteral("check_in")] = selectQuery.value(8).toString();
+        resMap[QStringLiteral("check_out")] = selectQuery.value(9).toString();
 
-        if (item) {
-            reservations.append(
-                item->data(Qt::UserRole).value<Reservation>()
-                );
-        }
+        // qDebug() << selectQuery.value(0).toString();
+        reservations.append(serializer.fromVariantMap(resMap));
     }
+
+    // for (int row = 0; row < model->rowCount(); ++row) {
+    //     QStandardItem *item = model->item(row, 0);
+
+    //     if (item) {
+    //         reservations.append(
+    //             item->data(Qt::UserRole).value<Reservation>()
+    //             );
+    //     }
+    // }
 
     return reservations;
 }
@@ -286,6 +314,12 @@ void ReservationsTab::addMockData()
     //      << new QStandardItem("08/08/2026")
     //      << new QStandardItem("18/08/2026");
     // model->appendRow(row5);
+}
+
+void ReservationsTab::populateReservationList() {
+    for (auto res : getAllReservations()) {
+        addReservationToModel(res);
+    }
 }
 
 void ReservationsTab::handleViewReservation(const QModelIndex &index)

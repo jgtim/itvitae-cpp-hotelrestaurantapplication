@@ -47,6 +47,7 @@ private:
     bool isReservationInDatabase(const Reservation &res);
 
     void addMockData();
+    void populateReservationList(); // a replacement for addMockData()
     void handleEditReservation();
     QList<Room> m_availableRooms;
 };
