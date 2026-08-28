@@ -2,6 +2,7 @@
 #include "ui_roomswindow.h"
 #include "roomdetailsdialog.h"
 #include "confirmdialog.h"
+#include "Room/room.h"
 #include "../../readers/hotelkamersreader.h"
 
 #include <QStandardItemModel>
@@ -27,6 +28,9 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->CancelButton->setVisible(false);
     ui->RoomNumEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
     ui->CapacityEdit->setValidator(new QIntValidator(0, 100, this));
+    //TODO convert roomtype enum to QStringList and put that in RoomTypeEdit combobox
+    //RoomType;
+    QStringList roomTypes = { "Arial", "Helvetica", "Times" };
     //ui->RoomTypeEdit->addItems(["A", "B"]);
 
     // --- later voor SQL aanzetten ---
