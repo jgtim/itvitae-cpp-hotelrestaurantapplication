@@ -3,23 +3,21 @@
 
 #include <QString>
 #include <QDate>
-#include "address.h"
-#include "gender.h"
+#include "../Guest/guest.h"
+#include "PaymentStatus.h"
 
 struct Reservation {
     QString ReservationID;
 
-    QString GuestName;
-    QString GuestPhoneNumber;
-    Address address;
-    QDate dateOfBirth;
-    Gender gender;  // Has serialization and deserialization methods now
+    Guest guest;
 
     int numberOfGuests;
-    int roomNumber; // temporary int; change with Room objects later
+    QString roomNumber; // In the Room struct, the roonNumber is also a QString. We can use a map for quick lookups
 
     QDate checkIn;
     QDate checkOut;
+
+    PaymentStatus paymentStatus;
 };
 
 // Allows Reservation to be stored inside a QVariant / QStandardItem
