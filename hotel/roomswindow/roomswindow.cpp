@@ -28,8 +28,6 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->CancelButton->setVisible(false);
     ui->RoomNumEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
     ui->CapacityEdit->setValidator(new QIntValidator(0, 100, this));
-    //TODO convert roomtype enum to QStringList and put that in RoomTypeEdit combobox
-    //RoomType;
 
     QStringList roomTypes = { "Economy", "Standard", "Luxurious", "Unknown" };
     ui->RoomTypeEdit->addItems(roomTypes);
@@ -204,26 +202,14 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
     }
 }
 
-void RoomsWindow::on_seeRoomDetails_clicked()
-{
-
-
-    QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
-
-    if (!proxyIndex.isValid()) {
-        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
-        return;
-    }
-    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
-    int selectedRow = sourceIndex.row();
+void RoomsWindow::fillInRoomData(int row){
     int columnCount = model->columnCount();
-
 
     for (int col = 0; col < columnCount; ++col) {
         setEditMode(true);
 
         QString header = model->horizontalHeaderItem(col)->text();
-        QStandardItem *item = model->item(selectedRow, col);
+        QStandardItem *item = model->item(row, col);
         QString value = item ? item->text() : "";
         if(header == "Room Number"){
             ui->RoomNumEdit->setText(value);
@@ -242,6 +228,21 @@ void RoomsWindow::on_seeRoomDetails_clicked()
             ui->NotesEdit->setText(value);
         }
     }
+}
+
+void RoomsWindow::on_seeRoomDetails_clicked()
+{
+
+
+    QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
+
+    if (!proxyIndex.isValid()) {
+        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
+        return;
+    }
+    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    int selectedRow = sourceIndex.row();
+    fillInRoomData(selectedRow);
 
     ui->roomStack->setCurrentIndex(1);
 }
@@ -281,6 +282,8 @@ void RoomsWindow::on_EditButton_clicked()
         dialog.changeText("save changes?");
         if (dialog.exec() == QDialog::Rejected) {
             return;
+        }else{
+            //TODO save changes to database
         }
     }
     setEditMode(editingNow);
@@ -292,6 +295,10 @@ void RoomsWindow::on_CancelButton_clicked()
     ConfirmDialog dialog(this);
     dialog.changeText("revert changes?");
     if (dialog.exec() == QDialog::Accepted) {
+        QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
+        QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+        int selectedRow = sourceIndex.row();
+        fillInRoomData(selectedRow);
         setEditMode(true);
     }
 }

@@ -18,6 +18,7 @@ public:
     explicit RoomsWindow(QWidget *parent = nullptr);
     ~RoomsWindow();
     void setEditMode(bool b);
+    void fillInRoomData(int row);
 
 
 private:
