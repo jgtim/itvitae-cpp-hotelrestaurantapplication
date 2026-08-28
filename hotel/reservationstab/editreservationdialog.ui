@@ -24,28 +24,144 @@
    <item row="0" column="1">
     <widget class="QLineEdit" name="nameEdit"/>
    </item>
-   <item row="11" column="0">
+   <item row="1" column="0">
+    <widget class="QLabel" name="phoneNumberLabel">
+     <property name="text">
+      <string>Phone Number:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="phoneNumberEdit"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="addresLabel">
+     <property name="text">
+      <string>Address:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="addressEdit1">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Street and number...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="addressEdit2">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Optional house information...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="addressEdit3">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>City...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="addressEdit4">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>State, region or province...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QLineEdit" name="addressEdit5">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Postal code...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QLineEdit" name="addressEdit6">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Country...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="dateOfBirthLabel">
+     <property name="text">
+      <string>Date of Birth:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QDateEdit" name="dateOfBirthEdit"/>
+   </item>
+   <item row="10" column="0">
+    <widget class="QLabel" name="genderLabel">
+     <property name="text">
+      <string>Gender:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QComboBox" name="genderComboBox"/>
+   </item>
+   <item row="13" column="0">
+    <widget class="QLabel" name="guestNumLabel">
+     <property name="text">
+      <string>Number of Guests:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="1">
+    <widget class="QLineEdit" name="guestNumEdit"/>
+   </item>
+   <item row="14" column="0">
     <widget class="QLabel" name="roomNumberLabel">
      <property name="text">
       <string>Room Number:</string>
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
+   <item row="14" column="1">
+    <widget class="QComboBox" name="roomEdit"/>
+   </item>
+   <item row="15" column="0">
     <widget class="QLabel" name="checkInDateLabel">
      <property name="text">
       <string>Check-In date:</string>
      </property>
     </widget>
    </item>
-   <item row="13" column="0">
+   <item row="15" column="1">
+    <widget class="QDateEdit" name="checkInEdit"/>
+   </item>
+   <item row="16" column="0">
     <widget class="QLabel" name="checkOutDateLabel">
      <property name="text">
       <string>Check-Out date:</string>
      </property>
     </widget>
    </item>
-   <item row="14" column="1">
+   <item row="16" column="1">
+    <widget class="QDateEdit" name="checkOutEdit"/>
+   </item>
+   <item row="17" column="1">
     <widget class="QDialogButtonBox" name="EditReservationButtonBox">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
@@ -58,121 +174,35 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="1">
-    <widget class="QDateEdit" name="checkInEdit"/>
-   </item>
-   <item row="13" column="1">
-    <widget class="QDateEdit" name="checkOutEdit"/>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="phoneNumberEdit"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="phoneNumberLabel">
+   <item row="11" column="0">
+    <widget class="QLabel" name="paymentMethodLabel">
      <property name="text">
-      <string>Phone Number:</string>
+      <string>Payment Method:</string>
      </property>
     </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="addresLabel">
-     <property name="text">
-      <string>Address:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QLineEdit" name="addressEdit6">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Country...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QLineEdit" name="addressEdit5">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Postal code...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QLineEdit" name="addressEdit4">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>State, region or province...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLineEdit" name="addressEdit3">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>City...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="addressEdit2">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Optional house information...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="dateOfBirthLabel">
-     <property name="text">
-      <string>Date of Birth:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QLabel" name="guestNumLabel">
-     <property name="text">
-      <string>Number of Guests:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1">
-    <widget class="QDateEdit" name="dateOfBirthEdit"/>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="addressEdit1">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Street and number...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="1">
-    <widget class="QLineEdit" name="guestNumEdit"/>
-   </item>
-   <item row="9" column="0">
-    <widget class="QLabel" name="genderLabel">
-     <property name="text">
-      <string>Gender:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="1">
-    <widget class="QComboBox" name="genderComboBox"/>
    </item>
    <item row="11" column="1">
-    <widget class="QComboBox" name="roomEdit"/>
+    <widget class="QComboBox" name="paymentMethodComboBox"/>
+   </item>
+   <item row="12" column="0">
+    <widget class="QLabel" name="IDTypeLabel">
+     <property name="text">
+      <string>ID type:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1">
+    <widget class="QComboBox" name="IDTypeComboBox"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="emailLabel">
+     <property name="text">
+      <string>E-mail: </string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="emailEdit"/>
    </item>
   </layout>
  </widget>
