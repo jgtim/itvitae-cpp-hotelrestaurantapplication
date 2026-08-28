@@ -80,7 +80,7 @@ void EditReservationDialog::setReservationData(const Reservation &res)
     }
 }
 
-void EditReservationDialog::setAvailableRooms(const QList<RoomRecord> &rooms)
+void EditReservationDialog::setAvailableRooms(const QList<Room> &rooms)
 {
     m_allRooms = rooms;
     populateRoomDropdown(rooms);
@@ -92,12 +92,12 @@ void EditReservationDialog::setExistingReservations(const QList<Reservation> &re
     m_allReservations = reservations;
 }
 
-void EditReservationDialog::populateRoomDropdown(const QList<RoomRecord> &rooms)
+void EditReservationDialog::populateRoomDropdown(const QList<Room> &rooms)
 {
     ui->roomEdit->clear();
     ui->roomEdit->addItem("-- Select a room --", -1);
 
-    for (const RoomRecord &room : rooms) {
+    for (const Room &room : rooms) {
         QString roomStr = room.roomNumber;
         int roomAsInt = roomStr.remove(".").toInt();
         ui->roomEdit->addItem(room.roomNumber, roomAsInt);
@@ -220,9 +220,9 @@ void EditReservationDialog::updateRoomAvailability()
     if (previouslySelected == -1 && !m_currentReservation.ReservationID.isEmpty()) {
         previouslySelected = m_currentReservation.roomNumber;
     }
-    QList<RoomRecord> availableRooms;
+    QList<Room> availableRooms;
 
-    for (const RoomRecord &room : m_allRooms) {
+    for (const Room &room : m_allRooms) {
         QString roomStr = room.roomNumber;
         int roomAsInt = roomStr.remove(".").toInt();
 

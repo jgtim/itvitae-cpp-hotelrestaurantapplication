@@ -20,7 +20,7 @@ public:
     void setReservationData(const Reservation &res);
     Reservation getReservationData() const;
     void setReadOnly(bool readOnly);
-    void setAvailableRooms(const QList<RoomRecord> &rooms);
+    void setAvailableRooms(const QList<Room> &rooms);
     void setExistingReservations(const QList<Reservation> &reservations);
 
 private slots:
@@ -32,10 +32,10 @@ private:
     Ui::EditReservationDialog *ui;
     Reservation m_currentReservation;
     // QList<QString> m_availableRoomNumbers;
-    QList<RoomRecord> m_allRooms;
+    QList<Room> m_allRooms;
     QList<Reservation> m_allReservations;
 
-    void populateRoomDropdown(const QList<RoomRecord> &rooms);
+    void populateRoomDropdown(const QList<Room> &rooms);
 };
 
 #endif // EDITRESERVATIONDIALOG_H
