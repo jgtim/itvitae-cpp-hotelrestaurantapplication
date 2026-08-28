@@ -1,6 +1,7 @@
 #ifndef GENDER_H
 #define GENDER_H
 
+#include <QString>
 #include <QMetaType>
 
 enum class Gender {
@@ -38,4 +39,4 @@ inline Gender stringToGender(const QString &str) {
     return Gender::Unspecified;
 }
 
-#endif // GENDER_H
+#endif

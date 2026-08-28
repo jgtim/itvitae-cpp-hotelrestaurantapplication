@@ -4,6 +4,7 @@
 #include <QString>
 #include <QDate>
 #include "../Guest/guest.h"
+#include "PaymentStatus.h"
 
 struct Reservation {
     QString ReservationID;
@@ -15,6 +16,8 @@ struct Reservation {
 
     QDate checkIn;
     QDate checkOut;
+
+    PaymentStatus paymentStatus;
 };
 
 // Allows Reservation to be stored inside a QVariant / QStandardItem

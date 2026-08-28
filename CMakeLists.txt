@@ -52,6 +52,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         readers/reservationserializer.h
         readers/reservationserializer.cpp
         hotel/reservationstab/Guest/guest.h
+        hotel/reservationstab/Guest/IDType.h
+        hotel/reservationstab/Guest/PaymentMethod.h
+        hotel/reservationstab/Reservation/PaymentStatus.h
     )
 
 # Define target properties for Android with Qt 6 as:
