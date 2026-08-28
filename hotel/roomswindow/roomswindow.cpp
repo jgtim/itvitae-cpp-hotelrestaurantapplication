@@ -225,7 +225,8 @@ void RoomsWindow::fillInRoomData(int row){
             int index = ui->CleaningEdit->findText(value);
             ui->CleaningEdit->setCurrentIndex(index);
         }else if(header == "Comments"){
-            ui->NotesEdit->setText(value);
+            value = "TESTING";
+            ui->NotesEdit->setHtml(value.toHtmlEscaped());
         }
     }
 }

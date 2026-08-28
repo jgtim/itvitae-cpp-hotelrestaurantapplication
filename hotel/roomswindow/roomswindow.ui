@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="roomStack">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="allRooms">
        <widget class="QPushButton" name="seeRoomDetails">
