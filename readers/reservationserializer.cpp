@@ -1,6 +1,8 @@
 #include "reservationserializer.h"
 #include "../hotel/reservationstab/Reservation/gender.h"
 #include "../hotel/reservationstab/Reservation/PaymentStatus.h"
+#include "../hotel/reservationstab/Guest/PaymentMethod.h"
+#include "../hotel/reservationstab/Guest/IDType.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -22,7 +24,9 @@ QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
 
     // Converting enum class to String
     map[QStringLiteral("gender")]            = genderToString(res.guest.gender);
-    map[QStringLiteral("payment_status")]           = paymentStatusToString(res.paymentStatus);
+    map[QStringLiteral("payment_status")]    = paymentStatusToString(res.paymentStatus);
+    map[QStringLiteral("payment_method")]    = paymentMethodToString(res.guest.paymentMethod);
+    map[QStringLiteral("id_type")]           = idTypeToString(res.guest.idType);
 
     // Putting in the Integers directly
     map[QStringLiteral("number_of_guests")]  = res.numberOfGuests;
@@ -60,8 +64,10 @@ Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
     res.checkOut           = QDate::fromString(map.value(QStringLiteral("check_out")).toString(), Qt::ISODate);
 
     // String to enum class
-    res.guest.gender       = stringToGender(map.value(QStringLiteral("gender")).toString());
-    res.paymentStatus      = stringToPaymentStatus(map.value(QStringLiteral("payment_status")).toString());
+    res.guest.gender        = stringToGender(map.value(QStringLiteral("gender")).toString());
+    res.paymentStatus       = stringToPaymentStatus(map.value(QStringLiteral("payment_status")).toString());
+    res.guest.paymentMethod = stringToPaymentMethod(map.value(QStringLiteral("payment_method")).toString());
+    res.guest.idType        = stringToIDType(map.value(QStringLiteral("id_type")).toString());
 
     // Converting back to Int automatically
     res.numberOfGuests     = map.value(QStringLiteral("number_of_guests")).toInt();
