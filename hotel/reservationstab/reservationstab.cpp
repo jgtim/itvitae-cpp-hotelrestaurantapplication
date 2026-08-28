@@ -115,7 +115,7 @@ void ReservationsTab::handleEditReservation()
         model->item(selectedRow, 3)->setData(
             updatedRes.roomNumber, Qt::DisplayRole);
 
-        model->item(selectedRow, 4)->setText(updatedRes.GuestName);
+        model->item(selectedRow, 4)->setText(updatedRes.guest.name);
 
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
@@ -139,7 +139,7 @@ void ReservationsTab::handleCancelReservation()
     reply = QMessageBox::question(this,
                                   "Confirm Cancellation",
                                   QString("Are you sure you want to cancel reservation #%1 for %2?")
-                                      .arg(res.ReservationID, res.GuestName),
+                                      .arg(res.ReservationID, res.guest.name),
                                   QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes) {
@@ -164,7 +164,7 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
     QStandardItem *checkOutItem = new QStandardItem(res.checkOut.toString("dd/MM/yyyy"));
     QStandardItem *roomItem = new QStandardItem();
     roomItem->setData(res.roomNumber, Qt::DisplayRole);
-    QStandardItem *nameItem = new QStandardItem(res.GuestName);
+    QStandardItem *nameItem = new QStandardItem(res.guest.name);
 
     // Saving the whole struct in Column 0
     idItem->setData(QVariant::fromValue(res), Qt::UserRole);
@@ -266,11 +266,11 @@ void ReservationsTab::addMockData()
 {
     Reservation r1;
     r1.ReservationID = "1";
-    r1.GuestName = "Giovanni Falegname";
-    r1.GuestPhoneNumber = "31 6 12345678";
-    r1.address = {"Maasdijk 68", "", "Veen", "Noord-Brabant", "4356AB", "Netherlands"};
-    r1.dateOfBirth = QDate(1991, 10, 1);
-    r1.gender = Gender::Male;
+    r1.guest.name = "Giovanni Falegname";
+    r1.guest.phoneNumber = "31 6 12345678";
+    r1.guest.address = {"Maasdijk 68", "", "Veen", "Noord-Brabant", "4356AB", "Netherlands"};
+    r1.guest.dateOfBirth = QDate(1991, 10, 1);
+    r1.guest.gender = Gender::Male;
     r1.numberOfGuests = 2;
     r1.roomNumber = 101;
     r1.checkIn = QDate(2026, 8, 12);
@@ -278,11 +278,11 @@ void ReservationsTab::addMockData()
 
     Reservation r2;
     r2.ReservationID = "2";
-    r2.GuestName = "Gualtiero Gaykemani";
-    r2.GuestPhoneNumber = "31 6 12345678";
-    r2.address = {"Maasdijk 69", "", "Veen", "Noord-Brabant", "4356AB", "Netherlands"};
-    r2.dateOfBirth = QDate(1992, 10, 1);
-    r2.gender = Gender::Male;
+    r2.guest.name = "Gualtiero Gaykemani";
+    r2.guest.phoneNumber = "31 6 12345678";
+    r2.guest.address = {"Maasdijk 69", "", "Veen", "Noord-Brabant", "4356AB", "Netherlands"};
+    r2.guest.dateOfBirth = QDate(1992, 10, 1);
+    r2.guest.gender = Gender::Male;
     r2.numberOfGuests = 3;
     r2.roomNumber = 102;
     r2.checkIn = QDate(2026, 9, 12);
@@ -290,30 +290,6 @@ void ReservationsTab::addMockData()
 
     addReservationToModel(r1);
     addReservationToModel(r2);
-
-    // QList<QStandardItem*> row2;
-    // row2 << new QStandardItem("0002")
-    //      << new QStandardItem("Giovane Principe")
-    //      << new QStandardItem("111")
-    //      << new QStandardItem("14/07/2026")
-    //      << new QStandardItem("20/07/2026");
-    // model->appendRow(row2);
-
-    // QList<QStandardItem*> row4;
-    // row4 << new QStandardItem("0004")
-    //      << new QStandardItem("Gioacchino della Pietra")
-    //      << new QStandardItem("108")
-    //      << new QStandardItem("10/06/2026")
-    //      << new QStandardItem("20/06/2026");
-    // model->appendRow(row4);
-
-    // QList<QStandardItem*> row5;
-    // row5 << new QStandardItem("0005")
-    //      << new QStandardItem("Giovanni Pialla")
-    //      << new QStandardItem("201")
-    //      << new QStandardItem("08/08/2026")
-    //      << new QStandardItem("18/08/2026");
-    // model->appendRow(row5);
 }
 
 void ReservationsTab::populateReservationList() {
@@ -349,7 +325,7 @@ void ReservationsTab::handleViewReservation(const QModelIndex &index)
             updatedRes.checkOut.toString("dd/MM/yyyy"));
         model->item(selectedRow, 3)->setData(
             updatedRes.roomNumber, Qt::DisplayRole);
-        model->item(selectedRow, 4)->setText(updatedRes.GuestName);
+        model->item(selectedRow, 4)->setText(updatedRes.guest.name);
 
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
@@ -366,7 +342,7 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
     Reservation newRes;
     newRes.checkIn = QDate::currentDate();
     newRes.checkOut = QDate::currentDate().addDays(1);
-    newRes.dateOfBirth = QDate::currentDate().addYears(-20);
+    newRes.guest.dateOfBirth = QDate::currentDate().addYears(-20);
     newRes.numberOfGuests = 1;
     newRes.roomNumber = 0;
 

@@ -33,6 +33,8 @@ build/
 *.qm
 *.prl
 *.qmlls.ini
+.~lock.*
+~lock.*
 
 # Qt unit tests
 target_wrapper.*
