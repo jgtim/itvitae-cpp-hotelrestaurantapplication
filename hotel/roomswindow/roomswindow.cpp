@@ -31,8 +31,14 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     //TODO convert roomtype enum to QStringList and put that in RoomTypeEdit combobox
     //RoomType;
 
-    QStringList roomTypes = { "Arial", "Helvetica", "Times" };
+    QStringList roomTypes = { "Economy", "Standard", "Luxurious", "Unknown" };
     ui->RoomTypeEdit->addItems(roomTypes);
+
+    QStringList roomStatuses = { "Available", "Occupied", "Reserved", "Maintenance" };
+    ui->StatusEdit->addItems(roomStatuses);
+
+    QStringList Cleaningstatuses = { "Clean", "Dirty" };
+    ui->CleaningEdit->addItems(Cleaningstatuses);
 
     // --- later voor SQL aanzetten ---
     //QSqlTableModel *model = new QSqlTableModel(this);
@@ -212,21 +218,26 @@ void RoomsWindow::on_seeRoomDetails_clicked()
     int selectedRow = sourceIndex.row();
     int columnCount = model->columnCount();
 
+
     for (int col = 0; col < columnCount; ++col) {
+        setEditMode(true);
+
         QString header = model->horizontalHeaderItem(col)->text();
         QStandardItem *item = model->item(selectedRow, col);
         QString value = item ? item->text() : "";
         if(header == "Room Number"){
             ui->RoomNumEdit->setText(value);
         }else if(header == "Room type"){
-            //ui->RoomTypeEdit->setText(value);
-            //TODO set to right value
+            int index = ui->RoomTypeEdit->findText(value);
+            ui->RoomTypeEdit->setCurrentIndex(index);
         }else if(header == "Capacity"){
             ui->CapacityEdit->setText(value);
         }else if(header == "Status"){
-            ui->StatusEdit->setText(value);
+            int index = ui->StatusEdit->findText(value);
+            ui->StatusEdit->setCurrentIndex(index);
         }else if(header == "Housekeeping"){
-            ui->CleaningEdit->setText(value);
+            int index = ui->CleaningEdit->findText(value);
+            ui->CleaningEdit->setCurrentIndex(index);
         }else if(header == "Comments"){
             ui->NotesEdit->setText(value);
         }
@@ -238,10 +249,13 @@ void RoomsWindow::on_seeRoomDetails_clicked()
 
 void RoomsWindow::on_ReturnButton_clicked()
 {
-    ConfirmDialog dialog(this);
-    dialog.changeText("leave without saving changes?");
-    if (dialog.exec() == QDialog::Rejected) {
-        return;
+    bool editing = ui->CancelButton->isVisible();
+    if(editing){
+        ConfirmDialog dialog(this);
+        dialog.changeText("leave without saving changes?");
+        if (dialog.exec() == QDialog::Rejected) {
+            return;
+        }
     }
     ui->roomStack->setCurrentIndex(0);
 }
@@ -251,10 +265,10 @@ void RoomsWindow::setEditMode(bool readMode){
     ui->EditButton->setText(newEditButtonText);
     ui->CancelButton->setVisible(!readMode);
     ui->RoomNumEdit->setReadOnly(readMode);
-    ui->RoomTypeEdit->setEditable(readMode);
+    ui->RoomTypeEdit->setDisabled(readMode);
     ui->CapacityEdit->setReadOnly(readMode);
-    ui->StatusEdit->setReadOnly(readMode);
-    ui->CleaningEdit->setReadOnly(readMode);
+    ui->StatusEdit->setDisabled(readMode);
+    ui->CleaningEdit->setDisabled(readMode);
     ui->NotesEdit->setReadOnly(readMode);
 }
 
