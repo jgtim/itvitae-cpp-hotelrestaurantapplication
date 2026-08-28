@@ -30,8 +30,9 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->CapacityEdit->setValidator(new QIntValidator(0, 100, this));
     //TODO convert roomtype enum to QStringList and put that in RoomTypeEdit combobox
     //RoomType;
+
     QStringList roomTypes = { "Arial", "Helvetica", "Times" };
-    //ui->RoomTypeEdit->addItems(["A", "B"]);
+    ui->RoomTypeEdit->addItems(roomTypes);
 
     // --- later voor SQL aanzetten ---
     //QSqlTableModel *model = new QSqlTableModel(this);
@@ -91,13 +92,8 @@ void RoomsWindow::updateRoomColors()
     for (int row = 0; row < model->rowCount(); row++)
     {
         // Status kolom = 8
-<<<<<<< HEAD
-        QStandardItem *statusItem = model->item(row, 3);
-        statusItem->setForeground(QBrush(QColor(0, 0, 0)));
 
-=======
         QStandardItem *statusItem = model->item(row, 8);
->>>>>>> main
 
         if (statusItem)
         {
@@ -116,12 +112,7 @@ void RoomsWindow::updateRoomColors()
 
 
         // Housekeeping kolom = 9
-<<<<<<< HEAD
-        QStandardItem *housekeepingItem = model->item(row, 4);
-
-=======
         QStandardItem *housekeepingItem = model->item(row, 9);
->>>>>>> main
         if (housekeepingItem)
         {
             housekeepingItem->setForeground(QBrush(QColor(0, 0, 0)));
@@ -196,7 +187,6 @@ void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 
     RoomDetailsDialog dialog(this);
     dialog.setDetails(roomDetails);
-<<<<<<< HEAD
     if (dialog.exec() == QDialog::Accepted) {
         QList<QPair<QString, QString>> updatedDetails = dialog.getDetails();
         for (int col = 0; col < updatedDetails.size(); ++col) {
@@ -292,7 +282,3 @@ void RoomsWindow::on_CancelButton_clicked()
     }
 }
 
-=======
-    dialog.exec();
-}
->>>>>>> main
