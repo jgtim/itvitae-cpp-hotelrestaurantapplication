@@ -1,6 +1,8 @@
 #include "roomswindow.h"
 #include "ui_roomswindow.h"
 #include "roomdetailsdialog.h"
+#include "confirmdialog.h"
+#include "Room/room.h"
 #include "../../readers/hotelkamersreader.h"
 
 #include <QStandardItemModel>
@@ -11,6 +13,8 @@
 #include <QHeaderView>
 #include <QMessageBox>
 
+
+
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
 
 RoomsWindow::RoomsWindow(QWidget *parent)
@@ -20,6 +24,19 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->setupUi(this);
 
     model = new QStandardItemModel(this);
+    ui->roomStack->setCurrentIndex(0);
+    ui->CancelButton->setVisible(false);
+    ui->RoomNumEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
+    ui->CapacityEdit->setValidator(new QIntValidator(0, 100, this));
+
+    QStringList roomTypes = { "Economy", "Standard", "Luxurious", "Unknown" };
+    ui->RoomTypeEdit->addItems(roomTypes);
+
+    QStringList roomStatuses = { "Available", "Occupied", "Reserved", "Maintenance" };
+    ui->StatusEdit->addItems(roomStatuses);
+
+    QStringList Cleaningstatuses = { "Clean", "Dirty" };
+    ui->CleaningEdit->addItems(Cleaningstatuses);
 
     // --- later voor SQL aanzetten ---
     //QSqlTableModel *model = new QSqlTableModel(this);
@@ -28,30 +45,34 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     // model->select();
 
     model->setHorizontalHeaderLabels({
+        //NOTE IF YOU CHANGE ANYTHING: these names are used in on_seeRoomDetails_clicked()
         "Room Number",
         "Room type",
-        "Adults",
+        "Capacity",
         "View     ",        //spaties om het vakje groter te maken
         "Babybed",
         "Bed type",
         "Comments        ", //spaties om het vakje groter te maken
         "Price per night",
         "Status",
-        "Housekeeping"
+        "Housekeeping",
+        //"More Information" //for if we add button here later
     });
 
-    importExcelRooms();
 
+    importExcelRooms();
     proxyModel = new QSortFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     proxyModel->setFilterKeyColumn(-1);
+
 
     ui->roomsTableView->setModel(proxyModel);
 
     ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,
@@ -75,6 +96,7 @@ void RoomsWindow::updateRoomColors()
     for (int row = 0; row < model->rowCount(); row++)
     {
         // Status kolom = 8
+
         QStandardItem *statusItem = model->item(row, 8);
 
         if (statusItem)
@@ -88,7 +110,7 @@ void RoomsWindow::updateRoomColors()
                 statusItem->setBackground(QColor(255, 200, 200));
             else if (status == "Reserved")
                 statusItem->setBackground(QColor(200, 220, 255));
-            else if (status == "Maintenace")
+            else if (status == "Maintenance")
                 statusItem->setBackground(QColor(200, 200, 200));
         }
 
@@ -148,26 +170,139 @@ void RoomsWindow::importExcelRooms(){
 
 void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 {
-    if (!proxyIndex.isValid())
-        return;
 
-    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
-    int selectedRow = sourceIndex.row();
+    on_seeRoomDetails_clicked();
+    //this chunk of code creates a roomdetailsdialog. this has been replaced.
+    // if (!proxyIndex.isValid())
+    //     return;
+
+    // QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    // int selectedRow = sourceIndex.row();
 
 
-    QList<QPair<QString, QString>> roomDetails;
+    // QList<QPair<QString, QString>> roomDetails;
+    // int columnCount = model->columnCount();
+
+    // for (int col = 0; col < columnCount; ++col) {
+    //     QString header = model->horizontalHeaderItem(col)->text();
+
+    //     QStandardItem *item = model->item(selectedRow, col);
+    //     QString value = item ? item->text() : "";
+
+    //     roomDetails.append(qMakePair(header, value));
+    // }
+
+    // RoomDetailsDialog dialog(this);
+    // dialog.setDetails(roomDetails);
+    // if (dialog.exec() == QDialog::Accepted) {
+    //     QList<QPair<QString, QString>> updatedDetails = dialog.getDetails();
+    //     for (int col = 0; col < updatedDetails.size(); ++col) {
+    //         QStandardItem *item = model->item(selectedRow, col);
+    //         if (item) {
+    //             item->setText(updatedDetails[col].second);
+    //         }
+    //     }
+    // }
+}
+
+void RoomsWindow::fillInRoomData(int row){
     int columnCount = model->columnCount();
 
     for (int col = 0; col < columnCount; ++col) {
+        setEditMode(true);
+
         QString header = model->horizontalHeaderItem(col)->text();
-
-        QStandardItem *item = model->item(selectedRow, col);
+        QStandardItem *item = model->item(row, col);
         QString value = item ? item->text() : "";
-
-        roomDetails.append(qMakePair(header, value));
+        if(header == "Room Number"){
+            ui->RoomNumEdit->setText(value);
+        }else if(header == "Room type"){
+            int index = ui->RoomTypeEdit->findText(value);
+            ui->RoomTypeEdit->setCurrentIndex(index);
+        }else if(header == "Capacity"){
+            ui->CapacityEdit->setText(value);
+        }else if(header == "Status"){
+            int index = ui->StatusEdit->findText(value);
+            ui->StatusEdit->setCurrentIndex(index);
+        }else if(header == "Housekeeping"){
+            int index = ui->CleaningEdit->findText(value);
+            ui->CleaningEdit->setCurrentIndex(index);
+        }else if(header == "Comments        "){
+            ui->NotesEdit->setText(value);
+        }
     }
-
-    RoomDetailsDialog dialog(this);
-    dialog.setDetails(roomDetails);
-    dialog.exec();
 }
+
+void RoomsWindow::on_seeRoomDetails_clicked()
+{
+
+
+    QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
+
+    if (!proxyIndex.isValid()) {
+        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
+        return;
+    }
+    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    int selectedRow = sourceIndex.row();
+    fillInRoomData(selectedRow);
+
+    ui->roomStack->setCurrentIndex(1);
+}
+
+
+void RoomsWindow::on_ReturnButton_clicked()
+{
+    bool editing = ui->CancelButton->isVisible();
+    if(editing){
+        ConfirmDialog dialog(this);
+        dialog.changeText("leave without saving changes?");
+        if (dialog.exec() == QDialog::Rejected) {
+            return;
+        }
+    }
+    ui->roomStack->setCurrentIndex(0);
+}
+
+void RoomsWindow::setEditMode(bool readMode){
+    const QString newEditButtonText = (readMode) ? "Edit" : "Save";
+    ui->EditButton->setText(newEditButtonText);
+    ui->CancelButton->setVisible(!readMode);
+    ui->RoomNumEdit->setReadOnly(readMode);
+    ui->RoomTypeEdit->setDisabled(readMode);
+    ui->CapacityEdit->setReadOnly(readMode);
+    ui->StatusEdit->setDisabled(readMode);
+    ui->CleaningEdit->setDisabled(readMode);
+    ui->NotesEdit->setReadOnly(readMode);
+}
+
+
+void RoomsWindow::on_EditButton_clicked()
+{
+    bool editingNow =  ui->CancelButton->isVisible();
+    if(editingNow){
+        ConfirmDialog dialog(this);
+        dialog.changeText("save changes?");
+        if (dialog.exec() == QDialog::Rejected) {
+            return;
+        }else{
+            //TODO save changes to database
+        }
+    }
+    setEditMode(editingNow);
+}
+
+
+void RoomsWindow::on_CancelButton_clicked()
+{
+    ConfirmDialog dialog(this);
+    dialog.changeText("revert changes?");
+    if (dialog.exec() == QDialog::Accepted) {
+        QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
+        QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+        int selectedRow = sourceIndex.row();
+        fillInRoomData(selectedRow);
+        setEditMode(true);
+    }
+}
+
