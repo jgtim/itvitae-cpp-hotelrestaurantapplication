@@ -237,6 +237,28 @@ void EditReservationDialog::accept(){
         return;
     }
 
+    // Address
+    bool missingStreet = ui->addressEdit1->text().trimmed().isEmpty();
+    bool missingCity   = ui->addressEdit3->text().trimmed().isEmpty();
+    bool missingPostal = ui->addressEdit5->text().trimmed().isEmpty();
+    bool missingCountry= ui->addressEdit6->text().trimmed().isEmpty();
+
+    if (missingStreet || missingCity || missingPostal || missingCountry) {
+        QMessageBox::warning(
+            this,
+            "Incomplete Address", "Please fill in our required address information:\n"
+            "• Street and number\n"
+            "• City\n"
+            "• Postal code\n"
+            "• Country"
+            );
+        if (missingStreet) ui->addressEdit1->setFocus();
+        else if (missingCity) ui->addressEdit3->setFocus();
+        else if (missingPostal) ui->addressEdit5->setFocus();
+        else if (missingCountry) ui->addressEdit6->setFocus();
+        return;
+    }
+
     // Room number
     if (ui->roomEdit->currentData().toString().isEmpty()) {
         QMessageBox::warning(this, "Missing Information", "Please select an available room.");
