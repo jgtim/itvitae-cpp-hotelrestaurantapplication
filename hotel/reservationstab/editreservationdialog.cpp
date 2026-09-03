@@ -35,10 +35,18 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     // Setting minimum check-in date to today
     ui->checkInEdit->setMinimumDate(QDate::currentDate());
 
-    // Checking text fields for maximum number of characters, while user is typing
+    // Checking contact info text fields for maximum number of characters, while user is typing
     setupFieldLimit(ui->nameEdit, 50, "Name");
     setupFieldLimit(ui->emailEdit, 50, "Email");
     setupFieldLimit(ui->phoneNumberEdit, 15, "Phone number");
+
+    // Checking address info fields for max length
+    setupFieldLimit(ui->addressEdit1, 100, "Street and number");
+    setupFieldLimit(ui->addressEdit2, 100, "Optional house information");
+    setupFieldLimit(ui->addressEdit3, 50, "City");
+    setupFieldLimit(ui->addressEdit4, 50, "State, region or province");
+    setupFieldLimit(ui->addressEdit5, 12, "Postal code");
+    setupFieldLimit(ui->addressEdit6, 50, "Country");
 
     ui->genderComboBox->clear();
     ui->genderComboBox->addItem("Unspecified", QVariant::fromValue(Gender::Unspecified));
