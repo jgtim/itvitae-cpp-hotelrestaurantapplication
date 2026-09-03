@@ -67,14 +67,16 @@ std::optional<QList<Room>> parseRoomFile() {
 
         appendRoom(
             rooms,
-            cellA,                                                   // roomNumber
-            stringToRoomType(xlsx.read(row, 2).toString()),          // roomType
-            xlsx.read(row, 3).toInt(),                               // adults
-            stringToRoomView(xlsx.read(row, 4).toString()),          // roomView
-            parseExcelToBool(xlsx.read(row, 5).toString()),          // babyBed
-            xlsx.read(row, 6).toString().trimmed(),                  // beds
-            xlsx.read(row, 7).toString().trimmed(),                  // comments
-            price                                                    // pricePerNight
+            cellA,                                                              // roomNumber
+            stringToRoomType(xlsx.read(row, 2).toString()),                     // roomType
+            xlsx.read(row, 3).toInt(),                                          // adults
+            stringToRoomView(xlsx.read(row, 4).toString()),                     // roomView
+            parseExcelToBool(xlsx.read(row, 5).toString()),                     // babyBed
+            xlsx.read(row, 6).toString().trimmed(),                             // beds
+            xlsx.read(row, 7).toString().trimmed(),                             // comments
+            price,                                                              // pricePerNight
+            stringToRoomStatus(xlsx.read(row, 9).toString().trimmed()),         // Status
+            stringToHouseKeepingStatus(xlsx.read(row, 10).toString().trimmed())  // Housekeeping
         );
     }
 
