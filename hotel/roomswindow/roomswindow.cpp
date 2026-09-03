@@ -14,8 +14,9 @@
 #include <QMessageBox>
 
 
-
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
+
+//TEST
 
 RoomsWindow::RoomsWindow(QWidget *parent)
     : QMainWindow(parent)
