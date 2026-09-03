@@ -45,6 +45,7 @@ private:
     Reservation getReservationFromIndex(const QModelIndex &index);
     QList<Reservation> getAllReservations();
     bool isReservationInDatabase(const Reservation &res);
+    bool isGuestInDatabase(const Guest &guest);
 
     void addMockData();
     void populateReservationList(); // a replacement for addMockData()

@@ -53,7 +53,7 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     }
 
     // addMockData();
-    populateReservationList();
+    populateReservationList(); // this reads all reservations from the database and adds them to the ui
     auto roomsOptional = parseRoomFile();
     if (roomsOptional.has_value()) {
         m_availableRooms = roomsOptional.value();
@@ -120,6 +120,7 @@ void ReservationsTab::handleEditReservation()
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
 
+
         emit dataChangedNotification();
     }
 }
@@ -172,21 +173,30 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
     row << idItem << checkInItem << checkOutItem << roomItem << nameItem;
     model->appendRow(row);
 
+
     if (!isReservationInDatabase(res)) {
         ReservationSerializer serializer;
         auto map = serializer.toVariantMap(res);
-        query.prepare("insert into reservations values (:reservationID, :name, :phoneNumber, :address, :dateOfBirth, :gender, :numberOfGuests, :roomNumber, :checkInDate, :checkOutDate);");
-        query.bindValue(":reservationID", map.value("reservation_id"));
-        query.bindValue(":name", map.value("guest_name"));
-        query.bindValue(":phoneNumber", map.value("guest_phone"));
-        query.bindValue(":address", map.value("address"));
-        query.bindValue(":dateOfBirth", map.value("date_of_birth"));
-        query.bindValue(":gender", map.value("gender")); // temporary placeholder until a .toString() is implemented for gender
-        query.bindValue(":numberOfGuests", map.value("number_of_guests"));
-        query.bindValue(":roomNumber", map.value("room_number"));
-        query.bindValue(":checkInDate", map.value("check_in"));
-        query.bindValue(":checkOutDate", map.value("check_out"));
+        query.prepare("insert into reservations values (:ReservationID, :GuestID, :NumberOfGuests, :RoomNumber, :CheckInDate, :CheckOutDate);");
+        query.bindValue(":ReservationID", map.value("reservation_id"));
+        query.bindValue(":GuestID", map.value("guest_name"));
+        query.bindValue(":NumberOfGuests", map.value("number_of_guests"));
+        query.bindValue(":RoomNumber", map.value("room_number"));
+        query.bindValue(":CheckInDate", map.value("check_in"));
+        query.bindValue(":CheckOutDate", map.value("check_out"));
         query.exec();
+
+        if (!isGuestInDatabase(res.guest)) {
+            query.prepare("insert into guests values (:GuestID, :GuestName, :GuestPhoneNumber, :GuestEmail, :GuestAddress, :GuestDateOfBirth, :GuestGender);");
+            query.bindValue(":GuestID", map.value("guest_name"));
+            query.bindValue(":GuestName", map.value("guest_name"));
+            query.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
+            query.bindValue(":GuestEmail", "placeholder email");
+            query.bindValue(":GuestAddress", map.value("address"));
+            query.bindValue(":GuestDateOfBirth", map.value("date_of_birth"));
+            query.bindValue(":GuestGender", map.value("gender"));
+            query.exec();
+        }
     }
 }
 
@@ -206,30 +216,29 @@ QList<Reservation> ReservationsTab::getAllReservations()
 {
     ReservationSerializer serializer;
     QList<Reservation> reservations;
-    QSqlQuery selectQuery("SELECT * FROM reservations;");
-    int indexID = query.record().indexOf("ReservationID");
-    int indexName = query.record().indexOf("GuestName");
-    int indexPhoneNumber = query.record().indexOf("GuestPhoneNumber");
-    int indexAddress = query.record().indexOf("Address");
-    int indexDateOfBirth = query.record().indexOf("DateOfBirth");
-    int indexGender = query.record().indexOf("Gender");
-    int indexNumberOfGuests = query.record().indexOf("NumberOfGuests");
-    int indexRoomNumber = query.record().indexOf("RoomNumber");
-    int indexCheckIn = query.record().indexOf("CheckInDate");
-    int indexCheckOut = query.record().indexOf("CheckOutDate");
+    QSqlQuery resQuery("SELECT * FROM reservations;");
 
-    while (selectQuery.next()) {
+    while (resQuery.next()) {
         QVariantMap resMap;
-        resMap[QStringLiteral("reservation_id")] = selectQuery.value(0).toString();
-        resMap[QStringLiteral("guest_name")] = selectQuery.value(1).toString();
-        resMap[QStringLiteral("guest_phone")] = selectQuery.value(2).toString();
-        resMap[QStringLiteral("address")] = selectQuery.value(3).toString();
-        resMap[QStringLiteral("date_of_birth")] = selectQuery.value(4).toString();
-        resMap[QStringLiteral("gender")] = selectQuery.value(5).toString();
-        resMap[QStringLiteral("number_of_guests")] = selectQuery.value(6).toString();
-        resMap[QStringLiteral("room_number")] = selectQuery.value(7).toString();
-        resMap[QStringLiteral("check_in")] = selectQuery.value(8).toString();
-        resMap[QStringLiteral("check_out")] = selectQuery.value(9).toString();
+        resMap[QStringLiteral("reservation_id")] = resQuery.value(0).toString();
+        resMap[QStringLiteral("number_of_guests")] = resQuery.value(2).toString();
+        resMap[QStringLiteral("room_number")] = resQuery.value(3).toString();
+        resMap[QStringLiteral("check_in")] = resQuery.value(4).toString();
+        resMap[QStringLiteral("check_out")] = resQuery.value(5).toString();
+
+        QSqlQuery guestQuery;
+        guestQuery.prepare("SELECT * FROM guests where GuestID = :id;");
+        guestQuery.bindValue(":id", resQuery.value(1).toString());
+        guestQuery.exec();
+        if (guestQuery.next()) {
+            resMap[QStringLiteral("guest_name")] = guestQuery.value(1).toString();
+            resMap[QStringLiteral("guest_phone")] = guestQuery.value(2).toString();
+            resMap[QStringLiteral("guest_phone")] = guestQuery.value(2).toString();
+            // email here
+            resMap[QStringLiteral("address")] = guestQuery.value(4).toString();
+            resMap[QStringLiteral("date_of_birth")] = guestQuery.value(5).toString();
+            resMap[QStringLiteral("gender")] = guestQuery.value(6).toString();
+        }
 
         // qDebug() << selectQuery.value(0).toString();
         reservations.append(serializer.fromVariantMap(resMap));
@@ -252,6 +261,19 @@ bool ReservationsTab::isReservationInDatabase(const Reservation &res) {
     bool status = false;
     query.prepare("SELECT ReservationID FROM reservations WHERE ReservationID = :id;");
     query.bindValue(":id", res.ReservationID);
+    if (query.exec()) {
+        if (query.next()) {
+            status = true;
+        }
+    }
+    // we can potentially add more uniqueness checks later
+    return status;
+}
+
+bool ReservationsTab::isGuestInDatabase(const Guest &guest) {
+    bool status = false;
+    query.prepare("select GuestID from guests WHERE GuestID = :id;");
+    query.bindValue(":id", guest.guestID);
     if (query.exec()) {
         if (query.next()) {
             status = true;
@@ -293,7 +315,7 @@ void ReservationsTab::addMockData()
 }
 
 void ReservationsTab::populateReservationList() {
-    for (auto res : getAllReservations()) {
+    for (auto &res : getAllReservations()) {
         addReservationToModel(res);
     }
 }
