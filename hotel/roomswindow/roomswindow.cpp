@@ -48,13 +48,8 @@ RoomsWindow::RoomsWindow(QWidget *parent)
         //NOTE IF YOU CHANGE ANYTHING: these names are used in on_seeRoomDetails_clicked()
         "Room Number",
         "Room type",
-<<<<<<< HEAD
-        "Adults",
-        "View",        //spaties om het vakje groter te maken
-=======
         "Capacity",
-        "View     ",        //spaties om het vakje groter te maken
->>>>>>> main
+        "View",        //spaties om het vakje groter te maken
         "Babybed",
         "Bed type",
         "Comments", //spaties om het vakje groter te maken
@@ -71,13 +66,19 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     proxyModel->setFilterKeyColumn(-1);
 
-
     ui->roomsTableView->setModel(proxyModel);
-
-    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    ui->roomsTableView->setColumnWidth(0,90); // room number
+    ui->roomsTableView->setColumnWidth(1,65); // room type
+    ui->roomsTableView->setColumnWidth(2,55); // capacity
+    ui->roomsTableView->setColumnWidth(3,60); // view
+    ui->roomsTableView->setColumnWidth(4,55); // babybed
+    // ui->roomsTableView->setColumnWidth(5,1); // bed type; leave size flexible because text can be big
+    // ui->roomsTableView->setColumnWidth(6,1); // comments; leave size flexible because text can be big
+    ui->roomsTableView->setColumnWidth(7,85); // price per night
+    ui->roomsTableView->setColumnWidth(8,80); // status
+    ui->roomsTableView->setColumnWidth(9,85); // housekeeping
 
 
     connect(ui->roomSearchLineEdit,
@@ -233,7 +234,7 @@ void RoomsWindow::fillInRoomData(int row){
         }else if(header == "Housekeeping"){
             int index = ui->CleaningEdit->findText(value);
             ui->CleaningEdit->setCurrentIndex(index);
-        }else if(header == "Comments        "){
+        }else if(header == "Comments"){
             ui->NotesEdit->setText(value);
         }
     }
