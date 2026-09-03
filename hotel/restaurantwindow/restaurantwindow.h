@@ -7,6 +7,8 @@
 #include <QSplitter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include "Restaurant/table.h"
+#include <QVector>
 
 namespace Ui {
 class RestaurantWindow;
@@ -46,6 +48,7 @@ private:
     QPushButton *setOccupiedBtn;
     QPushButton *reservationTableBtn;
     QWidget *tableCanvas;
+    QVector<Table> tables;
 
     // Setup functions
     void setupLayout();
@@ -54,6 +57,7 @@ private:
     void setupReservationTable();
     void setupOrderTable();
     void setupTableButtons();
+    void loadMockTables();
 
     // Mock data
     void loadMockReservations();

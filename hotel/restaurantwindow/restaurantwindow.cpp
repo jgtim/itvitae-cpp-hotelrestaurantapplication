@@ -4,12 +4,57 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QHeaderView>
+#include <QRandomGenerator>
+#include <QPainter>
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent), ui(nullptr)
 {
+    loadMockTables();
     setupLayout();
 }
+
+class TableCanvas : public QWidget
+{
+public:
+    explicit TableCanvas(const QVector<Table>& tables, QWidget *parent = nullptr)
+        : QWidget(parent), tables(tables)
+    {
+    }
+
+protected:
+    void paintEvent(QPaintEvent *event) override
+    {
+        Q_UNUSED(event);
+
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        for (const Table& table : tables) {
+            QColor color;
+
+            if (table.getStatus() == TableStatus::FREE)
+                color = Qt::green;
+            else if (table.getStatus() == TableStatus::OCCUPIED)
+                color = Qt::red;
+            else
+                color = QColor(255, 165, 0);
+
+            painter.setBrush(color);
+            painter.setPen(Qt::white);
+
+            painter.drawEllipse(table.getX(), table.getY(), 50, 50);
+
+            painter.setPen(Qt::black);
+            painter.drawText(table.getX(), table.getY(), 50, 50,
+                             Qt::AlignCenter,
+                             QString::number(table.getNumber()));
+        }
+    }
+
+private:
+    QVector<Table> tables;
+};
 
 RestaurantWindow::~RestaurantWindow()
 {
@@ -143,7 +188,7 @@ void RestaurantWindow::setupRightPanel()
     rightLayout->addLayout(topButtonLayout);
 
     // === Canvas Area (zwart) ===
-    tableCanvas = new QWidget();
+    tableCanvas = new TableCanvas(tables);
     tableCanvas->setStyleSheet("background-color: #000000; border: 2px solid #FFFFFF;");
     rightLayout->addWidget(tableCanvas);
 
@@ -202,6 +247,28 @@ void RestaurantWindow::setupOrderTable()
     orderTable->setItem(3, 4, new QTableWidgetItem("1"));
 }
 
+void RestaurantWindow::loadMockTables()
+{
+    tables.clear();
+
+    for (int i = 1; i <= 31; ++i) {
+        int x = 15 + ((i - 1) % 8) * 65;
+        int y = 15 + ((i - 1) / 8) * 65;
+
+        int randomStatus = QRandomGenerator::global()->bounded(3);
+
+        TableStatus status;
+
+        if (randomStatus == 0)
+            status = TableStatus::FREE;
+        else if (randomStatus == 1)
+            status = TableStatus::OCCUPIED;
+        else
+            status = TableStatus::RESERVED;
+
+        tables.append(Table(i, x, y, status));
+    }
+}
 // Slots
 void RestaurantWindow::onDataChanged()
 {
