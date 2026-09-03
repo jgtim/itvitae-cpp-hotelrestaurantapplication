@@ -45,14 +45,11 @@
           <item row="0" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Search</string>
+             <widget class="QLineEdit" name="roomSearchLineEdit">
+              <property name="placeholderText">
+               <string>Search on Room Number, Room Type, View, Status or Housekeeping...</string>
               </property>
              </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="roomSearchLineEdit"/>
             </item>
            </layout>
           </item>
@@ -332,4 +329,3 @@
  <resources/>
  <connections/>
 </ui>
-
