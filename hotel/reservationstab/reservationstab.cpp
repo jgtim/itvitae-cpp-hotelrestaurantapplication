@@ -30,6 +30,10 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     ui->ReservationsTabReservationsTable->setModel(proxyModel);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    ui->ReservationsTabReservationsTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
+    ui->ReservationsTabReservationsTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
+    ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
+
     connect(ui->ReservationsTabSearchfield, &QLineEdit::textChanged,
             proxyModel, &QSortFilterProxyModel::setFilterFixedString);
 
