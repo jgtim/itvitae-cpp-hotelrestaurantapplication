@@ -61,8 +61,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         hotel/reservationstab/Guest/IDType.h
         hotel/reservationstab/Guest/PaymentMethod.h
         hotel/reservationstab/Reservation/PaymentStatus.h
+<<<<<<< HEAD
         hotel/restaurantwindow/restaurant_mockdata.h
         hotel/restaurantwindow/Restaurant/table.h
+=======
+        filter/multicolumnfilterproxymodel.h filter/multicolumnfilterproxymodel.cpp
+
+>>>>>>> main
     )
 
 # Define target properties for Android with Qt 6 as:

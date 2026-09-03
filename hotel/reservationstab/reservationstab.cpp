@@ -21,10 +21,10 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     model->setHeaderData(3, Qt::Horizontal, "Room Number");
     model->setHeaderData(4, Qt::Horizontal, "Guest Name");
 
-    proxyModel = new QSortFilterProxyModel(this);
+    proxyModel = new MultiColumnFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    proxyModel->setFilterKeyColumn(-1);  // Search all columns
+    proxyModel->setFilterColumns({0, 3, 4}); // Searches Reservation ID, Room Number, Guest Name
 
     ui->ReservationsTabReservationsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->ReservationsTabReservationsTable->setModel(proxyModel);
@@ -270,6 +270,8 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
     dialog.setAvailableRooms(m_availableRooms);
     dialog.setExistingReservations(getAllReservations());
     dialog.setReservationData(newRes);
+
+    dialog.setWindowTitle("New Reservation");
 
     if (dialog.exec() == QDialog::Accepted) {
         // Retrieve filled struct from dialog
