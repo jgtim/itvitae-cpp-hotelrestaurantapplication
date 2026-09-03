@@ -32,6 +32,14 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     //TODO set maximum depending on total number of rooms in hotel. Maybe pull from database
     ui->guestNumEdit->setValidator(new QIntValidator(1, 20, this));
 
+    // Setting minimum check-in date to today
+    ui->checkInEdit->setMinimumDate(QDate::currentDate());
+
+    // Checking text fields for maximum number of characters, while user is typing
+    setupFieldLimit(ui->nameEdit, 50, "Name");
+    setupFieldLimit(ui->emailEdit, 50, "Email");
+    setupFieldLimit(ui->phoneNumberEdit, 15, "Phone number");
+
     ui->genderComboBox->clear();
     ui->genderComboBox->addItem("Unspecified", QVariant::fromValue(Gender::Unspecified));
     ui->genderComboBox->addItem("Male",        QVariant::fromValue(Gender::Male));
@@ -151,10 +159,12 @@ Reservation EditReservationDialog::getReservationData() const
 {
     Reservation res = m_currentReservation;
 
+    // Guest contact
     res.guest.name = ui->nameEdit->text();
     res.guest.phoneNumber = ui->phoneNumberEdit->text();
     res.guest.email = ui->emailEdit->text();
 
+    // Address
     res.guest.address.streetLine1 = ui->addressEdit1->text();
     res.guest.address.streetLine2 = ui->addressEdit2->text();
     res.guest.address.city = ui->addressEdit3->text();
@@ -162,17 +172,18 @@ Reservation EditReservationDialog::getReservationData() const
     res.guest.address.postalCode = ui->addressEdit5->text();
     res.guest.address.country = ui->addressEdit6->text();
 
-    // 3. Date of Birth
+    // Date of Birth
     res.guest.dateOfBirth = QDate::fromString(ui->dateOfBirthEdit->text(), "dd/MM/yyyy");
 
-    // 4. Details
+    // Details
     res.numberOfGuests = ui->guestNumEdit->text().toInt();
     res.roomNumber = ui->roomEdit->currentData().toString();
 
-    // 5. Dates
+    // Dates
     res.checkIn = ui->checkInEdit->date();
     res.checkOut = ui->checkOutEdit->date();
 
+    // Enums
     res.guest.gender        = ui->genderComboBox->currentData().value<Gender>();
     res.guest.idType        = ui->IDTypeComboBox->currentData().value<IDType>();
     res.guest.paymentMethod = ui->paymentMethodComboBox->currentData().value<PaymentMethod>();
@@ -189,12 +200,44 @@ void EditReservationDialog::on_EditReservationButtonBox_accepted()
 
 void EditReservationDialog::accept(){
 
-    // Name filled in check
+    // Name
     if (ui->nameEdit->text().trimmed().isEmpty()) {
-        QMessageBox::warning(this, "Missing Information", "Please enter a guest name.");
+        QMessageBox::warning(this, "Missing Information", "Please enter a name.");
+        ui->nameEdit->setFocus();
         return;
     }
 
+    // Phone Number
+    if (ui->phoneNumberEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a phone number.");
+        ui->phoneNumberEdit->setFocus();
+        return;
+    }
+
+    // Email
+    static const QRegularExpression emailRegex(R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)");
+    if (!ui->emailEdit->text().trimmed().isEmpty() &&
+        !emailRegex.match(ui->emailEdit->text().trimmed()).hasMatch()) {
+        QMessageBox::warning(this, "Invalid Email", "Please enter a valid email address.");
+        ui->emailEdit->setFocus();
+        return;
+    }
+
+    if (ui->emailEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a valid email address.");
+        ui->emailEdit->setFocus();
+        return;
+    }
+
+    // Room number
+    if (ui->roomEdit->currentData().toString().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please select an available room.");
+        ui->roomEdit->setFocus();
+        return;
+    }
+
+
+    // Check-out before check-in
     if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
         QMessageBox::warning(this, "Invalid selection", "Check-out date cannot be before check-in date.");
         return;
@@ -287,6 +330,27 @@ void EditReservationDialog::updateRoomAvailability()
         ui->roomEdit->setCurrentIndex(idx);
     }
 }
+
+
+//
+void EditReservationDialog::setupFieldLimit(QLineEdit *lineEdit, int maxLength, const QString &fieldName)
+{
+    lineEdit->setMaxLength(maxLength);
+    lineEdit->setProperty("fieldName", fieldName); // Attach field name the user is typing in to warning message
+    connect(lineEdit, &QLineEdit::textEdited, this, &EditReservationDialog::checkFieldLength);
+}
+
+
+void EditReservationDialog::checkFieldLength(const QString &text)
+{
+    auto *edit = qobject_cast<QLineEdit*>(sender());
+    if (edit && text.length() >= edit->maxLength()) {
+        QString name = edit->property("fieldName").toString();
+        QMessageBox::information(this, "Limit Reached",
+                                 QString("%1 cannot exceed %2 characters.").arg(name).arg(edit->maxLength()));
+    }
+}
+
 // void EditReservationDialog::closeEvent(QCloseEvent *event)
 // {
 

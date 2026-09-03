@@ -2,6 +2,7 @@
 #define EDITRESERVATIONDIALOG_H
 
 #include <QDialog>
+#include <qlineedit.h>
 #include "Reservation/reservation.h"
 #include "../../readers/hotelkamersreader.h"
 
@@ -28,6 +29,8 @@ private slots:
     void accept() override;
     void updateRoomAvailability();
 
+    void checkFieldLength(const QString &text);
+
 private:
     Ui::EditReservationDialog *ui;
     Reservation m_currentReservation;
@@ -36,6 +39,8 @@ private:
     QList<Reservation> m_allReservations;
 
     void populateRoomDropdown(const QList<Room> &rooms);
+
+    void setupFieldLimit(QLineEdit *lineEdit, int maxLength, const QString &fieldName);
 };
 
 #endif // EDITRESERVATIONDIALOG_H
