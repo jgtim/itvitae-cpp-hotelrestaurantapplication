@@ -76,7 +76,7 @@ std::optional<QList<Room>> parseRoomFile() {
             xlsx.read(row, 7).toString().trimmed(),                             // comments
             price,                                                              // pricePerNight
             stringToRoomStatus(xlsx.read(row, 9).toString().trimmed()),         // Status
-            stringToHouseKeepingStatus(xlsx.read(row, 10).toString().trimmed())  // Housekeeping
+            stringToHouseKeepingStatus(xlsx.read(row, 10).toString().trimmed()) // Housekeeping
         );
     }
 
