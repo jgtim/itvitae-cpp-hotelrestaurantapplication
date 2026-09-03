@@ -16,10 +16,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     reservationsTab = new ReservationsTab(this);
     roomswindow = new RoomsWindow(this);
     restaurantwindow = new RestaurantWindow(this);
-    tabWidget->addTab(restaurantwindow, tr("Restaurant"));
 
-    tabWidget->addTab(reservationsTab, tr("Reservations"));
     tabWidget->addTab(roomswindow, tr("Rooms"));
+    tabWidget->addTab(reservationsTab, tr("Reservations"));
+    tabWidget->addTab(restaurantwindow, tr("Restaurant"));
 
     connect(tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onTabChanged);
     connect(reservationsTab, &ReservationsTab::dataChangedNotification, this, &MainWindow::handleDataChangedInMainWindow);
