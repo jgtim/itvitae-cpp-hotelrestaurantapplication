@@ -6,6 +6,8 @@
 #include <QSortFilterProxyModel>
 #include <QString>
 
+#include "../../filter/multicolumnfilterproxymodel.h"
+
 namespace Ui {
 class RoomsWindow;
 }
@@ -17,12 +19,14 @@ class RoomsWindow : public QMainWindow
 public:
     explicit RoomsWindow(QWidget *parent = nullptr);
     ~RoomsWindow();
+    void setEditMode(bool b);
+    void fillInRoomData(int row);
 
 
 private:
     Ui::RoomsWindow *ui;
     QStandardItemModel *model;
-    QSortFilterProxyModel *proxyModel;
+    MultiColumnFilterProxyModel *proxyModel;
 
     void updateRoomColors();
     void filterRooms(const QString &text);
@@ -30,7 +34,10 @@ private:
 
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);
-
+    void on_seeRoomDetails_clicked();
+    void on_ReturnButton_clicked();
+    void on_EditButton_clicked();
+    void on_CancelButton_clicked();
 };
 
 #endif // ROOMSWINDOW_H

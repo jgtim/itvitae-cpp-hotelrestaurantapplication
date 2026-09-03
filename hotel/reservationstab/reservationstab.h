@@ -8,7 +8,9 @@
 #include <QSqlQuery>
 
 #include "../../readers/hotelkamersreader.h"
+#include "../../filter/multicolumnfilterproxymodel.h"
 #include "Reservation/reservation.h"
+
 
 namespace Ui {
 class ReservationsTab;
@@ -37,7 +39,7 @@ private slots:
 private:
     Ui::ReservationsTab *ui;
     QStandardItemModel *model; // For now, maybe SQL later
-    QSortFilterProxyModel *proxyModel;
+    MultiColumnFilterProxyModel *proxyModel;
     QSqlDatabase db;
     QSqlQuery query;
 
