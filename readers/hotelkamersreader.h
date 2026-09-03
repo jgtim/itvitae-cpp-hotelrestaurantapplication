@@ -18,7 +18,7 @@
 //     double pricePerNight;
 // };
 
-void CheckIfFileOpens(const QString& filePath);
+void CheckIfRoomFileOpens(const QString& filePath);
 
 std::optional<QList<Room>> parseRoomFile(); // Optional so in case it fails to open the file it will return explicit failure state instead of just being empty
 
