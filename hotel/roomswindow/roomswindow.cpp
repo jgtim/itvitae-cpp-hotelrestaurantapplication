@@ -254,7 +254,7 @@ void RoomsWindow::on_seeRoomDetails_clicked()
     QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
 
     if (!proxyIndex.isValid()) {
-        QMessageBox::warning(this, "No Selection", "Please click on a reservation first to edit it.");
+        QMessageBox::warning(this, "No Selection", "Please select a room first to view and edit it.");
         return;
     }
     QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
@@ -270,7 +270,7 @@ void RoomsWindow::on_ReturnButton_clicked()
     bool editing = ui->CancelButton->isVisible();
     if(editing){
         ConfirmDialog dialog(this);
-        dialog.changeText("leave without saving changes?");
+        dialog.changeText("Leave without saving changes?");
         if (dialog.exec() == QDialog::Rejected) {
             return;
         }
@@ -296,7 +296,7 @@ void RoomsWindow::on_EditButton_clicked()
     bool editingNow =  ui->CancelButton->isVisible();
     if(editingNow){
         ConfirmDialog dialog(this);
-        dialog.changeText("save changes?");
+        dialog.changeText("Save changes?");
         if (dialog.exec() == QDialog::Rejected) {
             return;
         }else{
@@ -310,7 +310,7 @@ void RoomsWindow::on_EditButton_clicked()
 void RoomsWindow::on_CancelButton_clicked()
 {
     ConfirmDialog dialog(this);
-    dialog.changeText("revert changes?");
+    dialog.changeText("Revert changes?");
     if (dialog.exec() == QDialog::Accepted) {
         QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
         QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
