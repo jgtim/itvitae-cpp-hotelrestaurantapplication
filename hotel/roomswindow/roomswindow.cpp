@@ -170,36 +170,39 @@ void RoomsWindow::importExcelRooms(){
 
 void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
 {
-    if (!proxyIndex.isValid())
-        return;
 
-    QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
-    int selectedRow = sourceIndex.row();
+    on_seeRoomDetails_clicked();
+    //this chunk of code creates a roomdetailsdialog. this has been replaced.
+    // if (!proxyIndex.isValid())
+    //     return;
+
+    // QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+    // int selectedRow = sourceIndex.row();
 
 
-    QList<QPair<QString, QString>> roomDetails;
-    int columnCount = model->columnCount();
+    // QList<QPair<QString, QString>> roomDetails;
+    // int columnCount = model->columnCount();
 
-    for (int col = 0; col < columnCount; ++col) {
-        QString header = model->horizontalHeaderItem(col)->text();
+    // for (int col = 0; col < columnCount; ++col) {
+    //     QString header = model->horizontalHeaderItem(col)->text();
 
-        QStandardItem *item = model->item(selectedRow, col);
-        QString value = item ? item->text() : "";
+    //     QStandardItem *item = model->item(selectedRow, col);
+    //     QString value = item ? item->text() : "";
 
-        roomDetails.append(qMakePair(header, value));
-    }
+    //     roomDetails.append(qMakePair(header, value));
+    // }
 
-    RoomDetailsDialog dialog(this);
-    dialog.setDetails(roomDetails);
-    if (dialog.exec() == QDialog::Accepted) {
-        QList<QPair<QString, QString>> updatedDetails = dialog.getDetails();
-        for (int col = 0; col < updatedDetails.size(); ++col) {
-            QStandardItem *item = model->item(selectedRow, col);
-            if (item) {
-                item->setText(updatedDetails[col].second);
-            }
-        }
-    }
+    // RoomDetailsDialog dialog(this);
+    // dialog.setDetails(roomDetails);
+    // if (dialog.exec() == QDialog::Accepted) {
+    //     QList<QPair<QString, QString>> updatedDetails = dialog.getDetails();
+    //     for (int col = 0; col < updatedDetails.size(); ++col) {
+    //         QStandardItem *item = model->item(selectedRow, col);
+    //         if (item) {
+    //             item->setText(updatedDetails[col].second);
+    //         }
+    //     }
+    // }
 }
 
 void RoomsWindow::fillInRoomData(int row){
