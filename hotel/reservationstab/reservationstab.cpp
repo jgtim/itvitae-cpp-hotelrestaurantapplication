@@ -220,27 +220,46 @@ QList<Reservation> ReservationsTab::getAllReservations()
     ReservationSerializer serializer;
     QList<Reservation> reservations;
     QSqlQuery resQuery("SELECT * FROM reservations;");
+    QSqlQuery guestQuery("SELECT * FROM guests;");
+
+    int resIdIndex = resQuery.record().indexOf("ReservationID");
+    int guestIdIndex = resQuery.record().indexOf("GuestID");
+    int numberOfGuestsIndex = resQuery.record().indexOf("NumberOfGuests");
+    int roomNumberIndex = resQuery.record().indexOf("RoomNumber");
+    int checkInIndex = resQuery.record().indexOf("CheckInDate");
+    int checkOutIndex = resQuery.record().indexOf("CheckOutDate");
+    int paymentStatusIndex = resQuery.record().indexOf("PaymentStatus");
+
+    int guestNameIndex = guestQuery.record().indexOf("GuestName");
+    int guestPhoneNumberIndex = guestQuery.record().indexOf("GuestPhoneNumber");
+    int guestEmailIndex = guestQuery.record().indexOf("GuestEmail");
+    int guestAddressIndex = guestQuery.record().indexOf("GuestAddress");
+    int guestDateOfBirthIndex = guestQuery.record().indexOf("GuestDateOfBirth");
+    int guestGenderIndex = guestQuery.record().indexOf("GuestGender");
+    int guestPaymentMethodIndex = guestQuery.record().indexOf("GuestPaymentMethod");
+    int guestIdTypeIndex = guestQuery.record().indexOf("GuestIdType");
 
     while (resQuery.next()) {
         QVariantMap resMap;
-        resMap[QStringLiteral("reservation_id")] = resQuery.value(0).toString();
-        resMap[QStringLiteral("number_of_guests")] = resQuery.value(2).toString();
-        resMap[QStringLiteral("room_number")] = resQuery.value(3).toString();
-        resMap[QStringLiteral("check_in")] = resQuery.value(4).toString();
-        resMap[QStringLiteral("check_out")] = resQuery.value(5).toString();
+        resMap[QStringLiteral("reservation_id")] = resQuery.value(resIdIndex).toString();
+        resMap[QStringLiteral("number_of_guests")] = resQuery.value(numberOfGuestsIndex).toString();
+        resMap[QStringLiteral("room_number")] = resQuery.value(roomNumberIndex).toString();
+        resMap[QStringLiteral("check_in")] = resQuery.value(checkInIndex).toString();
+        resMap[QStringLiteral("check_out")] = resQuery.value(checkOutIndex).toString();
+        resMap[QStringLiteral("payemnt_status")] = resQuery.value(paymentStatusIndex).toString();
 
-        QSqlQuery guestQuery;
         guestQuery.prepare("SELECT * FROM guests where GuestID = :id;");
-        guestQuery.bindValue(":id", resQuery.value(1).toString());
+        guestQuery.bindValue(":id", resQuery.value(guestIdIndex).toString());
         guestQuery.exec();
         if (guestQuery.next()) {
-            resMap[QStringLiteral("guest_name")] = guestQuery.value(1).toString();
-            resMap[QStringLiteral("guest_phone")] = guestQuery.value(2).toString();
-            resMap[QStringLiteral("guest_phone")] = guestQuery.value(2).toString();
-            // email here
-            resMap[QStringLiteral("address")] = guestQuery.value(4).toString();
-            resMap[QStringLiteral("date_of_birth")] = guestQuery.value(5).toString();
-            resMap[QStringLiteral("gender")] = guestQuery.value(6).toString();
+            resMap[QStringLiteral("guest_name")] = guestQuery.value(guestNameIndex).toString();
+            resMap[QStringLiteral("guest_phone")] = guestQuery.value(guestPhoneNumberIndex).toString();
+            resMap[QStringLiteral("guest_email")] = guestQuery.value(guestEmailIndex).toString();
+            resMap[QStringLiteral("address")] = guestQuery.value(guestAddressIndex).toString();
+            resMap[QStringLiteral("date_of_birth")] = guestQuery.value(guestDateOfBirthIndex).toString();
+            resMap[QStringLiteral("gender")] = guestQuery.value(guestGenderIndex).toString();
+            resMap[QStringLiteral("payment_method")] = guestQuery.value(guestPaymentMethodIndex).toString();
+            resMap[QStringLiteral("id_type")] = guestQuery.value(guestIdTypeIndex).toString();
         }
 
         // qDebug() << selectQuery.value(0).toString();
