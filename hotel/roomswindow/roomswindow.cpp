@@ -61,10 +61,10 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
 
     importExcelRooms();
-    proxyModel = new QSortFilterProxyModel(this);
+    proxyModel = new MultiColumnFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    proxyModel->setFilterKeyColumn(-1);
+    proxyModel->setFilterColumns({0,1,3,8,9});
 
 
     ui->roomsTableView->setModel(proxyModel);
@@ -77,6 +77,8 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->roomsTableView->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
     ui->roomsTableView->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
 
+    // Hiding the first column with row numbers
+    ui->roomsTableView->verticalHeader()->setVisible(false);
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,
@@ -126,9 +128,10 @@ void RoomsWindow::updateRoomColors()
             housekeepingItem->setForeground(QBrush(QColor(0, 0, 0)));
             QString housekeeping = housekeepingItem->text();
 
-            if (housekeeping == "Clean")
+            // Gebruikt nu de enum in plaats van de string literal om te checken
+            if (housekeeping == houseKeepingStatusToString(HouseKeepingStatus::Clean))
                 housekeepingItem->setBackground(QColor(200, 255, 200));
-            else if (housekeeping == "Dirty")
+            else if (housekeeping == houseKeepingStatusToString(HouseKeepingStatus::Dirty))
                 housekeepingItem->setBackground(QColor(255, 200, 200));
         }
     }

@@ -3,6 +3,7 @@
 
 #include "reservationstab/reservationstab.h"
 #include "roomswindow/roomswindow.h"
+#include "restaurantwindow/restaurantwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -14,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Add tabs here:
     reservationsTab = new ReservationsTab(this);
     roomswindow = new RoomsWindow(this);
+    restaurantwindow = new RestaurantWindow(this);
+    tabWidget->addTab(restaurantwindow, tr("Restaurant"));
 
     tabWidget->addTab(reservationsTab, tr("Reservations"));
     tabWidget->addTab(roomswindow, tr("Rooms"));

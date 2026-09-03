@@ -56,6 +56,9 @@
           <height>26</height>
          </rect>
         </property>
+        <property name="placeholderText">
+         <string>Search on Room Number, Room Type, View, Status or Housekeeping...</string>
+        </property>
        </widget>
        <widget class="QTableView" name="roomsTableView">
         <property name="geometry">
