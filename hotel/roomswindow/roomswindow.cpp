@@ -61,10 +61,10 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
 
     importExcelRooms();
-    proxyModel = new QSortFilterProxyModel(this);
+    proxyModel = new MultiColumnFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    proxyModel->setFilterKeyColumn(-1);
+    proxyModel->setFilterColumns({0,1,3,8,9});
 
     ui->roomsTableView->setModel(proxyModel);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -80,6 +80,8 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->roomsTableView->setColumnWidth(8,80); // status
     ui->roomsTableView->setColumnWidth(9,85); // housekeeping
 
+    // Hiding the first column with row numbers
+    ui->roomsTableView->verticalHeader()->setVisible(false);
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,

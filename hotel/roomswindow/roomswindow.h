@@ -6,6 +6,8 @@
 #include <QSortFilterProxyModel>
 #include <QString>
 
+#include "../../filter/multicolumnfilterproxymodel.h"
+
 namespace Ui {
 class RoomsWindow;
 }
@@ -24,7 +26,7 @@ public:
 private:
     Ui::RoomsWindow *ui;
     QStandardItemModel *model;
-    QSortFilterProxyModel *proxyModel;
+    MultiColumnFilterProxyModel *proxyModel;
 
     void updateRoomColors();
     void filterRooms(const QString &text);
