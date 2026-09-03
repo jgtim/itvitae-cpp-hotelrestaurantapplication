@@ -42,7 +42,7 @@ inline RoomView stringToRoomView(const QString& str) {
     QString lower = str.trimmed().toLower();
     if (lower == "standard") return RoomView::Standard;
     if (lower == "mountain") return RoomView::Mountain;
-    if (lower == "lake") return RoomView::Lake;
+    if (lower == "lake" || lower == "lake view") return RoomView::Lake;
     return RoomView::Standard;
 }
 
