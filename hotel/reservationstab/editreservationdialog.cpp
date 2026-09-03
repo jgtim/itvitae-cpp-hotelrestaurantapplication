@@ -66,6 +66,8 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     ui->paymentMethodComboBox->addItem("Bank Transfer", QVariant::fromValue(PaymentMethod::BankTransfer));
     ui->paymentMethodComboBox->addItem("PayPal",        QVariant::fromValue(PaymentMethod::PayPal));
     ui->paymentMethodComboBox->addItem("Other",         QVariant::fromValue(PaymentMethod::Other));
+
+    this->setWindowTitle("New Reservation");
 }
 
 EditReservationDialog::~EditReservationDialog()
@@ -75,6 +77,7 @@ EditReservationDialog::~EditReservationDialog()
 
 void EditReservationDialog::setReservationData(const Reservation &res)
 {
+    this->setWindowTitle("Edit Reservation");
     m_currentReservation = res;
 
     ui->nameEdit->setText(res.guest.name);
