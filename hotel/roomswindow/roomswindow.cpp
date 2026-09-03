@@ -73,6 +73,8 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    // Hiding the first column with row numbers
+    ui->roomsTableView->verticalHeader()->setVisible(false);
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,
