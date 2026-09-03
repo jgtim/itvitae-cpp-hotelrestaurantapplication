@@ -30,6 +30,9 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     ui->ReservationsTabReservationsTable->setModel(proxyModel);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    // Hiding the first column with row numbers
+    ui->ReservationsTabReservationsTable->verticalHeader()->setVisible(false);
+
     connect(ui->ReservationsTabSearchfield, &QLineEdit::textChanged,
             proxyModel, &QSortFilterProxyModel::setFilterFixedString);
 
