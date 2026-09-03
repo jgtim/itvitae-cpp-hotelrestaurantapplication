@@ -1,5 +1,8 @@
 #include "reservationserializer.h"
 #include "../hotel/reservationstab/Reservation/gender.h"
+#include "../hotel/reservationstab/Reservation/PaymentStatus.h"
+#include "../hotel/reservationstab/Guest/PaymentMethod.h"
+#include "../hotel/reservationstab/Guest/IDType.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -11,18 +14,22 @@ QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
     map[QStringLiteral("reservation_id")]    = res.ReservationID;
     map[QStringLiteral("guest_name")]        = res.guest.name;
     map[QStringLiteral("guest_phone")]       = res.guest.phoneNumber;
+    map[QStringLiteral("guest_email")]       = res.guest.email;
+    map[QStringLiteral("room_number")]       = res.roomNumber;
 
     // Putting the QDate datat type in a ISO-8601 for SQLite
     map[QStringLiteral("date_of_birth")]     = res.guest.dateOfBirth.toString(Qt::ISODate);
     map[QStringLiteral("check_in")]          = res.checkIn.toString(Qt::ISODate);
     map[QStringLiteral("check_out")]         = res.checkOut.toString(Qt::ISODate);
 
-    // Converting Gender enum class to String
+    // Converting enum class to String
     map[QStringLiteral("gender")]            = genderToString(res.guest.gender);
+    map[QStringLiteral("payment_status")]    = paymentStatusToString(res.paymentStatus);
+    map[QStringLiteral("payment_method")]    = paymentMethodToString(res.guest.paymentMethod);
+    map[QStringLiteral("id_type")]           = idTypeToString(res.guest.idType);
 
     // Putting in the Integers directly
     map[QStringLiteral("number_of_guests")]  = res.numberOfGuests;
-    map[QStringLiteral("room_number")]       = res.roomNumber;
 
 
     // This might be unneccessary but I couldn't find another way to get everything into one class to use.
@@ -49,18 +56,22 @@ Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
     res.ReservationID      = map.value(QStringLiteral("reservation_id")).toString();
     res.guest.name         = map.value(QStringLiteral("guest_name")).toString();
     res.guest.phoneNumber  = map.value(QStringLiteral("guest_phone")).toString();
+    res.guest.email        = map.value(QStringLiteral("guest_email")).toString();
 
     // ISO-8601 to QDate
     res.guest.dateOfBirth  = QDate::fromString(map.value(QStringLiteral("date_of_birth")).toString(), Qt::ISODate);
     res.checkIn            = QDate::fromString(map.value(QStringLiteral("check_in")).toString(), Qt::ISODate);
     res.checkOut           = QDate::fromString(map.value(QStringLiteral("check_out")).toString(), Qt::ISODate);
 
-    // String to Gender
-    res.guest.gender       = stringToGender(map.value(QStringLiteral("gender")).toString());
+    // String to enum class
+    res.guest.gender        = stringToGender(map.value(QStringLiteral("gender")).toString());
+    res.paymentStatus       = stringToPaymentStatus(map.value(QStringLiteral("payment_status")).toString());
+    res.guest.paymentMethod = stringToPaymentMethod(map.value(QStringLiteral("payment_method")).toString());
+    res.guest.idType        = stringToIDType(map.value(QStringLiteral("id_type")).toString());
 
     // Converting back to Int automatically
     res.numberOfGuests     = map.value(QStringLiteral("number_of_guests")).toInt();
-    res.roomNumber         = map.value(QStringLiteral("room_number")).toInt();
+    res.roomNumber         = map.value(QStringLiteral("room_number")).toString();
 
 
     // This might be unneccessary but I couldn't find another way to get everything into one class to use.

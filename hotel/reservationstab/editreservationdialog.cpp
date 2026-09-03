@@ -1,5 +1,7 @@
 #include "editreservationdialog.h"
 #include "ui_editreservationdialog.h"
+#include "../reservationstab/Guest/IDType.h"
+#include "../reservationstab/Guest/PaymentMethod.h"
 
 #include <QIntValidator>
 #include <QMessageBox>
@@ -36,11 +38,26 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     ui->genderComboBox->addItem("Female",      QVariant::fromValue(Gender::Female));
     ui->genderComboBox->addItem("Non-Binary",  QVariant::fromValue(Gender::NonBinary));
     ui->genderComboBox->addItem("Other",       QVariant::fromValue(Gender::Other));
+
+    ui->IDTypeComboBox->clear();
+    ui->IDTypeComboBox->addItem("Passport",         QVariant::fromValue(IDType::Passport));
+    ui->IDTypeComboBox->addItem("Driver's License", QVariant::fromValue(IDType::DriverLicense));
+    ui->IDTypeComboBox->addItem("National ID",      QVariant::fromValue(IDType::NationalID));
+    ui->IDTypeComboBox->addItem("Other",            QVariant::fromValue(IDType::Other));
+
+    ui->paymentMethodComboBox->clear();
+    ui->paymentMethodComboBox->addItem("Credit Card",   QVariant::fromValue(PaymentMethod::CreditCard));
+    ui->paymentMethodComboBox->addItem("Debit Card",    QVariant::fromValue(PaymentMethod::DebitCard));
+    ui->paymentMethodComboBox->addItem("Cash",          QVariant::fromValue(PaymentMethod::Cash));
+    ui->paymentMethodComboBox->addItem("Bank Transfer", QVariant::fromValue(PaymentMethod::BankTransfer));
+    ui->paymentMethodComboBox->addItem("PayPal",        QVariant::fromValue(PaymentMethod::PayPal));
+    ui->paymentMethodComboBox->addItem("Other",         QVariant::fromValue(PaymentMethod::Other));
 }
 
 EditReservationDialog::~EditReservationDialog()
 {
     //is dit wat we willen? volgens mij verwijderd dit de gehele window, niet alleen de popup
+    // Ja dit is goed, verwijdert niet de parent windows
     delete ui;
 }
 
@@ -50,6 +67,7 @@ void EditReservationDialog::setReservationData(const Reservation &res)
 
     ui->nameEdit->setText(res.guest.name);
     ui->phoneNumberEdit->setText(res.guest.phoneNumber);
+    ui->emailEdit->setText(res.guest.email);
 
     ui->addressEdit1->setText(res.guest.address.streetLine1);
     ui->addressEdit2->setText(res.guest.address.streetLine2);
@@ -65,8 +83,17 @@ void EditReservationDialog::setReservationData(const Reservation &res)
     ui->checkInEdit->setDate(res.checkIn);
     ui->checkOutEdit->setDate(res.checkOut);
 
-    int genderIndex =
-        ui->genderComboBox->findData(QVariant::fromValue(res.guest.gender));
+    // Set active index for Gender
+    int genderIndex = ui->genderComboBox->findData(QVariant::fromValue(res.guest.gender));
+    if (genderIndex != -1) ui->genderComboBox->setCurrentIndex(genderIndex);
+
+    // Set active index for ID Type
+    int idTypeIndex = ui->IDTypeComboBox->findData(QVariant::fromValue(res.guest.idType));
+    if (idTypeIndex != -1) ui->IDTypeComboBox->setCurrentIndex(idTypeIndex);
+
+    // Set active index for Payment Method
+    int paymentMethodIndex = ui->paymentMethodComboBox->findData(QVariant::fromValue(res.guest.paymentMethod));
+    if (paymentMethodIndex != -1) ui->paymentMethodComboBox->setCurrentIndex(paymentMethodIndex);
 
     // Update the room list based on the dates.
     updateRoomAvailability();
@@ -94,12 +121,10 @@ void EditReservationDialog::setExistingReservations(const QList<Reservation> &re
 void EditReservationDialog::populateRoomDropdown(const QList<Room> &rooms)
 {
     ui->roomEdit->clear();
-    ui->roomEdit->addItem("-- Select a room --", -1);
+    ui->roomEdit->addItem("-- Select a room --", QString(""));
 
     for (const Room &room : rooms) {
-        QString roomStr = room.roomNumber;
-        int roomAsInt = roomStr.remove(".").toInt();
-        ui->roomEdit->addItem(room.roomNumber, roomAsInt);
+        ui->roomEdit->addItem(room.roomNumber, room.roomNumber);
     }
 }
 // void EditReservationDialog::setAvailableRooms(const QList<RoomRecord> &rooms)
@@ -128,6 +153,7 @@ Reservation EditReservationDialog::getReservationData() const
 
     res.guest.name = ui->nameEdit->text();
     res.guest.phoneNumber = ui->phoneNumberEdit->text();
+    res.guest.email = ui->emailEdit->text();
 
     res.guest.address.streetLine1 = ui->addressEdit1->text();
     res.guest.address.streetLine2 = ui->addressEdit2->text();
@@ -141,13 +167,15 @@ Reservation EditReservationDialog::getReservationData() const
 
     // 4. Details
     res.numberOfGuests = ui->guestNumEdit->text().toInt();
-    res.roomNumber = ui->roomEdit->currentData().toInt();
+    res.roomNumber = ui->roomEdit->currentData().toString();
 
     // 5. Dates
     res.checkIn = ui->checkInEdit->date();
     res.checkOut = ui->checkOutEdit->date();
 
-    res.guest.gender = ui->genderComboBox->currentData().value<Gender>();
+    res.guest.gender        = ui->genderComboBox->currentData().value<Gender>();
+    res.guest.idType        = ui->IDTypeComboBox->currentData().value<IDType>();
+    res.guest.paymentMethod = ui->paymentMethodComboBox->currentData().value<PaymentMethod>();
 
     return res;
 }
@@ -188,8 +216,11 @@ void EditReservationDialog::setReadOnly(bool readOnly)
 {
     ui->nameEdit->setReadOnly(readOnly);
     ui->phoneNumberEdit->setReadOnly(readOnly);
+    ui->emailEdit->setReadOnly(readOnly);
     ui->dateOfBirthEdit->setReadOnly(readOnly);
     ui->genderComboBox->setEnabled(!readOnly);
+    ui->IDTypeComboBox->setEnabled(!readOnly);
+    ui->paymentMethodComboBox->setEnabled(!readOnly);
 
     ui->addressEdit1->setReadOnly(readOnly);
     ui->addressEdit2->setReadOnly(readOnly);
@@ -215,29 +246,27 @@ void EditReservationDialog::updateRoomAvailability()
     QDate checkIn = ui->checkInEdit->date();
     QDate checkOut = ui->checkOutEdit->date();
 
-    int previouslySelected = ui->roomEdit->currentData().toInt();
-    if (previouslySelected == -1 && !m_currentReservation.ReservationID.isEmpty()) {
+    QString previouslySelected = ui->roomEdit->currentData().toString();
+
+    if (previouslySelected.isEmpty() && !m_currentReservation.ReservationID.isEmpty()) {
         previouslySelected = m_currentReservation.roomNumber;
     }
+
     QList<Room> availableRooms;
 
     for (const Room &room : m_allRooms) {
-        QString roomStr = room.roomNumber;
-        int roomAsInt = roomStr.remove(".").toInt();
-
         bool isTaken = false;
 
         for (const Reservation &res : m_allReservations) {
-
-            // Sla de reservering over die we nu zelf aan het bewerken zijn
+            // Skip checking against the reservation currently being edited
             if (!m_currentReservation.ReservationID.isEmpty() &&
                 res.ReservationID == m_currentReservation.ReservationID) {
                 continue;
             }
 
-            if (res.roomNumber == roomAsInt) {
-
-                // Controleer of de reserveringen elkaar overlappen
+            // Direct QString comparison:
+            if (res.roomNumber == room.roomNumber) {
+                // Check if dates overlap
                 if (checkIn < res.checkOut && res.checkIn < checkOut) {
                     isTaken = true;
                     break;
@@ -254,7 +283,6 @@ void EditReservationDialog::updateRoomAvailability()
 
     // Probeer de eerder geselecteerde kamer opnieuw te selecteren
     int idx = ui->roomEdit->findData(previouslySelected);
-
     if (idx != -1) {
         ui->roomEdit->setCurrentIndex(idx);
     }
