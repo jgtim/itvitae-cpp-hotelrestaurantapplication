@@ -271,6 +271,8 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
     dialog.setExistingReservations(getAllReservations());
     dialog.setReservationData(newRes);
 
+    dialog.setWindowTitle("New Reservation");
+
     if (dialog.exec() == QDialog::Accepted) {
         // Retrieve filled struct from dialog
         newRes = dialog.getReservationData();
