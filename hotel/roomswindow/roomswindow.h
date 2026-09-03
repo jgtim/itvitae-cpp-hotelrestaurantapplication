@@ -21,6 +21,7 @@ public:
     ~RoomsWindow();
     void setEditMode(bool b);
     void fillInRoomData(int row);
+    void saveRoomData(int row);
 
 
 private:

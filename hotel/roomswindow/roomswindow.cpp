@@ -243,8 +243,36 @@ void RoomsWindow::fillInRoomData(int row){
             ui->CleaningEdit->setCurrentIndex(index);
         }else if(header == "Comments"){
             ui->NotesEdit->setText(value);
+        }else if(header == "Comments        "){
+            ui->NotesEdit->setPlainText(value);
         }
     }
+}
+
+void RoomsWindow::saveRoomData(int row){
+    int columnCount = model->columnCount();
+
+    for (int col = 0; col < columnCount; ++col) {
+        QString header = model->horizontalHeaderItem(col)->text();
+        QStandardItem *item = model->item(row, col);
+        if (!item) continue;
+
+        if(header == "Room Number"){
+            item->setText(ui->RoomNumEdit->text());
+        }else if(header == "Room type"){
+            item->setText(ui->RoomTypeEdit->currentText());
+        }else if(header == "Capacity"){
+            item->setText(ui->CapacityEdit->text());
+        }else if(header == "Status"){
+            item->setText(ui->StatusEdit->currentText());
+        }else if(header == "Housekeeping"){
+            item->setText(ui->CleaningEdit->currentText());
+        }else if(header == "Comments        "){
+            item->setText(ui->NotesEdit->toPlainText());
+        }
+    }
+
+    updateRoomColors(); // status/housekeeping colors need refreshing after a save
 }
 
 void RoomsWindow::on_seeRoomDetails_clicked()
@@ -300,7 +328,10 @@ void RoomsWindow::on_EditButton_clicked()
         if (dialog.exec() == QDialog::Rejected) {
             return;
         }else{
-            //TODO save changes to database
+            QModelIndex proxyIndex = ui->roomsTableView->currentIndex();
+            QModelIndex sourceIndex = proxyModel->mapToSource(proxyIndex);
+            int selectedRow = sourceIndex.row();
+            saveRoomData(selectedRow);
         }
     }
     setEditMode(editingNow);
