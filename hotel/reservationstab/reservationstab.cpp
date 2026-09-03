@@ -195,7 +195,7 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
             query.bindValue(":GuestID", map.value("guest_name"));
             query.bindValue(":GuestName", map.value("guest_name"));
             query.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
-            query.bindValue(":GuestEmail", "placeholder email");
+            query.bindValue(":GuestEmail", map.value("guest_email"));
             query.bindValue(":GuestAddress", map.value("address"));
             query.bindValue(":GuestDateOfBirth", map.value("date_of_birth"));
             query.bindValue(":GuestGender", map.value("gender"));
