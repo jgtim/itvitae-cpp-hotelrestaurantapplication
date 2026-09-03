@@ -33,6 +33,10 @@ set(PROJECT_SOURCES
         hotel/roomswindow/roomswindow.cpp
         hotel/roomswindow/roomswindow.ui
 
+        hotel/restaurantwindow/restaurantwindow.h
+        hotel/restaurantwindow/restaurantwindow.cpp
+        hotel/restaurantwindow/restaurantwindow.ui
+
         readers/hotelkamersreader.h
         readers/hotelkamersreader.cpp
 )
@@ -41,6 +45,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MolvenoLakeHotelResort
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        hotel/restaurantwindow/Restaurant/table.h
         hotel/roomswindow/roomdetailsdialog.h hotel/roomswindow/roomdetailsdialog.cpp hotel/roomswindow/roomdetailsdialog.ui
 
         hotel/reservationstab/Reservation/reservation.h
@@ -56,8 +61,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         hotel/reservationstab/Guest/IDType.h
         hotel/reservationstab/Guest/PaymentMethod.h
         hotel/reservationstab/Reservation/PaymentStatus.h
+        hotel/restaurantwindow/restaurant_mockdata.h
+        hotel/restaurantwindow/Restaurant/table.h
         filter/multicolumnfilterproxymodel.h filter/multicolumnfilterproxymodel.cpp
-
     )
 
 # Define target properties for Android with Qt 6 as:
