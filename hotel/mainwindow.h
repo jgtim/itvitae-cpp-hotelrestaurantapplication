@@ -7,6 +7,7 @@
 // Forward declaration of tab Classes:
 class ReservationsTab;
 class RoomsWindow;
+class RestaurantWindow;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainWindow;}
@@ -25,6 +26,7 @@ private:
     QTabWidget *tabWidget;
     ReservationsTab *reservationsTab;
     RoomsWindow *roomswindow;
+    RestaurantWindow *restaurantwindow;
 
 private slots:
     void onTabChanged(int index);

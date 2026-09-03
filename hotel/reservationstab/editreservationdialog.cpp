@@ -14,6 +14,11 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // This makes a calendar pop up when selecting dates
+    ui->checkInEdit->setCalendarPopup(true);
+    ui->checkOutEdit->setCalendarPopup(true);
+    ui->dateOfBirthEdit->setCalendarPopup(true);
+
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(ui->EditReservationButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 

@@ -1,16 +1,22 @@
 #include "reservationstab.h"
 #include "ui_reservationstab.h"
 #include "editreservationdialog.h"
+#include "../../readers/reservationserializer.h"
 
 #include <QMessageBox>
 #include <iostream>
 #include <QDate>
 #include <QDebug>
 #include <QString>
+#include <QSqlError>
+#include <QSqlRecord>
+#include <QJsonObject>
 
 ReservationsTab::ReservationsTab(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::ReservationsTab)
+    , ui(new Ui::ReservationsTab),
+    db(QSqlDatabase::database()),
+    query(QSqlQuery(db))
 {
     ui->setupUi(this);
 
@@ -30,6 +36,9 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     ui->ReservationsTabReservationsTable->setModel(proxyModel);
     ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    ui->ReservationsTabReservationsTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
+    ui->ReservationsTabReservationsTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
+    ui->ReservationsTabReservationsTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
     // Hiding the first column with row numbers
     ui->ReservationsTabReservationsTable->verticalHeader()->setVisible(false);
 
@@ -42,8 +51,15 @@ ReservationsTab::ReservationsTab(QWidget *parent)
     connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::handleEditReservation);
     connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::handleCancelReservation);
 
-    // For now - REMOVE LATER:
-    addMockData();
+    db.setDatabaseName("model.db");
+    db.open();
+    if (!db.open()) {
+        qDebug() << "WARNING: ReservationsTab was unable to open the database";
+        qDebug() << db.lastError().text();
+    }
+
+    // addMockData();
+    populateReservationList(); // this reads all reservations from the database and adds them to the ui
     auto roomsOptional = parseRoomFile();
     if (roomsOptional.has_value()) {
         m_availableRooms = roomsOptional.value();
@@ -55,6 +71,7 @@ ReservationsTab::ReservationsTab(QWidget *parent)
 
 ReservationsTab::~ReservationsTab()
 {
+    db.close();
     delete ui;
 }
 
@@ -109,6 +126,7 @@ void ReservationsTab::handleEditReservation()
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
 
+
         emit dataChangedNotification();
     }
 }
@@ -161,6 +179,34 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
     row << idItem << checkInItem << checkOutItem << roomItem << nameItem;
     model->appendRow(row);
 
+
+    if (!isReservationInDatabase(res)) {
+        ReservationSerializer serializer;
+        auto map = serializer.toVariantMap(res);
+        query.prepare("insert into reservations values (:ReservationID, :GuestID, :NumberOfGuests, :RoomNumber, :CheckInDate, :CheckOutDate, :PaymentStatus);");
+        query.bindValue(":ReservationID", map.value("reservation_id"));
+        query.bindValue(":GuestID", map.value("guest_name"));
+        query.bindValue(":NumberOfGuests", map.value("number_of_guests"));
+        query.bindValue(":RoomNumber", map.value("room_number"));
+        query.bindValue(":CheckInDate", map.value("check_in"));
+        query.bindValue(":CheckOutDate", map.value("check_out"));
+        query.bindValue(":PaymentStatus", map.value("payment_status"));
+        query.exec();
+
+        if (!isGuestInDatabase(res.guest)) {
+            query.prepare("insert into guests values (:GuestID, :GuestName, :GuestPhoneNumber, :GuestEmail, :GuestAddress, :GuestDateOfBirth, :GuestGender, :GuestPaymentMethod, :GuestIdType);");
+            query.bindValue(":GuestID", map.value("guest_name"));
+            query.bindValue(":GuestName", map.value("guest_name"));
+            query.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
+            query.bindValue(":GuestEmail", map.value("guest_email"));
+            query.bindValue(":GuestAddress", map.value("address"));
+            query.bindValue(":GuestDateOfBirth", map.value("date_of_birth"));
+            query.bindValue(":GuestGender", map.value("gender"));
+            query.bindValue(":GuestPaymentMethod", map.value("payment_method"));
+            query.bindValue(":GuestIdType", map.value("id_type"));
+            query.exec();
+        }
+    }
 }
 
 Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
@@ -175,22 +221,96 @@ Reservation ReservationsTab::getReservationFromIndex(const QModelIndex &index)
     return item->data(Qt::UserRole).value<Reservation>();
 }
 
-QList<Reservation> ReservationsTab::getAllReservations() const
+QList<Reservation> ReservationsTab::getAllReservations()
 {
+    ReservationSerializer serializer;
     QList<Reservation> reservations;
+    QSqlQuery resQuery("SELECT * FROM reservations;");
+    QSqlQuery guestQuery("SELECT * FROM guests;");
 
-    for (int row = 0; row < model->rowCount(); ++row) {
-        QStandardItem *item = model->item(row, 0);
+    int resIdIndex = resQuery.record().indexOf("ReservationID");
+    int guestIdIndex = resQuery.record().indexOf("GuestID");
+    int numberOfGuestsIndex = resQuery.record().indexOf("NumberOfGuests");
+    int roomNumberIndex = resQuery.record().indexOf("RoomNumber");
+    int checkInIndex = resQuery.record().indexOf("CheckInDate");
+    int checkOutIndex = resQuery.record().indexOf("CheckOutDate");
+    int paymentStatusIndex = resQuery.record().indexOf("PaymentStatus");
 
-        if (item) {
-            reservations.append(
-                item->data(Qt::UserRole).value<Reservation>()
-                );
+    int guestNameIndex = guestQuery.record().indexOf("GuestName");
+    int guestPhoneNumberIndex = guestQuery.record().indexOf("GuestPhoneNumber");
+    int guestEmailIndex = guestQuery.record().indexOf("GuestEmail");
+    int guestAddressIndex = guestQuery.record().indexOf("GuestAddress");
+    int guestDateOfBirthIndex = guestQuery.record().indexOf("GuestDateOfBirth");
+    int guestGenderIndex = guestQuery.record().indexOf("GuestGender");
+    int guestPaymentMethodIndex = guestQuery.record().indexOf("GuestPaymentMethod");
+    int guestIdTypeIndex = guestQuery.record().indexOf("GuestIdType");
+
+    while (resQuery.next()) {
+        QVariantMap resMap;
+        resMap[QStringLiteral("reservation_id")] = resQuery.value(resIdIndex).toString();
+        resMap[QStringLiteral("number_of_guests")] = resQuery.value(numberOfGuestsIndex).toString();
+        resMap[QStringLiteral("room_number")] = resQuery.value(roomNumberIndex).toString();
+        resMap[QStringLiteral("check_in")] = resQuery.value(checkInIndex).toString();
+        resMap[QStringLiteral("check_out")] = resQuery.value(checkOutIndex).toString();
+        resMap[QStringLiteral("payemnt_status")] = resQuery.value(paymentStatusIndex).toString();
+
+        guestQuery.prepare("SELECT * FROM guests where GuestID = :id;");
+        guestQuery.bindValue(":id", resQuery.value(guestIdIndex).toString());
+        guestQuery.exec();
+        if (guestQuery.next()) {
+            resMap[QStringLiteral("guest_name")] = guestQuery.value(guestNameIndex).toString();
+            resMap[QStringLiteral("guest_phone")] = guestQuery.value(guestPhoneNumberIndex).toString();
+            resMap[QStringLiteral("guest_email")] = guestQuery.value(guestEmailIndex).toString();
+            resMap[QStringLiteral("address")] = guestQuery.value(guestAddressIndex).toString();
+            resMap[QStringLiteral("date_of_birth")] = guestQuery.value(guestDateOfBirthIndex).toString();
+            resMap[QStringLiteral("gender")] = guestQuery.value(guestGenderIndex).toString();
+            resMap[QStringLiteral("payment_method")] = guestQuery.value(guestPaymentMethodIndex).toString();
+            resMap[QStringLiteral("id_type")] = guestQuery.value(guestIdTypeIndex).toString();
         }
+
+        // qDebug() << selectQuery.value(0).toString();
+        reservations.append(serializer.fromVariantMap(resMap));
     }
+
+    // for (int row = 0; row < model->rowCount(); ++row) {
+    //     QStandardItem *item = model->item(row, 0);
+
+    //     if (item) {
+    //         reservations.append(
+    //             item->data(Qt::UserRole).value<Reservation>()
+    //             );
+    //     }
+    // }
 
     return reservations;
 }
+
+bool ReservationsTab::isReservationInDatabase(const Reservation &res) {
+    bool status = false;
+    query.prepare("SELECT ReservationID FROM reservations WHERE ReservationID = :id;");
+    query.bindValue(":id", res.ReservationID);
+    if (query.exec()) {
+        if (query.next()) {
+            status = true;
+        }
+    }
+    // we can potentially add more uniqueness checks later
+    return status;
+}
+
+bool ReservationsTab::isGuestInDatabase(const Guest &guest) {
+    bool status = false;
+    query.prepare("select GuestID from guests WHERE GuestID = :id;");
+    query.bindValue(":id", guest.guestID);
+    if (query.exec()) {
+        if (query.next()) {
+            status = true;
+        }
+    }
+    // we can potentially add more uniqueness checks later
+    return status;
+}
+
 // Placeholder method for adding mock data - REMOVE LATER
 void ReservationsTab::addMockData()
 {
@@ -220,6 +340,12 @@ void ReservationsTab::addMockData()
 
     addReservationToModel(r1);
     addReservationToModel(r2);
+}
+
+void ReservationsTab::populateReservationList() {
+    for (auto &res : getAllReservations()) {
+        addReservationToModel(res);
+    }
 }
 
 void ReservationsTab::handleViewReservation(const QModelIndex &index)

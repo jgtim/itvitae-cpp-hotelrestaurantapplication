@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+
 #include "../../readers/hotelkamersreader.h"
 #include "../../filter/multicolumnfilterproxymodel.h"
 #include "Reservation/reservation.h"
@@ -37,12 +40,17 @@ private:
     Ui::ReservationsTab *ui;
     QStandardItemModel *model; // For now, maybe SQL later
     MultiColumnFilterProxyModel *proxyModel;
+    QSqlDatabase db;
+    QSqlQuery query;
 
     void addReservationToModel(const Reservation &res);
     Reservation getReservationFromIndex(const QModelIndex &index);
-    QList<Reservation> getAllReservations() const;
+    QList<Reservation> getAllReservations();
+    bool isReservationInDatabase(const Reservation &res);
+    bool isGuestInDatabase(const Guest &guest);
 
     void addMockData();
+    void populateReservationList(); // a replacement for addMockData()
     void handleEditReservation();
     QList<Room> m_availableRooms;
 };
