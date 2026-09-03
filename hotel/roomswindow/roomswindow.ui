@@ -84,7 +84,7 @@
             <item>
              <widget class="QPushButton" name="seeRoomDetails">
               <property name="text">
-               <string>room details</string>
+               <string>Room Details</string>
               </property>
              </widget>
             </item>
