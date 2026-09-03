@@ -124,9 +124,10 @@ void RoomsWindow::updateRoomColors()
             housekeepingItem->setForeground(QBrush(QColor(0, 0, 0)));
             QString housekeeping = housekeepingItem->text();
 
-            if (housekeeping == "Clean")
+            // Gebruikt nu de enum in plaats van de string literal om te checken
+            if (housekeeping == houseKeepingStatusToString(HouseKeepingStatus::Clean))
                 housekeepingItem->setBackground(QColor(200, 255, 200));
-            else if (housekeeping == "Dirty")
+            else if (housekeeping == houseKeepingStatusToString(HouseKeepingStatus::Dirty))
                 housekeepingItem->setBackground(QColor(255, 200, 200));
         }
     }
