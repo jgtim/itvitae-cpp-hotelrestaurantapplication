@@ -7,6 +7,10 @@
 #include <QRandomGenerator>
 #include <QPainter>
 
+#include <iostream>
+#include <qevent.h>
+
+
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent), ui(nullptr)
 {
@@ -52,8 +56,42 @@ protected:
         }
     }
 
+    void mousePressEvent(QMouseEvent *event) override
+    {
+        if (event->button() == Qt::LeftButton) {
+            QPoint mousePos = event->pos();
+
+            for (Table& table : tables) {
+                // Determine circle center and radius based on your drawEllipse dimensions
+                const int radius = 25;
+                QPoint center(table.getX() + radius, table.getY() + radius);
+
+                // Calculate distance from click point to circle center using Pythagorean theorem
+                int dx = mousePos.x() - center.x();
+                int dy = mousePos.y() - center.y();
+                double distance = std::sqrt(dx * dx + dy * dy);
+
+                // If click is within circle radius, trigger action
+                if (distance <= radius) {
+                    onTableClicked(table);
+                    break; // Stop checking further tables once hit is found
+                }
+            }
+        }
+
+        QWidget::mousePressEvent(event);
+    }
+
 private:
     QVector<Table> tables;
+        void onTableClicked(Table& table)
+    {
+        qDebug() << "Clicked Table Number:" << table.getNumber();
+
+        // Example action: Toggle or update status, then trigger repaint
+        // update();
+    }
+
 };
 
 RestaurantWindow::~RestaurantWindow()
@@ -303,4 +341,5 @@ void RestaurantWindow::onSetOccupiedClicked()
 void RestaurantWindow::onReservationTableClicked()
 {
     // TODO: Implementatie
+    std::cout << "TESTING" << std::endl;
 }
