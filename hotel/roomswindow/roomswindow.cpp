@@ -110,7 +110,7 @@ void RoomsWindow::updateRoomColors()
                 statusItem->setBackground(QColor(255, 200, 200));
             else if (status == "Reserved")
                 statusItem->setBackground(QColor(200, 220, 255));
-            else if (status == "Maintenace")
+            else if (status == "Maintenance")
                 statusItem->setBackground(QColor(200, 200, 200));
         }
 
@@ -224,9 +224,8 @@ void RoomsWindow::fillInRoomData(int row){
         }else if(header == "Housekeeping"){
             int index = ui->CleaningEdit->findText(value);
             ui->CleaningEdit->setCurrentIndex(index);
-        }else if(header == "Comments"){
-            value = "TESTING";
-            ui->NotesEdit->setHtml(value.toHtmlEscaped());
+        }else if(header == "Comments        "){
+            ui->NotesEdit->setText(value);
         }
     }
 }
