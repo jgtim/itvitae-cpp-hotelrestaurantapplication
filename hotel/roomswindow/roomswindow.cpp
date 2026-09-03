@@ -14,8 +14,9 @@
 #include <QMessageBox>
 
 
-
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
+
+//TEST
 
 RoomsWindow::RoomsWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -68,17 +69,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     ui->roomsTableView->setModel(proxyModel);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    ui->roomsTableView->setColumnWidth(0,90); // room number
-    ui->roomsTableView->setColumnWidth(1,65); // room type
-    ui->roomsTableView->setColumnWidth(2,55); // capacity
-    ui->roomsTableView->setColumnWidth(3,60); // view
-    ui->roomsTableView->setColumnWidth(4,55); // babybed
-    // ui->roomsTableView->setColumnWidth(5,1); // bed type; leave size flexible because text can be big
-    // ui->roomsTableView->setColumnWidth(6,1); // comments; leave size flexible because text can be big
-    ui->roomsTableView->setColumnWidth(7,85); // price per night
-    ui->roomsTableView->setColumnWidth(8,80); // status
-    ui->roomsTableView->setColumnWidth(9,85); // housekeeping
+    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->roomsTableView->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
     ui->roomsTableView->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
