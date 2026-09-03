@@ -31,10 +31,10 @@ RoomsWindow::RoomsWindow(QWidget *parent)
         "Room Number",
         "Room type",
         "Adults",
-        "View     ",        //spaties om het vakje groter te maken
+        "View",        //spaties om het vakje groter te maken
         "Babybed",
         "Bed type",
-        "Comments        ", //spaties om het vakje groter te maken
+        "Comments", //spaties om het vakje groter te maken
         "Price per night",
         "Status",
         "Housekeeping"
@@ -52,6 +52,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,
