@@ -16,6 +16,8 @@ RestaurantWindow::RestaurantWindow(QWidget *parent)
 {
     loadMockTables();
     setupLayout();
+    Table *currentTable;
+    //TODO maybe make a table #0 and if that "table" is selected it does nothing
 }
 
 class TableCanvas : public QWidget
