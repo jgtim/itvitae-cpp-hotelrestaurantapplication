@@ -177,17 +177,18 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
     if (!isReservationInDatabase(res)) {
         ReservationSerializer serializer;
         auto map = serializer.toVariantMap(res);
-        query.prepare("insert into reservations values (:ReservationID, :GuestID, :NumberOfGuests, :RoomNumber, :CheckInDate, :CheckOutDate);");
+        query.prepare("insert into reservations values (:ReservationID, :GuestID, :NumberOfGuests, :RoomNumber, :CheckInDate, :CheckOutDate, :PaymentStatus);");
         query.bindValue(":ReservationID", map.value("reservation_id"));
         query.bindValue(":GuestID", map.value("guest_name"));
         query.bindValue(":NumberOfGuests", map.value("number_of_guests"));
         query.bindValue(":RoomNumber", map.value("room_number"));
         query.bindValue(":CheckInDate", map.value("check_in"));
         query.bindValue(":CheckOutDate", map.value("check_out"));
+        query.bindValue(":PaymentStatus", map.value("payment_status"));
         query.exec();
 
         if (!isGuestInDatabase(res.guest)) {
-            query.prepare("insert into guests values (:GuestID, :GuestName, :GuestPhoneNumber, :GuestEmail, :GuestAddress, :GuestDateOfBirth, :GuestGender);");
+            query.prepare("insert into guests values (:GuestID, :GuestName, :GuestPhoneNumber, :GuestEmail, :GuestAddress, :GuestDateOfBirth, :GuestGender, :GuestPaymentMethod, :GuestIdType);");
             query.bindValue(":GuestID", map.value("guest_name"));
             query.bindValue(":GuestName", map.value("guest_name"));
             query.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
@@ -195,6 +196,8 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
             query.bindValue(":GuestAddress", map.value("address"));
             query.bindValue(":GuestDateOfBirth", map.value("date_of_birth"));
             query.bindValue(":GuestGender", map.value("gender"));
+            query.bindValue(":GuestPaymentMethod", map.value("payment_method"));
+            query.bindValue(":GuestIdType", map.value("id_type"));
             query.exec();
         }
     }
