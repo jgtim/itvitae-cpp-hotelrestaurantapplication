@@ -5,8 +5,6 @@
 
 #include <QIntValidator>
 #include <QMessageBox>
-#include <QEvent>
-#include <QCloseEvent>
 #include <QDate>
 #include <QComboBox>
 
@@ -72,8 +70,6 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
 
 EditReservationDialog::~EditReservationDialog()
 {
-    //is dit wat we willen? volgens mij verwijderd dit de gehele window, niet alleen de popup
-    // Ja dit is goed, verwijdert niet de parent windows
     delete ui;
 }
 
@@ -126,7 +122,6 @@ void EditReservationDialog::setAvailableRooms(const QList<Room> &rooms)
 {
     m_allRooms = rooms;
     populateRoomDropdown(rooms);
-
 }
 
 void EditReservationDialog::setExistingReservations(const QList<Reservation> &reservations)
@@ -143,25 +138,7 @@ void EditReservationDialog::populateRoomDropdown(const QList<Room> &rooms)
         ui->roomEdit->addItem(room.roomNumber, room.roomNumber);
     }
 }
-// void EditReservationDialog::setAvailableRooms(const QList<RoomRecord> &rooms)
-// {
-//     ui->roomEdit->clear();
-//     ui->roomEdit->addItem("-- Select a room --", -1);
 
-//     m_availableRoomNumbers.clear();
-
-//     for (const RoomRecord &room : rooms) {
-//         // "1.01" -> "101" -> 101 (int)
-//         QString roomStr = room.roomNumber;
-//         int roomAsInt = roomStr.remove(".").toInt();
-
-//         // Zichtbaar in dropdown: "1.01" (mooi leesbaar)
-//         // Data erachter: 101 (int, makkelijk te vergelijken)
-//         ui->roomEdit->addItem(room.roomNumber, roomAsInt);
-
-//         m_availableRoomNumbers.append(room.roomNumber);
-//     }
-// }
 
 Reservation EditReservationDialog::getReservationData() const
 {
@@ -181,7 +158,7 @@ Reservation EditReservationDialog::getReservationData() const
     res.guest.address.country = ui->addressEdit6->text();
 
     // Date of Birth
-    res.guest.dateOfBirth = QDate::fromString(ui->dateOfBirthEdit->text(), "dd/MM/yyyy");
+    res.guest.dateOfBirth = ui->dateOfBirthEdit->date();
 
     // Details
     res.numberOfGuests = ui->guestNumEdit->text().toInt();
@@ -199,15 +176,8 @@ Reservation EditReservationDialog::getReservationData() const
     return res;
 }
 
-void EditReservationDialog::on_EditReservationButtonBox_accepted()
-{
 
-    //close();
-
-}
-
-void EditReservationDialog::accept(){
-
+void EditReservationDialog::accept() {
     // Name
     if (ui->nameEdit->text().trimmed().isEmpty()) {
         QMessageBox::warning(this, "Missing Information", "Please enter a name.");
@@ -223,16 +193,16 @@ void EditReservationDialog::accept(){
     }
 
     // Email
-    static const QRegularExpression emailRegex(R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)");
-    if (!ui->emailEdit->text().trimmed().isEmpty() &&
-        !emailRegex.match(ui->emailEdit->text().trimmed()).hasMatch()) {
-        QMessageBox::warning(this, "Invalid Email", "Please enter a valid email address.");
+    if (ui->emailEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a valid email address.");
         ui->emailEdit->setFocus();
         return;
     }
 
-    if (ui->emailEdit->text().trimmed().isEmpty()) {
-        QMessageBox::warning(this, "Missing Information", "Please enter a valid email address.");
+    static const QRegularExpression emailRegex(R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)");
+    if (!ui->emailEdit->text().trimmed().isEmpty() &&
+        !emailRegex.match(ui->emailEdit->text().trimmed()).hasMatch()) {
+        QMessageBox::warning(this, "Invalid Email", "Please enter a valid email address.");
         ui->emailEdit->setFocus();
         return;
     }
@@ -265,7 +235,6 @@ void EditReservationDialog::accept(){
         ui->roomEdit->setFocus();
         return;
     }
-
 
     // Check-out before check-in
     if(ui->checkOutEdit->date() < ui->checkInEdit->date()){
@@ -380,10 +349,3 @@ void EditReservationDialog::checkFieldLength(const QString &text)
                                  QString("%1 cannot exceed %2 characters.").arg(name).arg(edit->maxLength()));
     }
 }
-
-// void EditReservationDialog::closeEvent(QCloseEvent *event)
-// {
-
-//     event->ignore();
-// }
-

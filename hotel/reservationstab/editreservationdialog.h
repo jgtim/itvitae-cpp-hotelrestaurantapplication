@@ -25,7 +25,6 @@ public:
     void setExistingReservations(const QList<Reservation> &reservations);
 
 private slots:
-    void on_EditReservationButtonBox_accepted();
     void accept() override;
     void updateRoomAvailability();
 
