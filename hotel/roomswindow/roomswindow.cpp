@@ -73,6 +73,10 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     ui->roomsTableView->horizontalHeader()->setStretchLastSection(true);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    ui->roomsTableView->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
+    ui->roomsTableView->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
+    ui->roomsTableView->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
+
 
     connect(ui->roomSearchLineEdit,
             &QLineEdit::textChanged,
