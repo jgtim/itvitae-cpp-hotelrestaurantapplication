@@ -6,6 +6,7 @@
 #include <QHeaderView>
 #include <QRandomGenerator>
 #include <QPainter>
+#include <QMessageBox>
 
 #include <iostream>
 #include <qevent.h>
@@ -28,6 +29,10 @@ public:
         : QWidget(parent), tables(tables)
     {
 
+    }
+
+    void updateTables(QVector<Table> newTables){
+        tables = newTables;
     }
 
     void repaintTable(){
@@ -353,25 +358,35 @@ void RestaurantWindow::onNewOrderClicked()
 
 void RestaurantWindow::onSetFreeClicked()
 {
-    TableStatus status = tables[selectedTable - 1].getStatus();
-    if(status == TableStatus::FREE){
-        std::cout << "IM FREE" << std::endl;
+    if(selectedTable > 0){
+        tables[selectedTable - 1].setStatus(TableStatus::FREE);
+        canvasPointer->updateTables(tables);
+        canvasPointer->update();
+    }else{
+        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
-    tables[selectedTable - 1].setStatus(TableStatus::FREE);
-    canvasPointer->update();
 }
 
 void RestaurantWindow::onSetOccupiedClicked()
 {
-    // TODO: Implementatie
-    tables[selectedTable - 1].setStatus(TableStatus::OCCUPIED);
-    canvasPointer->update();
+    if(selectedTable > 0){
+        tables[selectedTable - 1].setStatus(TableStatus::OCCUPIED);
+        canvasPointer->updateTables(tables);
+        canvasPointer->update();
+    }else{
+        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
+    }
+
 }
 
 void RestaurantWindow::onReservationTableClicked()
 {
-    // TODO: Implementatie
-    std::cout << "TESTING" << std::endl;
+    if(selectedTable > 0){
+        // TODO: Implementatie
+        std::cout << "TESTING" << std::endl;
+    }else{
+        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
+    }
 }
 
 #include "restaurantwindow.moc"
