@@ -6,14 +6,13 @@
 
 #include "../hotel/roomswindow/Room/room.h"
 
-// Abstracts *where* room data lives. Today that's the placeholder Excel file
-// (ExcelRoomRepository); later it will be a database (e.g. SqliteRoomRepository).
+// Abstracts *where* room data lives. Right now it's the Excel file (ExcelRoomRepository); can be changed to the database later.
 //
-// RoomsWindow (and anything else that needs room data) should only ever talk to this
-// interface, never to QXlsx or SQL directly. That way, switching storage backends later
-// means: write one new class implementing IRoomRepository, then change the single line in
-// readers/roomrepositoryfactory.cpp that decides which one gets created. Nothing that uses
-// IRoomRepository needs to change.
+// RoomsWindow (and anything else that needs room data) should only talk to this interface instead of to QXlsx or SQL directly
+// That way, switching storage backends later means: write one new class implementing IRoomRepository,
+// then change the single line in readers/roomrepositoryfactory.cpp that decides which one gets created.
+// Nothing that uses IRoomRepository needs to change.
+
 class IRoomRepository
 {
 public:
