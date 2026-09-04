@@ -358,9 +358,21 @@ void RestaurantWindow::onSetFreeClicked()
     int selectedTable = canvasPointer->getSelectedTable();
     if(selectedTable > 0){
         //TODO: check if there's a reservation on this table, if so set it to reserved instead of free
-        tables[selectedTable - 1].setStatus(TableStatus::FREE);
-        canvasPointer->updateTables(tables);
-        canvasPointer->update();
+        for(int r = 0; r < reservationTable->model()->rowCount(); r++){
+            int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+            if(selectedTable == tableNumber){
+                tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
+                canvasPointer->updateTables(tables);
+                canvasPointer->update();
+                std::cout << "RESERVED" << std::endl;
+                break;
+            }
+        }
+        if(tables[selectedTable - 1].getStatus() == TableStatus::OCCUPIED){
+            tables[selectedTable - 1].setStatus(TableStatus::FREE);
+            canvasPointer->updateTables(tables);
+            canvasPointer->update();
+        }
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
