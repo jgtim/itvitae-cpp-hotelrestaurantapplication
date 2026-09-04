@@ -11,9 +11,6 @@
 #include <iostream>
 #include <qevent.h>
 
-int selectedTable = 0;
-class TableCanvas;
-TableCanvas* canvasPointer = nullptr;
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent)
@@ -34,6 +31,11 @@ public:
     void updateTables(QVector<Table> newTables){
         tables = newTables;
     }
+
+    int getSelectedTable(){
+        return selectedTable;
+    }
+
 
 protected:
     void paintEvent(QPaintEvent *event) override
@@ -77,6 +79,7 @@ protected:
 
 private:
     QVector<Table> tables;
+    int selectedTable = 0;
     void onTableClicked(Table& table)
     {
         selectedTable = table.getNumber();
@@ -352,6 +355,7 @@ void RestaurantWindow::onNewOrderClicked()
 
 void RestaurantWindow::onSetFreeClicked()
 {
+    int selectedTable = canvasPointer->getSelectedTable();
     if(selectedTable > 0){
         //TODO: check if there's a reservation on this table, if so set it to reserved instead of free
         tables[selectedTable - 1].setStatus(TableStatus::FREE);
@@ -364,6 +368,7 @@ void RestaurantWindow::onSetFreeClicked()
 
 void RestaurantWindow::onSetOccupiedClicked()
 {
+    int selectedTable = canvasPointer->getSelectedTable();
     if(selectedTable > 0){
         tables[selectedTable - 1].setStatus(TableStatus::OCCUPIED);
         canvasPointer->updateTables(tables);
@@ -376,7 +381,7 @@ void RestaurantWindow::onSetOccupiedClicked()
 
 void RestaurantWindow::onReservationTableClicked()
 {
-    if(selectedTable > 0){
+    if(canvasPointer->getSelectedTable() > 0){
         // TODO: Implementatie
         std::cout << "TESTING" << std::endl;
     }else{

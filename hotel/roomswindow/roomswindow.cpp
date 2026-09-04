@@ -1,6 +1,5 @@
 #include "roomswindow.h"
 #include "ui_roomswindow.h"
-//#include "roomdetailsdialog.h"
 #include "confirmdialog.h"
 #include "Room/room.h"
 #include "../../readers/hotelkamersreader.h"
