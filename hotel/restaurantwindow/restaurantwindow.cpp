@@ -35,14 +35,6 @@ public:
         tables = newTables;
     }
 
-    void repaintTable(){
-        std::cout << "REPAINTING" << std::endl;
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        paintTable(tables[selectedTable - 1], painter);
-    }
-
 protected:
     void paintEvent(QPaintEvent *event) override
     {
