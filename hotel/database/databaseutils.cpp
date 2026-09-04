@@ -14,7 +14,7 @@ void prepareDatabaseFile() {
     QSqlQuery query = QSqlQuery(db);
     query.exec("create table reservations(ReservationID INT, GuestID TEXT, NumberOfGuests INT, RoomNumber INT, CheckInDate TEXT, CheckOutDate TEXT, PaymentStatus TEXT);");
     query.exec("create table guests(GuestID TEXT, GuestName TEXT, GuestPhoneNumber TEXT, GuestEmail TEXT, GuestAddress TEXT, GuestDateOfBirth TEXT, GuestGender TEXT, GuestPaymentMethod TEXT, GuestIdType TEXT);");
-    query.exec("create table rooms(RoomNumber TEXT, RoomType TEXT, Capcity INT, RoomView TEXT, BabyBed TEXT, Comments TEXT, PricePerNight TEXT, RoomStatus TEXT, HousekeepingStatus TEXT);");
+    query.exec("create table rooms(RoomNumber TEXT, RoomType TEXT, Capacity INT, RoomView TEXT, BabyBed TEXT, Comments TEXT, PricePerNight TEXT, RoomStatus TEXT, HousekeepingStatus TEXT);");
 
     QSqlDatabase::removeDatabase("QSQLITE");
     db.close();
