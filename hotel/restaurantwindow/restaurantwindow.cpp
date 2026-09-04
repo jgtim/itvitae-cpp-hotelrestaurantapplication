@@ -10,22 +10,32 @@
 #include <iostream>
 #include <qevent.h>
 
+int selectedTable = 0;
+class TableCanvas;
+TableCanvas* canvasPointer = nullptr;
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
-    : QWidget(parent), ui(nullptr)
+    : QWidget(parent)
 {
     loadMockTables();
     setupLayout();
-    Table *currentTable;
-    //TODO maybe make a table #0 and if that "table" is selected it does nothing
 }
 
 class TableCanvas : public QWidget
-{
+{Q_OBJECT
 public:
     explicit TableCanvas(const QVector<Table>& tables, QWidget *parent = nullptr)
         : QWidget(parent), tables(tables)
     {
+
+    }
+
+    void repaintTable(){
+        std::cout << "REPAINTING" << std::endl;
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        paintTable(tables[selectedTable - 1], painter);
     }
 
 protected:
@@ -37,24 +47,8 @@ protected:
         painter.setRenderHint(QPainter::Antialiasing);
 
         for (const Table& table : tables) {
-            QColor color;
-
-            if (table.getStatus() == TableStatus::FREE)
-                color = Qt::green;
-            else if (table.getStatus() == TableStatus::OCCUPIED)
-                color = Qt::red;
-            else
-                color = QColor(255, 165, 0);
-
-            painter.setBrush(color);
-            painter.setPen(Qt::white);
-
-            painter.drawEllipse(table.getX(), table.getY(), 50, 50);
-
-            painter.setPen(Qt::black);
-            painter.drawText(table.getX(), table.getY(), 50, 50,
-                             Qt::AlignCenter,
-                             QString::number(table.getNumber()));
+            //std::cout << "PAINTING" << std::endl;
+            paintTable(table, painter);
         }
     }
 
@@ -79,6 +73,7 @@ protected:
                     break; // Stop checking further tables once hit is found
                 }
             }
+
         }
 
         QWidget::mousePressEvent(event);
@@ -86,12 +81,33 @@ protected:
 
 private:
     QVector<Table> tables;
-        void onTableClicked(Table& table)
+    void onTableClicked(Table& table)
     {
-        qDebug() << "Clicked Table Number:" << table.getNumber();
+        selectedTable = table.getNumber();
+        qDebug() << "Clicked Table Number:" << selectedTable;
 
-        // Example action: Toggle or update status, then trigger repaint
         // update();
+    }
+    void paintTable(const Table& table, QPainter& painter){
+        QColor color;
+        //TODO set selected table text to bold or something
+
+        if (table.getStatus() == TableStatus::FREE)
+            color = Qt::green;
+        else if (table.getStatus() == TableStatus::OCCUPIED)
+            color = Qt::red;
+        else
+            color = QColor(255, 165, 0);
+
+        painter.setBrush(color);
+        painter.setPen(Qt::white);
+
+        painter.drawEllipse(table.getX(), table.getY(), 50, 50);
+
+        painter.setPen(Qt::black);
+        painter.drawText(table.getX(), table.getY(), 50, 50,
+                         Qt::AlignCenter,
+                         QString::number(table.getNumber()));
     }
 
 };
@@ -229,6 +245,7 @@ void RestaurantWindow::setupRightPanel()
 
     // === Canvas Area (zwart) ===
     tableCanvas = new TableCanvas(tables);
+    canvasPointer = qobject_cast<TableCanvas*>(tableCanvas);
     tableCanvas->setStyleSheet("background-color: #000000; border: 2px solid #FFFFFF;");
     rightLayout->addWidget(tableCanvas);
 
@@ -332,12 +349,19 @@ void RestaurantWindow::onNewOrderClicked()
 
 void RestaurantWindow::onSetFreeClicked()
 {
-    // TODO: Implementatie
+    TableStatus status = tables[selectedTable - 1].getStatus();
+    if(status == TableStatus::FREE){
+        std::cout << "IM FREE" << std::endl;
+    }
+    tables[selectedTable - 1].setStatus(TableStatus::FREE);
+    canvasPointer->update();
 }
 
 void RestaurantWindow::onSetOccupiedClicked()
 {
     // TODO: Implementatie
+    tables[selectedTable - 1].setStatus(TableStatus::OCCUPIED);
+    canvasPointer->update();
 }
 
 void RestaurantWindow::onReservationTableClicked()
@@ -345,3 +369,5 @@ void RestaurantWindow::onReservationTableClicked()
     // TODO: Implementatie
     std::cout << "TESTING" << std::endl;
 }
+
+#include "restaurantwindow.moc"
