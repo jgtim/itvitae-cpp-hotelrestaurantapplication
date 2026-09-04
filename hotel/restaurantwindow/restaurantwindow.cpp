@@ -31,21 +31,23 @@ protected:
         painter.setRenderHint(QPainter::Antialiasing);
 
         for (const Table& table : tables) {
-            QColor color;
+            QColor fillColor;
+            QColor textColor = QColor("#F5F5F5");
 
-            if (table.getStatus() == TableStatus::FREE)
-                color = Qt::green;
+            if (table.getStatus() == TableStatus::FREE) {
+                fillColor = QColor("#2ECC71"); // some sage green
+                textColor = QColor("#1E1E24"); // better readability
+            }
             else if (table.getStatus() == TableStatus::OCCUPIED)
-                color = Qt::red;
+                fillColor = QColor("#D9534F"); // a soft little crimson
             else
-                color = QColor(255, 165, 0);
+                fillColor = QColor("#E69F00"); // lovely warm amber
 
-            painter.setBrush(color);
-            painter.setPen(Qt::white);
-
+            painter.setBrush(fillColor);
+            painter.setPen(QPen(QColor("#2D2D35"), 2));
             painter.drawEllipse(table.getX(), table.getY(), 50, 50);
 
-            painter.setPen(Qt::black);
+            painter.setPen(textColor);
             painter.drawText(table.getX(), table.getY(), 50, 50,
                              Qt::AlignCenter,
                              QString::number(table.getNumber()));
@@ -95,37 +97,39 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->setSpacing(10);
 
     // === Menukaart Header ===
-    QLabel *menuLabel = new QLabel("Menukaart");
+    QLabel *menuLabel = new QLabel("Menu");
+    menuLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
     menuLabel->setAlignment(Qt::AlignCenter);
     menuLabel->setFixedHeight(40);
     leftLayout->addWidget(menuLabel);
 
     // === Reserveringen Tabel ===
-    QLabel *reserveLabel = new QLabel("Reserveringen");
+    QLabel *reserveLabel = new QLabel("Reservations");
     reserveLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
     leftLayout->addWidget(reserveLabel);
 
     reservationTable = new QTableWidget();
     reservationTable->setColumnCount(4);
-    reservationTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Hotelkamer" << "Tijd");
+    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Hotel Room" << "Time");
     reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setStretchLastSection(true);
     setupReservationTable();
     leftLayout->addWidget(reservationTable);
 
     // === Bekijk Reservering Details Button ===
-    viewReservationBtn = new QPushButton("Bekijk reservering details");
+    viewReservationBtn = new QPushButton("Reservation Details");
     viewReservationBtn->setFixedHeight(35);
     connect(viewReservationBtn, &QPushButton::clicked, this, &RestaurantWindow::onViewReservationClicked);
     leftLayout->addWidget(viewReservationBtn);
 
     // === Bestellingen Tabel ===
-    QLabel *orderLabel = new QLabel("Bestellingen");
+    QLabel *orderLabel = new QLabel("Orders");
+    orderLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
     leftLayout->addWidget(orderLabel);
 
     orderTable = new QTableWidget();
     orderTable->setColumnCount(5);
-    orderTable->setHorizontalHeaderLabels(QStringList() << "Status" << "Kamer nummer" << "Menu Item(s)" << "Geplaatst om" << "Tafel");
+    orderTable->setHorizontalHeaderLabels(QStringList() << "Status" << "Rooms Number" << "Menu Item(s)" << "Placed at" << "Tables");
     orderTable->setMaximumHeight(120);
     orderTable->horizontalHeader()->setStretchLastSection(true);
     setupOrderTable();
@@ -138,12 +142,12 @@ void RestaurantWindow::setupLeftPanel()
     QHBoxLayout *bottomButtonLayout = new QHBoxLayout();
     bottomButtonLayout->setSpacing(10);
 
-    allOrdersBtn = new QPushButton("Alle bestellingen");
+    allOrdersBtn = new QPushButton("All Orders");
     allOrdersBtn->setFixedHeight(35);
     connect(allOrdersBtn, &QPushButton::clicked, this, &RestaurantWindow::onAllOrdersClicked);
     bottomButtonLayout->addWidget(allOrdersBtn);
 
-    newOrderBtn = new QPushButton("Nieuwe bestelling");
+    newOrderBtn = new QPushButton("New Order");
     newOrderBtn->setFixedHeight(35);
     connect(newOrderBtn, &QPushButton::clicked, this, &RestaurantWindow::onNewOrderClicked);
     bottomButtonLayout->addWidget(newOrderBtn);
@@ -156,7 +160,7 @@ void RestaurantWindow::setupLeftPanel()
 void RestaurantWindow::setupRightPanel()
 {
     rightPanel = new QWidget();
-    rightPanel->setStyleSheet("background-color: #000000;");
+    rightPanel->setStyleSheet("background-color: #1E1E24;");
 
     QVBoxLayout *rightLayout = new QVBoxLayout(rightPanel);
     rightLayout->setContentsMargins(10, 10, 10, 10);
@@ -166,20 +170,20 @@ void RestaurantWindow::setupRightPanel()
     QHBoxLayout *topButtonLayout = new QHBoxLayout();
     topButtonLayout->setSpacing(10);
 
-    setFreeBtn = new QPushButton("Zet vrij");
-    setFreeBtn->setStyleSheet("background-color: #00FF00; color: #000000; padding: 10px; font-weight: bold; border-radius: 5px;");
+    setFreeBtn = new QPushButton("Free");
+    setFreeBtn->setStyleSheet("background-color: #2ECC71; color: #1E1E24; padding: 10px; font-weight: bold; border-radius: 5px;");
     setFreeBtn->setFixedHeight(40);
     connect(setFreeBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetFreeClicked);
     topButtonLayout->addWidget(setFreeBtn);
 
-    setOccupiedBtn = new QPushButton("Zet bezet");
-    setOccupiedBtn->setStyleSheet("background-color: #FF0000; color: #FFFFFF; padding: 10px; font-weight: bold; border-radius: 5px;");
+    setOccupiedBtn = new QPushButton("Occupy");
+    setOccupiedBtn->setStyleSheet("background-color: #D9534F; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
     setOccupiedBtn->setFixedHeight(40);
     connect(setOccupiedBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetOccupiedClicked);
     topButtonLayout->addWidget(setOccupiedBtn);
 
-    reservationTableBtn = new QPushButton("Reserveringen-tafel");
-    reservationTableBtn->setStyleSheet("background-color: #FFA500; color: #000000; padding: 10px; font-weight: bold; border-radius: 5px;");
+    reservationTableBtn = new QPushButton("Reserve");
+    reservationTableBtn->setStyleSheet("background-color: #E69F00; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
     reservationTableBtn->setFixedHeight(40);
     connect(reservationTableBtn, &QPushButton::clicked, this, &RestaurantWindow::onReservationTableClicked);
     topButtonLayout->addWidget(reservationTableBtn);
@@ -189,7 +193,7 @@ void RestaurantWindow::setupRightPanel()
 
     // === Canvas Area (zwart) ===
     tableCanvas = new TableCanvas(tables);
-    tableCanvas->setStyleSheet("background-color: #000000; border: 2px solid #FFFFFF;");
+    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
     rightLayout->addWidget(tableCanvas);
 
     rightPanel->setLayout(rightLayout);
