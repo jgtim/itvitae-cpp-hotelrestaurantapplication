@@ -86,7 +86,7 @@ private:
         selectedTable = table.getNumber();
         qDebug() << "Clicked Table Number:" << selectedTable;
 
-        // update();
+        update();
     }
     void paintTable(const Table& table, QPainter& painter){
         QColor color;
@@ -100,7 +100,11 @@ private:
             color = QColor(255, 165, 0);
 
         painter.setBrush(color);
-        painter.setPen(Qt::white);
+        if(table.getNumber() == selectedTable){
+            painter.setPen(Qt::yellow);
+        }else{
+            painter.setPen(Qt::white);
+        }
 
         painter.drawEllipse(table.getX(), table.getY(), 50, 50);
 
