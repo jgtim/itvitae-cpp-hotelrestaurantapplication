@@ -5,8 +5,11 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 #include <QString>
+#include <memory>
 
 #include "../../filter/multicolumnfilterproxymodel.h"
+#include "../../readers/iroomrepository.h"
+#include "Room/room.h"
 
 namespace Ui {
 class RoomsWindow;
@@ -28,10 +31,13 @@ private:
     Ui::RoomsWindow *ui;
     QStandardItemModel *model;
     MultiColumnFilterProxyModel *proxyModel;
+    std::unique_ptr<IRoomRepository> roomRepository;
+    QList<Room> rooms; // Kept index-aligned with model's rows
 
     void updateRoomColors();
     void filterRooms(const QString &text);
-    void importExcelRooms();
+    void loadRooms();
+    void populateModelRow(int row, const Room &room);
 
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);

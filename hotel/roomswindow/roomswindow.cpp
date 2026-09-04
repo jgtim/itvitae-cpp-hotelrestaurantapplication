@@ -3,7 +3,7 @@
 #include "roomdetailsdialog.h"
 #include "confirmdialog.h"
 #include "Room/room.h"
-#include "../../readers/hotelkamersreader.h"
+#include "../../readers/roomrepositoryfactory.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -21,6 +21,7 @@
 RoomsWindow::RoomsWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::RoomsWindow)
+    , roomRepository(createRoomRepository())
 {
     ui->setupUi(this);
 
@@ -61,7 +62,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     });
 
 
-    importExcelRooms();
+    loadRooms();
     proxyModel = new MultiColumnFilterProxyModel(this);
     proxyModel->setSourceModel(model);
     proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -135,41 +136,48 @@ void RoomsWindow::updateRoomColors()
     }
 }
 
-void RoomsWindow::importExcelRooms(){
-    std::optional<QList<Room>> roomList = parseRoomFile();
+// Writes a single Room's fields into the given row of the display model.
+// Shared by loadRooms() (initial fill) and saveRoomData() (refresh after an edit) so the
+// two never drift out of sync with each other.
+void RoomsWindow::populateModelRow(int row, const Room &room) {
+    // Column 0: Room Number
+    model->setItem(row, 0, new QStandardItem(room.roomNumber));
+    // Column 1: Room Type (Enum -> String)
+    model->setItem(row, 1, new QStandardItem(roomTypeToString(room.roomType)));
+    // Column 2: Adults
+    model->setItem(row, 2, new QStandardItem(QString::number(room.adults)));
+    // Column 3: Room View (Enum -> String)
+    model->setItem(row, 3, new QStandardItem(roomViewToString(room.roomView)));
+    // Column 4: Baby Bed (Bool -> String)
+    model->setItem(row, 4, new QStandardItem(room.babyBed ? "Yes" : "No"));
+    // Column 5: Bed Type
+    model->setItem(row, 5, new QStandardItem(room.beds));
+    // Column 6: Comments
+    model->setItem(row, 6, new QStandardItem(room.comments));
+    // Column 7: Price per Night (2 decimal places)
+    QString priceString = QString("€ %1").arg(room.pricePerNight, 0, 'f', 2);
+    model->setItem(row, 7, new QStandardItem(priceString));
+    // Column 8: Room Status
+    model->setItem(row, 8, new QStandardItem(roomStatusToString(room.roomStatus)));
+    // Column 9: Housekeeping Status
+    model->setItem(row, 9, new QStandardItem(houseKeepingStatusToString(room.houseKeepingStatus)));
+}
+
+void RoomsWindow::loadRooms(){
+    std::optional<QList<Room>> roomList = roomRepository->loadRooms();
 
     if (!roomList.has_value()) {
         qDebug() << "Could not import room data";
-        QMessageBox::warning(this, "Import Error", "Failed to load room data from Excel.");
+        QMessageBox::warning(this, "Import Error", "Failed to load room data.");
         return;
     }
 
+    rooms = *roomList;
+
     model->removeRows(0, model->rowCount()); // Clear any existing items
 
-    for (int i = 0; i < roomList->size(); ++i) {
-        const Room& room = roomList->at(i);
-
-        // Column 0: Room Number
-        model->setItem(i, 0, new QStandardItem(room.roomNumber));
-        // Column 1: Room Type (Enum -> String)
-        model->setItem(i, 1, new QStandardItem(roomTypeToString(room.roomType)));
-        // Column 2: Adults
-        model->setItem(i, 2, new QStandardItem(QString::number(room.adults)));
-        // Column 3: Room View (Enum -> String)
-        model->setItem(i, 3, new QStandardItem(roomViewToString(room.roomView)));
-        // Column 4: Baby Bed (Bool -> String)
-        model->setItem(i, 4, new QStandardItem(room.babyBed ? "Yes" : "No"));
-        // Column 5: Bed Type
-        model->setItem(i, 5, new QStandardItem(room.beds));
-        // Column 6: Comments
-        model->setItem(i, 6, new QStandardItem(room.comments));
-        // Column 7: Price per Night (2 decimal places)
-        QString priceString = QString("€ %1").arg(room.pricePerNight, 0, 'f', 2);
-        model->setItem(i, 7, new QStandardItem(priceString));
-        // Column 8: Room Status
-        model->setItem(i, 8, new QStandardItem(roomStatusToString(room.roomStatus)));
-        // Column 9: Housekeeping Status
-        model->setItem(i, 9, new QStandardItem(houseKeepingStatusToString(room.houseKeepingStatus)));
+    for (int i = 0; i < rooms.size(); ++i) {
+        populateModelRow(i, rooms.at(i));
     }
 }
 
@@ -241,29 +249,24 @@ void RoomsWindow::fillInRoomData(int row){
 }
 
 void RoomsWindow::saveRoomData(int row){
-    int columnCount = model->columnCount();
+    if (row < 0 || row >= rooms.size()) return;
 
-    for (int col = 0; col < columnCount; ++col) {
-        QString header = model->horizontalHeaderItem(col)->text();
-        QStandardItem *item = model->item(row, col);
-        if (!item) continue;
+    // Update the in-memory Room struct from the edit fields. Fields the UI doesn't expose
+    // for editing (view, baby bed, beds, price) are simply left as they were.
+    Room &room = rooms[row];
+    room.roomNumber = ui->RoomNumEdit->text();
+    room.roomType = stringToRoomType(ui->RoomTypeEdit->currentText());
+    room.adults = ui->CapacityEdit->text().toInt();
+    room.roomStatus = stringToRoomStatus(ui->StatusEdit->currentText());
+    room.houseKeepingStatus = stringToHouseKeepingStatus(ui->CleaningEdit->currentText());
+    room.comments = ui->NotesEdit->toPlainText();
 
-        if(header == "Room Number"){
-            item->setText(ui->RoomNumEdit->text());
-        }else if(header == "Room type"){
-            item->setText(ui->RoomTypeEdit->currentText());
-        }else if(header == "Capacity"){
-            item->setText(ui->CapacityEdit->text());
-        }else if(header == "Status"){
-            item->setText(ui->StatusEdit->currentText());
-        }else if(header == "Housekeeping"){
-            item->setText(ui->CleaningEdit->currentText());
-        }else if(header == "Comments        "){
-            item->setText(ui->NotesEdit->toPlainText());
-        }
+    populateModelRow(row, room); // Reflect the change in the table immediately
+    updateRoomColors();          // status/housekeeping colors need refreshing after a save
+
+    if (!roomRepository->saveRooms(rooms)) {
+        QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes are only visible for this session.");
     }
-
-    updateRoomColors(); // status/housekeeping colors need refreshing after a save
 }
 
 void RoomsWindow::on_seeRoomDetails_clicked()
