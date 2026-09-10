@@ -74,6 +74,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         filter/multicolumnfilterproxymodel.h filter/multicolumnfilterproxymodel.cpp
         readers/roomserializer.h readers/roomserializer.cpp
         hotel/restaurantwindow/reservetable/reservetable.h hotel/restaurantwindow/reservetable/reservetable.cpp hotel/restaurantwindow/reservetable/reservetable.ui
+        hotel/restaurantwindow/reservetable/reservetable.cpp
     )
 
 # Define target properties for Android with Qt 6 as:

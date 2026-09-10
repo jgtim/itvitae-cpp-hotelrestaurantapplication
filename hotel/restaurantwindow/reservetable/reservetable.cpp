@@ -3,6 +3,7 @@
 //#include "ui_reservetable.h"
 #include "../restaurantwindow.h"
 #include <QMessageBox>
+#include <iostream>
 
 
 reservetable::reservetable(QWidget *parent)
@@ -30,20 +31,29 @@ void reservetable::on_buttonBox_accepted()
 {
 
     //TODO check if answers are valid (table exists & is not already reserved at that time, number of guests not over table capacity)
+    //this function is empty now because everything was moved to accept()
+
+}
+
+void reservetable::accept()
+{
     QVector<Table> tables = qobject_cast<RestaurantWindow *>(parent())->getTables();
     for (Table &table : tables) {
-        if (table.getNumber() == ui->roomNumberEdit->text().toInt()) {
+        if (table.getNumber() == ui->tableEdit->text().toInt()) {
             if(table.getStatus() != TableStatus::OCCUPIED){
-                this->accept();
+                std::cout << "NOT OCCUPIED" << std::endl;
+                table.setStatus(TableStatus::RESERVED);
+                QDialog::accept();
+                return;
                 //TODO check if it's reserved at that time
 
             }else{
-               QMessageBox::warning(this, "occupied", "this table is occupied");
+                QMessageBox::warning(this, "occupied", "this table is occupied");
+                return;
             }
             break;
         }
     }
-
 }
 
 

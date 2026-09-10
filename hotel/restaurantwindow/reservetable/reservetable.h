@@ -24,6 +24,8 @@ private slots:
 
     void on_buttonBox_rejected();
 
+    void accept();
+
 private:
     Ui::reservetable *ui;
 };
