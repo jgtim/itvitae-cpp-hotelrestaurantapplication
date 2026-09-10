@@ -228,12 +228,13 @@ void RoomsWindow::updateRoomInDatabase(const Room& room) {
     auto map = RoomSerializer::toVariantMap(room);
     QSqlQuery roomQuery(db);
 
-    roomQuery.prepare("UPDATE rooms SET RoomType = :RoomType, Beds = :Beds, RoomView = :RoomView, BabyBed = :BabyBed, Comments = :Comments, RoomStatus = :RoomStatus, HousekeepingStatus = :HousekeepingStatus WHERE RoomNumber = :RoomNumber;");
+    roomQuery.prepare("UPDATE rooms SET RoomType = :RoomType, Adults = :Adults, RoomView = :RoomView, BabyBed = :BabyBed, Beds = :Beds, Comments = :Comments, RoomStatus = :RoomStatus, HousekeepingStatus = :HousekeepingStatus WHERE RoomNumber = :RoomNumber;");
 
     roomQuery.bindValue(":RoomType", map.value("room_type").toString());
-    roomQuery.bindValue(":Beds", map.value("capacity").toString());
+    roomQuery.bindValue(":Adults", map.value("adults").toString());
     roomQuery.bindValue(":RoomView", map.value("room_view").toString());
     roomQuery.bindValue(":BabyBed", map.value("baby_bed").toString());
+    roomQuery.bindValue(":Beds", map.value("beds").toString());
     roomQuery.bindValue(":Comments", map.value("comments").toString());
     roomQuery.bindValue(":RoomStatus", map.value("room_status").toString());
     roomQuery.bindValue(":HousekeepingStatus", map.value("housekeeping_status").toString());
