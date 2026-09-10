@@ -11,6 +11,8 @@
 #include <iostream>
 #include <qevent.h>
 
+#include "reservetable/reservetable.h"
+
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent)
@@ -396,6 +398,10 @@ void RestaurantWindow::onReservationTableClicked()
     if(canvasPointer->getSelectedTable() > 0){
         // TODO: Implementatie
         std::cout << "TESTING" << std::endl;
+        reservetable dialog(this);
+        if (dialog.exec() == QDialog::Rejected) {
+            return;
+        }
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
