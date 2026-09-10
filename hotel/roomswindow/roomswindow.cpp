@@ -27,6 +27,9 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Make the table header text fit
+    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
     model = new QStandardItemModel(this);
     ui->roomStack->setCurrentIndex(0);
     ui->CancelButton->setVisible(false);
@@ -53,11 +56,11 @@ RoomsWindow::RoomsWindow(QWidget *parent)
         "Room Number",
         "Room type",
         "Capacity",
-        "View",        //spaties om het vakje groter te maken
+        "View",
         "Babybed",
         "Bed type",
-        "Comments", //spaties om het vakje groter te maken
         "Price per night",
+        "Comments",
         "Status",
         "Housekeeping",
         //"More Information" //for if we add button here later
@@ -71,8 +74,9 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     proxyModel->setFilterColumns({0,1,3,8,9});
 
     ui->roomsTableView->setModel(proxyModel);
+    ui->roomsTableView->resizeColumnsToContents();
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    // ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->roomsTableView->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
     ui->roomsTableView->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
@@ -153,27 +157,34 @@ void RoomsWindow::importExcelRooms(){
         const Room& room = roomList->at(i);
         addRoomToDatabase(room);
 
+        // Helper lambda function to create centered items quickly
+        auto createCenteredItem = [](const QString &text) {
+            auto *item = new QStandardItem(text);
+            item->setTextAlignment(Qt::AlignCenter);
+            return item;
+        };
+
         // Column 0: Room Number
-        model->setItem(i, 0, new QStandardItem(room.roomNumber));
-        // Column 1: Room Type (Enum -> String)
-        model->setItem(i, 1, new QStandardItem(roomTypeToString(room.roomType)));
+        model->setItem(i, 0, createCenteredItem(room.roomNumber));
+        // Column 1: Room Type
+        model->setItem(i, 1, createCenteredItem(roomTypeToString(room.roomType)));
         // Column 2: Adults
-        model->setItem(i, 2, new QStandardItem(QString::number(room.adults)));
-        // Column 3: Room View (Enum -> String)
-        model->setItem(i, 3, new QStandardItem(roomViewToString(room.roomView)));
-        // Column 4: Baby Bed (Bool -> String)
-        model->setItem(i, 4, new QStandardItem(room.babyBed ? "Yes" : "No"));
+        model->setItem(i, 2, createCenteredItem(QString::number(room.adults)));
+        // Column 3: Room View
+        model->setItem(i, 3, createCenteredItem(roomViewToString(room.roomView)));
+        // Column 4: Baby Bed
+        model->setItem(i, 4, createCenteredItem(room.babyBed ? "Yes" : "No"));
         // Column 5: Bed Type
-        model->setItem(i, 5, new QStandardItem(room.beds));
-        // Column 6: Comments
-        model->setItem(i, 6, new QStandardItem(room.comments));
-        // Column 7: Price per Night (2 decimal places)
+        model->setItem(i, 5, createCenteredItem(room.beds));
+        // Column 6: Price per Night
         QString priceString = QString("€ %1").arg(room.pricePerNight, 0, 'f', 2);
-        model->setItem(i, 7, new QStandardItem(priceString));
+        model->setItem(i, 6, createCenteredItem(priceString));
+        // Column 7: Comments
+        model->setItem(i, 7, createCenteredItem(room.comments));
         // Column 8: Room Status
-        model->setItem(i, 8, new QStandardItem(roomStatusToString(room.roomStatus)));
+        model->setItem(i, 8, createCenteredItem(roomStatusToString(room.roomStatus)));
         // Column 9: Housekeeping Status
-        model->setItem(i, 9, new QStandardItem(houseKeepingStatusToString(room.houseKeepingStatus)));
+        model->setItem(i, 9, createCenteredItem(houseKeepingStatusToString(room.houseKeepingStatus)));
 
     }
 }
