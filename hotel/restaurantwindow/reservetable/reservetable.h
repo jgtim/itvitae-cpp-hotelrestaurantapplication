@@ -14,6 +14,7 @@ class reservetable : public QDialog
 public:
     explicit reservetable(QWidget *parent = nullptr);
     ~reservetable();
+    std::vector<QString> getdata();
 
 private slots:
     void on_tableSelectButton_clicked();

@@ -405,10 +405,11 @@ void RestaurantWindow::onReservationTableClicked()
 
             int row = reservationTable->rowCount();
             reservationTable->insertRow(row);
-            reservationTable->setItem(row, 0, new QTableWidgetItem(dialog->ui)); //name
-            reservationTable->setItem(row, 1, new QTableWidgetItem("3")); //table number
-            reservationTable->setItem(row, 2, new QTableWidgetItem("12")); //room number pulled from nowhere
-            reservationTable->setItem(row, 3, new QTableWidgetItem("18:00")); //time, get this from datetime & save date for the sake of detail screen
+            std::vector<QString> newstring = dialog.getdata();
+            reservationTable->setItem(row, 0, new QTableWidgetItem(newstring[0])); //name
+            reservationTable->setItem(row, 1, new QTableWidgetItem(newstring[1])); //table number
+            reservationTable->setItem(row, 2, new QTableWidgetItem(newstring[2])); //room number pulled from nowhere
+            reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); //time, get this from datetime & save date for the sake of detail screen
         }
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");

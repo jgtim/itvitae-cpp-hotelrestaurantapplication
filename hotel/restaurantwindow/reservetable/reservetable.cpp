@@ -35,3 +35,12 @@ void reservetable::on_buttonBox_rejected()
     this->reject();
 }
 
+std::vector<QString> reservetable::getdata(){
+    //get 4 in order: name, table number, room number, time
+    QString name =  ui->nameEdit->text();
+    QString tablenumber = ui->tableEdit->text();
+    QString roomnumber = ""; // TODO add this maybe
+    QString time = ui->reserveTimeEdit->time().toString("HH:mm");
+    return {name, tablenumber, roomnumber, time};
+}
+
