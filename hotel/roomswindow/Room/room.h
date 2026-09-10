@@ -135,8 +135,8 @@ inline void appendRoom(QList<Room>& roomList,
                        const QString& beds,
                        const QString& comments,
                        double pricePerNight,
-                       RoomStatus status = RoomStatus::Available,
-                       HouseKeepingStatus housekeeping = HouseKeepingStatus::Clean)
+                       RoomStatus status,
+                       HouseKeepingStatus housekeeping)
 {
     Room r;
     r.roomNumber = roomNumber;

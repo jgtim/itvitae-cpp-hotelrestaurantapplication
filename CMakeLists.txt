@@ -39,6 +39,12 @@ set(PROJECT_SOURCES
 
         readers/hotelkamersreader.h
         readers/hotelkamersreader.cpp
+
+        readers/iroomrepository.h
+        readers/excelroomrepository.h
+        readers/excelroomrepository.cpp
+        readers/roomrepositoryfactory.h
+        readers/roomrepositoryfactory.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
