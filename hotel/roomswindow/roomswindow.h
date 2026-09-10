@@ -5,9 +5,11 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 #include <QString>
+#include <QSqlDatabase>
 #include <memory>
 
 #include "../../filter/multicolumnfilterproxymodel.h"
+#include "../../hotel/roomswindow/Room/room.h"
 #include "../../readers/iroomrepository.h"
 #include "Room/room.h"
 
@@ -33,11 +35,15 @@ private:
     MultiColumnFilterProxyModel *proxyModel;
     std::unique_ptr<IRoomRepository> roomRepository;
     QList<Room> rooms; // Kept index-aligned with model's rows
+    QSqlDatabase db;
 
     void updateRoomColors();
     void filterRooms(const QString &text);
     void loadRooms();
     void populateModelRow(int row, const Room &room);
+    void importExcelRooms();
+    void addRoomToDatabase(const Room& room);
+    bool isRoomInDatabase(const Room& room);
 
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);

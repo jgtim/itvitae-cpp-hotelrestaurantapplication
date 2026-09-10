@@ -4,6 +4,8 @@
 #include "confirmdialog.h"
 #include "Room/room.h"
 #include "../../readers/roomrepositoryfactory.h"
+#include "../../readers/hotelkamersreader.h"
+#include "../../readers/roomserializer.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -12,6 +14,7 @@
 #include <QSortFilterProxyModel>
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QSqlQuery>
 
 
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
@@ -22,6 +25,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::RoomsWindow)
     , roomRepository(createRoomRepository())
+    , db(QSqlDatabase::database())
 {
     ui->setupUi(this);
 
@@ -178,7 +182,43 @@ void RoomsWindow::loadRooms(){
 
     for (int i = 0; i < rooms.size(); ++i) {
         populateModelRow(i, rooms.at(i));
+        addRoomToDatabase(rooms.at(i);
     }
+}
+
+void RoomsWindow::addRoomToDatabase(const Room& room) {
+    QSqlQuery roomQuery(db);
+
+    if (!isRoomInDatabase(room)) {
+        auto map = RoomSerializer::toVariantMap(room);
+
+        roomQuery.prepare("INSERT INTO rooms VALUES (:RoomNumber, :RoomType, :Beds, :RoomView, :BabyBed, :Comments, :PricePerNight, :RoomStatus, :HousekeepingStatus);");
+
+        roomQuery.bindValue(":RoomNumber", map.value("room_number"));
+        roomQuery.bindValue(":RoomType", map.value("room_type"));
+        roomQuery.bindValue(":Beds", map.value("capacity"));
+        roomQuery.bindValue(":RoomView", map.value("room_view"));
+        roomQuery.bindValue(":BabyBed", map.value("baby_bed"));
+        roomQuery.bindValue(":Comments", map.value("comments"));
+        roomQuery.bindValue(":PricePerNight", map.value("price_per_night"));
+        roomQuery.bindValue(":RoomStatus", map.value("room_status"));
+        roomQuery.bindValue(":HousekeepingStatus", map.value("housekeeping_status"));
+        roomQuery.exec();
+    }
+}
+
+bool RoomsWindow::isRoomInDatabase(const Room& room) {
+    QSqlQuery roomQuery(db);
+    bool status = false;
+
+    roomQuery.prepare("SELECT RoomNumber FROM rooms WHERE RoomNumber = :roomNum;");
+    roomQuery.bindValue(":roomNum", room.roomNumber);
+    if (roomQuery.exec()) {
+        if (roomQuery.next()) {
+            status = true;
+        }
+    }
+    return status;
 }
 
 void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
