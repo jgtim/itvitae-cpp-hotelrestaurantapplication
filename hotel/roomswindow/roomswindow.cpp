@@ -230,13 +230,9 @@ void RoomsWindow::addRoomToDatabase(const Room& room) {
         roomQuery.bindValue(":Adults", map.value("adults"));
         roomQuery.bindValue(":RoomView", map.value("room_view"));
         roomQuery.bindValue(":BabyBed", map.value("baby_bed"));
-<<<<<<< HEAD
-=======
         roomQuery.bindValue(":Beds", map.value("beds"));
         roomQuery.bindValue(":Comments", map.value("comments"));
->>>>>>> cd0f7b9387319e542c4ef20aa69ecc118069a7d6
         roomQuery.bindValue(":PricePerNight", map.value("price_per_night"));
-        roomQuery.bindValue(":Comments", map.value("comments"));
         roomQuery.bindValue(":RoomStatus", map.value("room_status"));
         roomQuery.bindValue(":HousekeepingStatus", map.value("housekeeping_status"));
         roomQuery.exec();
