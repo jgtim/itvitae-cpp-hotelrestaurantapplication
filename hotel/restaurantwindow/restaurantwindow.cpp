@@ -81,9 +81,9 @@ void RestaurantWindow::setupLayout()
     mainSplitter->addWidget(rightPanel);
 
     // Set splitter sizes (30/70)
-    mainSplitter->setSizes(QList<int>() << 300 << 700);
-    mainSplitter->setStretchFactor(0, 3);
-    mainSplitter->setStretchFactor(1, 7);
+    mainSplitter->setSizes(QList<int>() << 625 << 375);
+    mainSplitter->setStretchFactor(0, 1);
+    mainSplitter->setStretchFactor(1, 1);
 
     mainLayout->addWidget(mainSplitter);
     setLayout(mainLayout);
@@ -112,7 +112,7 @@ void RestaurantWindow::setupLeftPanel()
     reservationTable->setColumnCount(4);
     reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Hotel Room" << "Time");
     reservationTable->setMaximumHeight(120);
-    reservationTable->horizontalHeader()->setStretchLastSection(true);
+    reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     reservationTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
     reservationTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
@@ -138,7 +138,7 @@ void RestaurantWindow::setupLeftPanel()
     orderTable->setColumnCount(5);
     orderTable->setHorizontalHeaderLabels(QStringList() << "Status" << "Rooms Number" << "Menu Item(s)" << "Placed at" << "Tables");
     orderTable->setMaximumHeight(120);
-    orderTable->horizontalHeader()->setStretchLastSection(true);
+    orderTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     orderTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
     orderTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
@@ -269,9 +269,12 @@ void RestaurantWindow::loadMockTables()
 {
     tables.clear();
 
+    const int columns = 4;
+    const int itemSpacing = 65;
+
     for (int i = 1; i <= 31; ++i) {
-        int x = 15 + ((i - 1) % 8) * 65;
-        int y = 15 + ((i - 1) / 8) * 65;
+        int x = 15 + ((i - 1) % columns) * itemSpacing;
+        int y = 15 + ((i - 1) / columns) * itemSpacing;
 
         int randomStatus = QRandomGenerator::global()->bounded(3);
 
