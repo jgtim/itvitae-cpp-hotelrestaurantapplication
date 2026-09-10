@@ -7,6 +7,7 @@
 #include <QRandomGenerator>
 #include <QPainter>
 #include <QMessageBox>
+#include <cmath>
 
 #include <iostream>
 #include <qevent.h>
