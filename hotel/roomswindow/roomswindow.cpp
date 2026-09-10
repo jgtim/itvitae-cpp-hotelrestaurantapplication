@@ -251,22 +251,28 @@ void RoomsWindow::fillInRoomData(int row){
 void RoomsWindow::saveRoomData(int row){
     if (row < 0 || row >= rooms.size()) return;
 
-    // Update the in-memory Room struct from the edit fields. Fields the UI doesn't expose
-    // for editing (view, baby bed, beds, price) are simply left as they were.
-    Room &room = rooms[row];
-    room.roomNumber = ui->RoomNumEdit->text();
-    room.roomType = stringToRoomType(ui->RoomTypeEdit->currentText());
-    room.adults = ui->CapacityEdit->text().toInt();
-    room.roomStatus = stringToRoomStatus(ui->StatusEdit->currentText());
-    room.houseKeepingStatus = stringToHouseKeepingStatus(ui->CleaningEdit->currentText());
-    room.comments = ui->NotesEdit->toPlainText();
+    // Build the updated Room on a copy first. Fields the UI doesn't expose for editing
+    // view, baby bed, beds and price are simply left as they were.
+    Room updatedRoom = rooms[row];
+    updatedRoom.roomNumber = ui->RoomNumEdit->text();
+    updatedRoom.roomType = stringToRoomType(ui->RoomTypeEdit->currentText());
+    updatedRoom.adults = ui->CapacityEdit->text().toInt();
+    updatedRoom.roomStatus = stringToRoomStatus(ui->StatusEdit->currentText());
+    updatedRoom.houseKeepingStatus = stringToHouseKeepingStatus(ui->CleaningEdit->currentText());
+    updatedRoom.comments = ui->NotesEdit->toPlainText();
 
-    populateModelRow(row, room); // Reflect the change in the table immediately
-    updateRoomColors();          // status/housekeeping colors need refreshing after a save
+    // Try to persist the copy first. Only commit it to rooms/model once storage confirms the save succeeded
+    QList<Room> attemptedRooms = rooms;
+    attemptedRooms[row] = updatedRoom;
 
-    if (!roomRepository->saveRooms(rooms)) {
-        QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes are only visible for this session.");
+    if (!roomRepository->saveRooms(attemptedRooms)) {
+        QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes have not been saved.");
+        return;
     }
+
+    rooms = attemptedRooms;
+    populateModelRow(row, updatedRoom); // Reflect the change in the table now that it's safely saved
+    updateRoomColors();                 // status/housekeeping colors need refreshing after a save
 }
 
 void RoomsWindow::on_seeRoomDetails_clicked()
@@ -344,4 +350,3 @@ void RoomsWindow::on_CancelButton_clicked()
         setEditMode(true);
     }
 }
-
