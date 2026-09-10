@@ -146,27 +146,35 @@ void RoomsWindow::updateRoomColors()
 // Shared by loadRooms() (initial fill) and saveRoomData() (refresh after an edit) so the
 // two never drift out of sync with each other.
 void RoomsWindow::populateModelRow(int row, const Room &room) {
+
+    // Lambda function to create centered items quickly
+    auto createCenteredItem = [](const QString &text) {
+        auto *item = new QStandardItem(text);
+        item->setTextAlignment(Qt::AlignCenter);
+        return item;
+    };
+
     // Column 0: Room Number
-    model->setItem(row, 0, new QStandardItem(room.roomNumber));
+    model->setItem(row, 0, createCenteredItem(room.roomNumber));
     // Column 1: Room Type (Enum -> String)
-    model->setItem(row, 1, new QStandardItem(roomTypeToString(room.roomType)));
+    model->setItem(row, 1, createCenteredItem(roomTypeToString(room.roomType)));
     // Column 2: Adults
-    model->setItem(row, 2, new QStandardItem(QString::number(room.adults)));
+    model->setItem(row, 2, createCenteredItem(QString::number(room.adults)));
     // Column 3: Room View (Enum -> String)
-    model->setItem(row, 3, new QStandardItem(roomViewToString(room.roomView)));
+    model->setItem(row, 3, createCenteredItem(roomViewToString(room.roomView)));
     // Column 4: Baby Bed (Bool -> String)
-    model->setItem(row, 4, new QStandardItem(room.babyBed ? "Yes" : "No"));
+    model->setItem(row, 4, createCenteredItem(room.babyBed ? "Yes" : "No"));
     // Column 5: Bed Type
-    model->setItem(row, 5, new QStandardItem(room.beds));
-    // Column 6: Comments
-    model->setItem(row, 6, new QStandardItem(room.comments));
-    // Column 7: Price per Night (2 decimal places)
+    model->setItem(row, 5, createCenteredItem(room.beds));
+    // Column 6: Price per Night (2 decimal places)
     QString priceString = QString("€ %1").arg(room.pricePerNight, 0, 'f', 2);
-    model->setItem(row, 7, new QStandardItem(priceString));
+    model->setItem(row, 6, createCenteredItem(priceString));
+    // Column 7: Comments
+    model->setItem(row, 7, createCenteredItem(room.comments));
     // Column 8: Room Status
-    model->setItem(row, 8, new QStandardItem(roomStatusToString(room.roomStatus)));
+    model->setItem(row, 8, createCenteredItem(roomStatusToString(room.roomStatus)));
     // Column 9: Housekeeping Status
-    model->setItem(row, 9, new QStandardItem(houseKeepingStatusToString(room.houseKeepingStatus)));
+    model->setItem(row, 9, createCenteredItem(houseKeepingStatusToString(room.houseKeepingStatus)));
 }
 
 void RoomsWindow::loadRooms(){
@@ -202,8 +210,8 @@ void RoomsWindow::addRoomToDatabase(const Room& room) {
         roomQuery.bindValue(":Beds", map.value("capacity"));
         roomQuery.bindValue(":RoomView", map.value("room_view"));
         roomQuery.bindValue(":BabyBed", map.value("baby_bed"));
-        roomQuery.bindValue(":Comments", map.value("comments"));
         roomQuery.bindValue(":PricePerNight", map.value("price_per_night"));
+        roomQuery.bindValue(":Comments", map.value("comments"));
         roomQuery.bindValue(":RoomStatus", map.value("room_status"));
         roomQuery.bindValue(":HousekeepingStatus", map.value("housekeeping_status"));
         roomQuery.exec();
