@@ -4,7 +4,7 @@
 #include <QString>
 #include <QDate>
 #include "../Guest/guest.h"
-#include "PaymentStatus.h"
+#include "hotel/reservationstab/Reservation/PaymentStatus.h"
 
 struct Reservation {
     QString ReservationID;
