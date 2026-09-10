@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <qevent.h>
+#include <qstandarditemmodel.h>
 
 #include "reservetable/reservetable.h"
 
@@ -400,12 +401,14 @@ void RestaurantWindow::onReservationTableClicked()
         reservetable dialog(this);
         if (dialog.exec() == QDialog::Accepted) {
             std::cout << "DIALOG" << std::endl;
-            //TODO add to list of reservations. Not sure what to do about the comments or hotel room
-            //reservationTable->insertRow(2); //instead of 2 whatever row is last +1
-            //reservationTable->setItem(2, 0, new QTableWidgetItem("Janssen")); //name
-            //reservationTable->setItem(2, 1, new QTableWidgetItem("3")); //table number
-            //reservationTable->setItem(2, 2, new QTableWidgetItem("12")); //room number pulled from nowhere
-            //reservationTable->setItem(2, 3, new QTableWidgetItem("18:00")); //time, get this from datetime & save date for the sake of detail screen
+            //TODO add to list of reservations. Not sure what to do about the comments or hotel room. might also be database later?
+
+            int row = reservationTable->rowCount();
+            reservationTable->insertRow(row);
+            reservationTable->setItem(row, 0, new QTableWidgetItem(dialog->ui)); //name
+            reservationTable->setItem(row, 1, new QTableWidgetItem("3")); //table number
+            reservationTable->setItem(row, 2, new QTableWidgetItem("12")); //room number pulled from nowhere
+            reservationTable->setItem(row, 3, new QTableWidgetItem("18:00")); //time, get this from datetime & save date for the sake of detail screen
         }
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
