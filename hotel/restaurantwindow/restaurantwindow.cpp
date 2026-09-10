@@ -6,6 +6,7 @@
 #include <QHeaderView>
 #include <QRandomGenerator>
 #include <QPainter>
+#include <QScrollArea>
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent), ui(nullptr)
@@ -20,6 +21,22 @@ public:
     explicit TableCanvas(const QVector<Table>& tables, QWidget *parent = nullptr)
         : QWidget(parent), tables(tables)
     {
+        updateCanvasSize();
+    }
+
+    void updateCanvasSize()
+    {
+        int maxX = 0;
+        int maxY = 0;
+
+        for (const Table& table : tables) {
+            // Each table ellipse is 50x50 at (x, y)
+            if (table.getX() + 50 > maxX) maxX = table.getX() + 50;
+            if (table.getY() + 50 > maxY) maxY = table.getY() + 50;
+        }
+
+        // Add padding around the canvas edge
+        setMinimumSize(maxX + 0, maxY + 0);
     }
 
 protected:
@@ -205,11 +222,14 @@ void RestaurantWindow::setupRightPanel()
     topButtonLayout->addStretch();
     rightLayout->addLayout(topButtonLayout);
 
-    // === Canvas Area (zwart) ===
     tableCanvas = new TableCanvas(tables);
-    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
-    rightLayout->addWidget(tableCanvas);
 
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidget(tableCanvas);
+    scrollArea->setWidgetResizable(true); // Allows canvas to expand automatically when window expands
+    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
+
+    rightLayout->addWidget(scrollArea);
     rightPanel->setLayout(rightLayout);
 }
 
