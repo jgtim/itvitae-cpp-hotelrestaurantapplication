@@ -75,6 +75,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     ui->roomsTableView->setModel(proxyModel);
     ui->roomsTableView->resizeColumnsToContents();
+    ui->roomsTableView->setColumnWidth(7, 200);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     // ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -170,7 +171,20 @@ void RoomsWindow::populateModelRow(int row, const Room &room) {
     QString priceString = QString("€ %1").arg(room.pricePerNight, 0, 'f', 2);
     model->setItem(row, 6, createCenteredItem(priceString));
     // Column 7: Comments
-    model->setItem(row, 7, createCenteredItem(room.comments));
+    // Truncate the text in the table
+    const int maxDisplayChars = 10;
+    QString displayText = room.comments;
+    displayText.replace("\n", " ");
+
+    if (displayText.length() > maxDisplayChars) {
+        displayText = displayText.left(maxDisplayChars) + "...";
+    }
+
+    QStandardItem *commentsItem = createCenteredItem(displayText);
+    commentsItem->setToolTip(room.comments);
+    commentsItem->setData(room.comments, Qt::UserRole);
+
+    model->setItem(row, 7, commentsItem);
     // Column 8: Room Status
     model->setItem(row, 8, createCenteredItem(roomStatusToString(room.roomStatus)));
     // Column 9: Housekeeping Status
@@ -278,23 +292,26 @@ void RoomsWindow::fillInRoomData(int row){
         QString header = model->horizontalHeaderItem(col)->text();
         QStandardItem *item = model->item(row, col);
         QString value = item ? item->text() : "";
-        if(header == "Room Number"){
+        if (header == "Room Number") {
             ui->RoomNumEdit->setText(value);
-        }else if(header == "Room type"){
+        } else if(header == "Room type") {
             int index = ui->RoomTypeEdit->findText(value);
             ui->RoomTypeEdit->setCurrentIndex(index);
-        }else if(header == "Capacity"){
+        } else if(header == "Capacity") {
             ui->CapacityEdit->setText(value);
-        }else if(header == "Status"){
+        } else if(header == "Status") {
             int index = ui->StatusEdit->findText(value);
             ui->StatusEdit->setCurrentIndex(index);
-        }else if(header == "Housekeeping"){
+        } else if(header == "Housekeeping") {
             int index = ui->CleaningEdit->findText(value);
             ui->CleaningEdit->setCurrentIndex(index);
-        }else if(header == "Comments"){
-            ui->NotesEdit->setText(value);
-        }else if(header == "Comments        "){
-            ui->NotesEdit->setPlainText(value);
+        } else if(header == "Comments") {
+            // Retrieve the full original text from Qt::UserRole if available
+            QString fullComment = item ? item->data(Qt::UserRole).toString() : "";
+            if (fullComment.isEmpty()) {
+                fullComment = value; // Fallback to display text if UserRole is empty
+            }
+            ui->NotesEdit->setPlainText(fullComment);
         }
     }
 }
