@@ -27,9 +27,18 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Make the table header text fit
+    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
     model = new QStandardItemModel(this);
     ui->roomStack->setCurrentIndex(0);
+
+    // Prevent CancelButton from shifting nearby widgets when hidden/shown
+    QSizePolicy cancelPolicy = ui->CancelButton->sizePolicy();
+    cancelPolicy.setRetainSizeWhenHidden(true);
+    ui->CancelButton->setSizePolicy(cancelPolicy);
     ui->CancelButton->setVisible(false);
+
     ui->RoomNumEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
     ui->CapacityEdit->setValidator(new QIntValidator(0, 100, this));
 
@@ -39,7 +48,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     QStringList roomStatuses = { "Available", "Occupied", "Reserved", "Maintenance" };
     ui->StatusEdit->addItems(roomStatuses);
 
-    QStringList Cleaningstatuses = { "Clean", "Dirty" };
+    QStringList Cleaningstatuses = { "Clean", "Needs Cleaning" };
     ui->CleaningEdit->addItems(Cleaningstatuses);
 
     // --- later voor SQL aanzetten ---
@@ -53,11 +62,11 @@ RoomsWindow::RoomsWindow(QWidget *parent)
         "Room Number",
         "Room type",
         "Capacity",
-        "View",        //spaties om het vakje groter te maken
+        "View",
         "Babybed",
         "Bed type",
-        "Comments", //spaties om het vakje groter te maken
         "Price per night",
+        "Comments",
         "Status",
         "Housekeeping",
         //"More Information" //for if we add button here later
@@ -71,8 +80,10 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     proxyModel->setFilterColumns({0,1,3,8,9});
 
     ui->roomsTableView->setModel(proxyModel);
+    ui->roomsTableView->resizeColumnsToContents();
+    ui->roomsTableView->setColumnWidth(7, 300);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    // ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui->roomsTableView->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
     ui->roomsTableView->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
@@ -142,27 +153,48 @@ void RoomsWindow::updateRoomColors()
 // Shared by loadRooms() (initial fill) and saveRoomData() (refresh after an edit) so the
 // two never drift out of sync with each other.
 void RoomsWindow::populateModelRow(int row, const Room &room) {
+
+    // Lambda function to create centered items quickly
+    auto createCenteredItem = [](const QString &text) {
+        auto *item = new QStandardItem(text);
+        item->setTextAlignment(Qt::AlignCenter);
+        return item;
+    };
+
     // Column 0: Room Number
-    model->setItem(row, 0, new QStandardItem(room.roomNumber));
+    model->setItem(row, 0, createCenteredItem(room.roomNumber));
     // Column 1: Room Type (Enum -> String)
-    model->setItem(row, 1, new QStandardItem(roomTypeToString(room.roomType)));
+    model->setItem(row, 1, createCenteredItem(roomTypeToString(room.roomType)));
     // Column 2: Adults
-    model->setItem(row, 2, new QStandardItem(QString::number(room.adults)));
+    model->setItem(row, 2, createCenteredItem(QString::number(room.adults)));
     // Column 3: Room View (Enum -> String)
-    model->setItem(row, 3, new QStandardItem(roomViewToString(room.roomView)));
+    model->setItem(row, 3, createCenteredItem(roomViewToString(room.roomView)));
     // Column 4: Baby Bed (Bool -> String)
-    model->setItem(row, 4, new QStandardItem(room.babyBed ? "Yes" : "No"));
+    model->setItem(row, 4, createCenteredItem(room.babyBed ? "Yes" : "No"));
     // Column 5: Bed Type
-    model->setItem(row, 5, new QStandardItem(room.beds));
-    // Column 6: Comments
-    model->setItem(row, 6, new QStandardItem(room.comments));
-    // Column 7: Price per Night (2 decimal places)
+    model->setItem(row, 5, createCenteredItem(room.beds));
+    // Column 6: Price per Night (2 decimal places)
     QString priceString = QString("€ %1").arg(room.pricePerNight, 0, 'f', 2);
-    model->setItem(row, 7, new QStandardItem(priceString));
+    model->setItem(row, 6, createCenteredItem(priceString));
+    // Column 7: Comments
+    // Truncate the text in the table
+    const int maxDisplayChars = 20;
+    QString displayText = room.comments;
+    displayText.replace("\n", " ");
+
+    if (displayText.length() > maxDisplayChars) {
+        displayText = displayText.left(maxDisplayChars) + "...";
+    }
+
+    QStandardItem *commentsItem = createCenteredItem(displayText);
+    commentsItem->setToolTip(room.comments);
+    commentsItem->setData(room.comments, Qt::UserRole);
+
+    model->setItem(row, 7, commentsItem);
     // Column 8: Room Status
-    model->setItem(row, 8, new QStandardItem(roomStatusToString(room.roomStatus)));
+    model->setItem(row, 8, createCenteredItem(roomStatusToString(room.roomStatus)));
     // Column 9: Housekeeping Status
-    model->setItem(row, 9, new QStandardItem(houseKeepingStatusToString(room.houseKeepingStatus)));
+    model->setItem(row, 9, createCenteredItem(houseKeepingStatusToString(room.houseKeepingStatus)));
 }
 
 void RoomsWindow::loadRooms(){
@@ -179,8 +211,12 @@ void RoomsWindow::loadRooms(){
     model->removeRows(0, model->rowCount()); // Clear any existing items
 
     for (int i = 0; i < rooms.size(); ++i) {
-        populateModelRow(i, rooms.at(i));
-        addRoomToDatabase(rooms.at(i));
+        if (!isRoomInDatabase(rooms.at(i))) {
+            addRoomToDatabase(rooms.at(i)); // if the room isn't in the database, add it
+        } else {
+            updateRoomPrice(rooms.at(i)); // otherwise, just update the price
+        }
+        populateModelRow(i, getRoomFromDatabaseByNumber(rooms.at(i).roomNumber));
     }
 }
 
@@ -218,6 +254,63 @@ bool RoomsWindow::isRoomInDatabase(const Room& room) {
         }
     }
     return status;
+}
+
+void RoomsWindow::updateRoomInDatabase(const Room& room) {
+    auto map = RoomSerializer::toVariantMap(room);
+    QSqlQuery roomQuery(db);
+
+    roomQuery.prepare("UPDATE rooms SET RoomType = :RoomType, Adults = :Adults, RoomView = :RoomView, BabyBed = :BabyBed, Beds = :Beds, Comments = :Comments, RoomStatus = :RoomStatus, HousekeepingStatus = :HousekeepingStatus WHERE RoomNumber = :RoomNumber;");
+
+    roomQuery.bindValue(":RoomType", map.value("room_type").toString());
+    roomQuery.bindValue(":Adults", map.value("adults").toString());
+    roomQuery.bindValue(":RoomView", map.value("room_view").toString());
+    roomQuery.bindValue(":BabyBed", map.value("baby_bed").toString());
+    roomQuery.bindValue(":Beds", map.value("beds").toString());
+    roomQuery.bindValue(":Comments", map.value("comments").toString());
+    roomQuery.bindValue(":RoomStatus", map.value("room_status").toString());
+    roomQuery.bindValue(":HousekeepingStatus", map.value("housekeeping_status").toString());
+
+    roomQuery.bindValue(":RoomNumber", map.value("room_number").toString());
+
+    roomQuery.exec();
+}
+
+void RoomsWindow::updateRoomPrice(const Room& room) {
+    auto map = RoomSerializer::toVariantMap(room);
+    QSqlQuery roomQuery(db);
+
+    roomQuery.prepare("UPDATE rooms SET PricePerNight = :PricePerNight WHERE RoomNumber = :RoomNumber;");
+
+    roomQuery.bindValue(":PricePerNight", map.value("price_per_night"));
+    roomQuery.bindValue(":RoomNumber", map.value("room_number"));
+
+    roomQuery.exec();
+}
+
+Room RoomsWindow::getRoomFromDatabaseByNumber(const QString& roomNumber){
+    QSqlQuery roomQuery(db);
+    QVariantMap roomMap;
+    Room room;
+    roomQuery.prepare("SELECT RoomNumber, RoomType, Adults, RoomView, BabyBed, Beds, Comments, PricePerNight, RoomStatus, HousekeepingStatus FROM rooms WHERE RoomNumber = :roomNum;");
+
+    roomQuery.bindValue(":roomNum", roomNumber);
+    if (roomQuery.exec()) {
+        if (roomQuery.next()) {
+            roomMap["room_number"] = roomQuery.value("RoomNumber").toString();
+            roomMap["room_type"] = roomQuery.value("RoomType").toString();
+            roomMap["adults"] = roomQuery.value("Adults").toString();
+            roomMap["room_view"] = roomQuery.value("RoomView").toString();
+            roomMap["baby_bed"] = roomQuery.value("BabyBed").toString();
+            roomMap["beds"] = roomQuery.value("Beds").toString();
+            roomMap["comments"] = roomQuery.value("Comments").toString();
+            roomMap["price_per_night"] = roomQuery.value("PricePerNight").toDouble();
+            roomMap["room_status"] = roomQuery.value("RoomStatus").toString();
+            roomMap["housekeeping_status"] = roomQuery.value("HousekeepingStatus").toString();
+            room = RoomSerializer::fromVariantMap(roomMap);
+        }
+    }
+    return room;
 }
 
 void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
@@ -261,30 +354,33 @@ void RoomsWindow::fillInRoomData(int row){
     int columnCount = model->columnCount();
 
     for (int col = 0; col < columnCount; ++col) {
-        setEditMode(true);
-
         QString header = model->horizontalHeaderItem(col)->text();
         QStandardItem *item = model->item(row, col);
         QString value = item ? item->text() : "";
-        if(header == "Room Number"){
+
+        if (header == "Room Number") {
             ui->RoomNumEdit->setText(value);
-        }else if(header == "Room type"){
+        } else if(header == "Room type") {
             int index = ui->RoomTypeEdit->findText(value);
             ui->RoomTypeEdit->setCurrentIndex(index);
-        }else if(header == "Capacity"){
+        } else if(header == "Capacity") {
             ui->CapacityEdit->setText(value);
-        }else if(header == "Status"){
+        } else if(header == "Status") {
             int index = ui->StatusEdit->findText(value);
             ui->StatusEdit->setCurrentIndex(index);
-        }else if(header == "Housekeeping"){
+        } else if(header == "Housekeeping") {
             int index = ui->CleaningEdit->findText(value);
             ui->CleaningEdit->setCurrentIndex(index);
-        }else if(header == "Comments"){
-            ui->NotesEdit->setText(value);
-        }else if(header == "Comments        "){
-            ui->NotesEdit->setPlainText(value);
+        } else if(header == "Comments") {
+            // Retrieve the full original text from Qt::UserRole if available
+            QString fullComment = item ? item->data(Qt::UserRole).toString() : "";
+            if (fullComment.isEmpty()) {
+                fullComment = value; // Fallback to display text if UserRole is empty
+            }
+            ui->NotesEdit->setPlainText(fullComment);
         }
     }
+    setEditMode(true);
 }
 
 void RoomsWindow::saveRoomData(int row){
@@ -304,10 +400,12 @@ void RoomsWindow::saveRoomData(int row){
     QList<Room> attemptedRooms = rooms;
     attemptedRooms[row] = updatedRoom;
 
-    if (!roomRepository->saveRooms(attemptedRooms)) {
-        QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes have not been saved.");
-        return;
-    }
+    // if (!roomRepository->saveRooms(attemptedRooms)) {
+    //     QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes have not been saved.");
+    //     return;
+    // }
+
+    updateRoomInDatabase(updatedRoom);
 
     rooms = attemptedRooms;
     populateModelRow(row, updatedRoom); // Reflect the change in the table now that it's safely saved
