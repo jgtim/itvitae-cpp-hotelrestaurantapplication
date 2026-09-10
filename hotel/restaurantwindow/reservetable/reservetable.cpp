@@ -44,3 +44,7 @@ std::vector<QString> reservetable::getdata(){
     return {name, tablenumber, roomnumber, time};
 }
 
+void reservetable::setTable(int selectedTable){
+    ui->tableEdit->setText(QString::number(selectedTable));
+}
+

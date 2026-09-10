@@ -15,6 +15,7 @@ public:
     explicit reservetable(QWidget *parent = nullptr);
     ~reservetable();
     std::vector<QString> getdata();
+    void setTable(int);
 
 private slots:
     void on_tableSelectButton_clicked();
