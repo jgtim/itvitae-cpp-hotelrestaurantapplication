@@ -113,6 +113,13 @@ void RestaurantWindow::setupLeftPanel()
     reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Hotel Room" << "Time");
     reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setStretchLastSection(true);
+
+    reservationTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
+    reservationTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
+    reservationTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
+    reservationTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
+    reservationTable->verticalHeader()->setVisible(false);                  // Cannot see row numbers
+
     setupReservationTable();
     leftLayout->addWidget(reservationTable);
 
@@ -132,6 +139,13 @@ void RestaurantWindow::setupLeftPanel()
     orderTable->setHorizontalHeaderLabels(QStringList() << "Status" << "Rooms Number" << "Menu Item(s)" << "Placed at" << "Tables");
     orderTable->setMaximumHeight(120);
     orderTable->horizontalHeader()->setStretchLastSection(true);
+
+    orderTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
+    orderTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
+    orderTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
+    orderTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
+    orderTable->verticalHeader()->setVisible(false);                  // Cannot see row numbers
+
     setupOrderTable();
     leftLayout->addWidget(orderTable);
 
