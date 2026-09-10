@@ -184,11 +184,11 @@ void RoomsWindow::addRoomToDatabase(const Room& room) {
     if (!isRoomInDatabase(room)) {
         auto map = RoomSerializer::toVariantMap(room);
 
-        roomQuery.prepare("INSERT INTO rooms VALUES (:RoomNumber, :RoomType, :Capacity, :RoomView, :BabyBed, :Comments, :PricePerNight, :RoomStatus, :HousekeepingStatus);");
+        roomQuery.prepare("INSERT INTO rooms VALUES (:RoomNumber, :RoomType, :Beds, :RoomView, :BabyBed, :Comments, :PricePerNight, :RoomStatus, :HousekeepingStatus);");
 
         roomQuery.bindValue(":RoomNumber", map.value("room_number"));
         roomQuery.bindValue(":RoomType", map.value("room_type"));
-        roomQuery.bindValue(":Capacity", map.value("capacity"));
+        roomQuery.bindValue(":Beds", map.value("capacity"));
         roomQuery.bindValue(":RoomView", map.value("room_view"));
         roomQuery.bindValue(":BabyBed", map.value("baby_bed"));
         roomQuery.bindValue(":Comments", map.value("comments"));
