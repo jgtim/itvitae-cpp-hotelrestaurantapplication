@@ -180,7 +180,11 @@ void RoomsWindow::loadRooms(){
 
     for (int i = 0; i < rooms.size(); ++i) {
         populateModelRow(i, rooms.at(i));
-        addRoomToDatabase(rooms.at(i));
+        if (!isRoomInDatabase(rooms.at(i))) {
+            addRoomToDatabase(rooms.at(i)); // if the room isn't in the database, add it
+        } else {
+            updateRoomPrice(rooms.at(i)); // otherwise, just update the price
+        }
     }
 }
 
@@ -217,6 +221,57 @@ bool RoomsWindow::isRoomInDatabase(const Room& room) {
         }
     }
     return status;
+}
+
+void RoomsWindow::updateRoomInDatabase(const Room& room) {
+    auto map = RoomSerializer::toVariantMap(room);
+    QSqlQuery roomQuery(db);
+
+    roomQuery.prepare("UPDATE rooms SET RoomType = :RoomType, Beds = :Beds, RoomView = :RoomView, BabyBed = :BabyBed, Comments = :Comments, RoomStatus = :RoomStatus, HousekeepingStatus = :HousekeepingStatus WHERE RoomNumber = :RoomNumber;");
+
+    roomQuery.bindValue(":RoomType", map.value("room_type").toString());
+    roomQuery.bindValue(":Beds", map.value("capacity").toString());
+    roomQuery.bindValue(":RoomView", map.value("room_view").toString());
+    roomQuery.bindValue(":BabyBed", map.value("baby_bed").toString());
+    roomQuery.bindValue(":Comments", map.value("comments").toString());
+    roomQuery.bindValue(":RoomStatus", map.value("room_status").toString());
+    roomQuery.bindValue(":HousekeepingStatus", map.value("housekeeping_status").toString());
+
+    roomQuery.bindValue(":RoomNumber", map.value("room_number").toString());
+
+    roomQuery.exec();
+}
+
+void RoomsWindow::updateRoomPrice(const Room& room) {
+    auto map = RoomSerializer::toVariantMap(room);
+    QSqlQuery roomQuery(db);
+
+    roomQuery.prepare("UPDATE rooms SET PricePerNight = :PricePerNight WHERE RoomNumber = :RoomNumber;");
+
+    roomQuery.bindValue(":PricePerNight", map.value("price_per_night"));
+    roomQuery.bindValue(":RoomNumber", map.value("room_number"));
+
+    roomQuery.exec();
+}
+
+Room RoomsWindow::getRoomFromDatabaseByNumber(const QString& roomNumber){
+    QSqlQuery roomQuery(db);
+    QVariantMap roomMap;
+    roomQuery.prepare("SELECT RoomNumber, RoomType, Beds, RoomView, BabyBed, Comments, PricePerNight, RoomStatus, HousekeepingStatus FROM rooms WHERE RoomNumber = :roomNum;");
+
+    roomQuery.bindValue(":roomNum", roomNumber);
+    if (roomQuery.exec()) {
+        if (roomQuery.next()) {
+            roomMap["room_number"] = roomQuery.value("RoomNumber").toString();
+            roomMap["room_type"] = roomQuery.value("RoomType").toString();
+            roomMap["capacity"] = roomQuery.value("Beds").toString();
+            roomMap["room_view"] = roomQuery.value("RoomView").toString();
+            roomMap["price_per_night"] = roomQuery.value("PricePerNight").toDouble();
+            roomMap["room_status"] = roomQuery.value("RoomStatus").toString();
+            roomMap["housekeeping_status"] = roomQuery.value("HousekeepingStatus").toString();
+        }
+    }
+    // not finished yet, need to fix room implemenation in the database first
 }
 
 void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
