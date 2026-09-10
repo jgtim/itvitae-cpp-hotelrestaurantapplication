@@ -5,8 +5,10 @@
 #include <QStandardItemModel>
 #include <QSortFilterProxyModel>
 #include <QString>
+#include <QSqlDatabase>
 
 #include "../../filter/multicolumnfilterproxymodel.h"
+#include "../../hotel/roomswindow/Room/room.h"
 
 namespace Ui {
 class RoomsWindow;
@@ -27,10 +29,13 @@ private:
     Ui::RoomsWindow *ui;
     QStandardItemModel *model;
     MultiColumnFilterProxyModel *proxyModel;
+    QSqlDatabase db;
 
     void updateRoomColors();
     void filterRooms(const QString &text);
     void importExcelRooms();
+    void addRoomToDatabase(const Room& room);
+    bool isRoomInDatabase(const Room& room);
 
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);
