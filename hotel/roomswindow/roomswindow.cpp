@@ -32,7 +32,13 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     model = new QStandardItemModel(this);
     ui->roomStack->setCurrentIndex(0);
+
+    // Prevent CancelButton from shifting nearby widgets when hidden/shown
+    QSizePolicy cancelPolicy = ui->CancelButton->sizePolicy();
+    cancelPolicy.setRetainSizeWhenHidden(true);
+    ui->CancelButton->setSizePolicy(cancelPolicy);
     ui->CancelButton->setVisible(false);
+
     ui->RoomNumEdit->setValidator(new QDoubleValidator(0, 100, 2, this));
     ui->CapacityEdit->setValidator(new QIntValidator(0, 100, this));
 
@@ -75,7 +81,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     ui->roomsTableView->setModel(proxyModel);
     ui->roomsTableView->resizeColumnsToContents();
-    ui->roomsTableView->setColumnWidth(7, 200);
+    ui->roomsTableView->setColumnWidth(7, 300);
     ui->roomsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     // ui->roomsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -172,7 +178,7 @@ void RoomsWindow::populateModelRow(int row, const Room &room) {
     model->setItem(row, 6, createCenteredItem(priceString));
     // Column 7: Comments
     // Truncate the text in the table
-    const int maxDisplayChars = 10;
+    const int maxDisplayChars = 20;
     QString displayText = room.comments;
     displayText.replace("\n", " ");
 
@@ -287,11 +293,10 @@ void RoomsWindow::fillInRoomData(int row){
     int columnCount = model->columnCount();
 
     for (int col = 0; col < columnCount; ++col) {
-        setEditMode(true);
-
         QString header = model->horizontalHeaderItem(col)->text();
         QStandardItem *item = model->item(row, col);
         QString value = item ? item->text() : "";
+
         if (header == "Room Number") {
             ui->RoomNumEdit->setText(value);
         } else if(header == "Room type") {
@@ -314,6 +319,7 @@ void RoomsWindow::fillInRoomData(int row){
             ui->NotesEdit->setPlainText(fullComment);
         }
     }
+    setEditMode(true);
 }
 
 void RoomsWindow::saveRoomData(int row){
