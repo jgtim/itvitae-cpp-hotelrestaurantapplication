@@ -179,12 +179,12 @@ void RoomsWindow::loadRooms(){
     model->removeRows(0, model->rowCount()); // Clear any existing items
 
     for (int i = 0; i < rooms.size(); ++i) {
-        populateModelRow(i, rooms.at(i));
         if (!isRoomInDatabase(rooms.at(i))) {
             addRoomToDatabase(rooms.at(i)); // if the room isn't in the database, add it
         } else {
             updateRoomPrice(rooms.at(i)); // otherwise, just update the price
         }
+        populateModelRow(i, getRoomFromDatabaseByNumber(rooms.at(i).roomNumber));
     }
 }
 
@@ -365,10 +365,12 @@ void RoomsWindow::saveRoomData(int row){
     QList<Room> attemptedRooms = rooms;
     attemptedRooms[row] = updatedRoom;
 
-    if (!roomRepository->saveRooms(attemptedRooms)) {
-        QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes have not been saved.");
-        return;
-    }
+    // if (!roomRepository->saveRooms(attemptedRooms)) {
+    //     QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes have not been saved.");
+    //     return;
+    // }
+
+    updateRoomInDatabase(updatedRoom);
 
     rooms = attemptedRooms;
     populateModelRow(row, updatedRoom); // Reflect the change in the table now that it's safely saved
