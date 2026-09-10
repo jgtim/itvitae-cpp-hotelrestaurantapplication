@@ -41,7 +41,6 @@ private:
     void filterRooms(const QString &text);
     void loadRooms();
     void populateModelRow(int row, const Room &room);
-    void importExcelRooms();
     void addRoomToDatabase(const Room& room);
     bool isRoomInDatabase(const Room& room);
 

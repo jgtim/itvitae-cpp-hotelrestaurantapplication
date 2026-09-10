@@ -1,10 +1,8 @@
 #include "roomswindow.h"
 #include "ui_roomswindow.h"
-#include "roomdetailsdialog.h"
 #include "confirmdialog.h"
 #include "Room/room.h"
 #include "../../readers/roomrepositoryfactory.h"
-#include "../../readers/hotelkamersreader.h"
 #include "../../readers/roomserializer.h"
 
 #include <QStandardItemModel>
@@ -182,7 +180,7 @@ void RoomsWindow::loadRooms(){
 
     for (int i = 0; i < rooms.size(); ++i) {
         populateModelRow(i, rooms.at(i));
-        addRoomToDatabase(rooms.at(i);
+        addRoomToDatabase(rooms.at(i));
     }
 }
 
