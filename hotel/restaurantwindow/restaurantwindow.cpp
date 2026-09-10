@@ -399,12 +399,12 @@ void RestaurantWindow::onReservationTableClicked()
     if(canvasPointer->getSelectedTable() > 0){
         std::cout << "TESTING" << std::endl;
         reservetable dialog(this);
+        int selectedTable = canvasPointer->getSelectedTable();
+        if(selectedTable > 0){
+            std::cout << "GOT TO TABLE" << std::endl;
+            dialog.setTable(selectedTable);
+        }
         if (dialog.exec() == QDialog::Accepted) {
-            int selectedTable = canvasPointer->getSelectedTable();
-            if(selectedTable > 0){
-                //TODO get this to work
-                dialog.setTable(selectedTable);
-            }
             //TODO add to list of reservations. Not sure what to do about the comments or hotel room. might also be database later?
 
             int row = reservationTable->rowCount();
