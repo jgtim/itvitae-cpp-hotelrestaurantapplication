@@ -9,6 +9,7 @@ reservetable::reservetable(QWidget *parent)
     ui->setupUi(this);
     ui->guestsEdit->setValidator(new QIntValidator(0, 100, this)); //maximum to max number of guests per table?
     ui->tableEdit->setValidator(new QIntValidator(0, 100, this)); //set maximum to highest table number if that can be pulled from somewhere
+    ui->roomNumberEdit->setValidator(new QIntValidator(0, 100, this));
 }
 
 reservetable::~reservetable()
@@ -39,7 +40,7 @@ std::vector<QString> reservetable::getdata(){
     //get 4 in order: name, table number, room number, time
     QString name =  ui->nameEdit->text();
     QString tablenumber = ui->tableEdit->text();
-    QString roomnumber = ""; // TODO add this maybe
+    QString roomnumber = ui->roomNumberEdit->text();
     QString time = ui->reserveTimeEdit->time().toString("HH:mm");
     return {name, tablenumber, roomnumber, time};
 }
