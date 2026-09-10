@@ -14,12 +14,21 @@
    <string>RoomsWindow</string>
   </property>
   <widget class="QWidget" name="widget">
-   <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0">
-    <property name="spacing">
-     <number>7</number>
-    </property>
-    <item>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
       <item>
        <widget class="QStackedWidget" name="roomStack">
         <property name="sizePolicy">
@@ -88,56 +97,49 @@
           <item row="2" column="0">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
              <widget class="QPushButton" name="seeRoomDetails">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string>Room Details</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </item>
          </layout>
         </widget>
         <widget class="QWidget" name="roomDetails">
-         <widget class="QPushButton" name="ReturnButton">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>10</y>
-            <width>93</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Return</string>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="EditButton">
-          <property name="geometry">
-           <rect>
-            <x>90</x>
-            <y>10</y>
-            <width>93</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Edit</string>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="CancelButton">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>10</y>
-            <width>93</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Cancel</string>
-          </property>
-         </widget>
          <widget class="QScrollArea" name="existingReservations">
           <property name="geometry">
            <rect>
@@ -171,7 +173,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>Reservations</string>
+           <string>Reservations:</string>
           </property>
          </widget>
          <widget class="QLabel" name="NotesLabel">
@@ -184,7 +186,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>Notes</string>
+           <string>Notes:</string>
           </property>
          </widget>
          <widget class="QLabel" name="RoomNumLabel">
@@ -197,7 +199,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>Room Number</string>
+           <string>Room Number:</string>
           </property>
          </widget>
          <widget class="QLabel" name="RoomTypeLabel">
@@ -210,7 +212,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>Room Type</string>
+           <string>Room Type:</string>
           </property>
          </widget>
          <widget class="QLabel" name="CapacityLabel">
@@ -223,7 +225,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>Capacity</string>
+           <string>Capacity:</string>
           </property>
          </widget>
          <widget class="QLabel" name="StatusLabel">
@@ -236,7 +238,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>Status</string>
+           <string>Status:</string>
           </property>
          </widget>
          <widget class="QLabel" name="CleaningLabel">
@@ -249,7 +251,7 @@
            </rect>
           </property>
           <property name="text">
-           <string>Cleaning</string>
+           <string>Cleaning:</string>
           </property>
          </widget>
          <widget class="QTextEdit" name="NotesEdit">
@@ -323,6 +325,70 @@
             <height>26</height>
            </rect>
           </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>10</y>
+            <width>317</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QPushButton" name="ReturnButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Return</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="EditButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="CancelButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </widget>
         </widget>
        </widget>
