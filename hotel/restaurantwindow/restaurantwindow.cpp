@@ -39,6 +39,10 @@ public:
         return selectedTable;
     }
 
+    QVector<Table> getTables(){
+        return tables;
+    }
+
 
 protected:
     void paintEvent(QPaintEvent *event) override
@@ -335,6 +339,11 @@ void RestaurantWindow::loadMockTables()
         tables.append(Table(i, x, y, status));
     }
 }
+
+QVector<Table> RestaurantWindow::getTables(){
+    return this->canvasPointer->getTables();
+}
+
 // Slots
 void RestaurantWindow::onDataChanged()
 {
