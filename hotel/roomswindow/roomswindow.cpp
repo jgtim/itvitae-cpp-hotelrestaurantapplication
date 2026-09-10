@@ -48,7 +48,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     QStringList roomStatuses = { "Available", "Occupied", "Reserved", "Maintenance" };
     ui->StatusEdit->addItems(roomStatuses);
 
-    QStringList Cleaningstatuses = { "Clean", "Dirty" };
+    QStringList Cleaningstatuses = { "Clean", "Needs Cleaning" };
     ui->CleaningEdit->addItems(Cleaningstatuses);
 
     // --- later voor SQL aanzetten ---
@@ -211,9 +211,12 @@ void RoomsWindow::loadRooms(){
     model->removeRows(0, model->rowCount()); // Clear any existing items
 
     for (int i = 0; i < rooms.size(); ++i) {
-        populateModelRow(i, rooms.at(i));
-        addRoomToDatabase(rooms.at(i));
-
+        if (!isRoomInDatabase(rooms.at(i))) {
+            addRoomToDatabase(rooms.at(i)); // if the room isn't in the database, add it
+        } else {
+            updateRoomPrice(rooms.at(i)); // otherwise, just update the price
+        }
+        populateModelRow(i, getRoomFromDatabaseByNumber(rooms.at(i).roomNumber));
     }
 }
 
@@ -251,6 +254,63 @@ bool RoomsWindow::isRoomInDatabase(const Room& room) {
         }
     }
     return status;
+}
+
+void RoomsWindow::updateRoomInDatabase(const Room& room) {
+    auto map = RoomSerializer::toVariantMap(room);
+    QSqlQuery roomQuery(db);
+
+    roomQuery.prepare("UPDATE rooms SET RoomType = :RoomType, Adults = :Adults, RoomView = :RoomView, BabyBed = :BabyBed, Beds = :Beds, Comments = :Comments, RoomStatus = :RoomStatus, HousekeepingStatus = :HousekeepingStatus WHERE RoomNumber = :RoomNumber;");
+
+    roomQuery.bindValue(":RoomType", map.value("room_type").toString());
+    roomQuery.bindValue(":Adults", map.value("adults").toString());
+    roomQuery.bindValue(":RoomView", map.value("room_view").toString());
+    roomQuery.bindValue(":BabyBed", map.value("baby_bed").toString());
+    roomQuery.bindValue(":Beds", map.value("beds").toString());
+    roomQuery.bindValue(":Comments", map.value("comments").toString());
+    roomQuery.bindValue(":RoomStatus", map.value("room_status").toString());
+    roomQuery.bindValue(":HousekeepingStatus", map.value("housekeeping_status").toString());
+
+    roomQuery.bindValue(":RoomNumber", map.value("room_number").toString());
+
+    roomQuery.exec();
+}
+
+void RoomsWindow::updateRoomPrice(const Room& room) {
+    auto map = RoomSerializer::toVariantMap(room);
+    QSqlQuery roomQuery(db);
+
+    roomQuery.prepare("UPDATE rooms SET PricePerNight = :PricePerNight WHERE RoomNumber = :RoomNumber;");
+
+    roomQuery.bindValue(":PricePerNight", map.value("price_per_night"));
+    roomQuery.bindValue(":RoomNumber", map.value("room_number"));
+
+    roomQuery.exec();
+}
+
+Room RoomsWindow::getRoomFromDatabaseByNumber(const QString& roomNumber){
+    QSqlQuery roomQuery(db);
+    QVariantMap roomMap;
+    Room room;
+    roomQuery.prepare("SELECT RoomNumber, RoomType, Adults, RoomView, BabyBed, Beds, Comments, PricePerNight, RoomStatus, HousekeepingStatus FROM rooms WHERE RoomNumber = :roomNum;");
+
+    roomQuery.bindValue(":roomNum", roomNumber);
+    if (roomQuery.exec()) {
+        if (roomQuery.next()) {
+            roomMap["room_number"] = roomQuery.value("RoomNumber").toString();
+            roomMap["room_type"] = roomQuery.value("RoomType").toString();
+            roomMap["adults"] = roomQuery.value("Adults").toString();
+            roomMap["room_view"] = roomQuery.value("RoomView").toString();
+            roomMap["baby_bed"] = roomQuery.value("BabyBed").toString();
+            roomMap["beds"] = roomQuery.value("Beds").toString();
+            roomMap["comments"] = roomQuery.value("Comments").toString();
+            roomMap["price_per_night"] = roomQuery.value("PricePerNight").toDouble();
+            roomMap["room_status"] = roomQuery.value("RoomStatus").toString();
+            roomMap["housekeeping_status"] = roomQuery.value("HousekeepingStatus").toString();
+            room = RoomSerializer::fromVariantMap(roomMap);
+        }
+    }
+    return room;
 }
 
 void RoomsWindow::on_roomsTableView_doubleClicked(const QModelIndex &proxyIndex)
@@ -340,10 +400,12 @@ void RoomsWindow::saveRoomData(int row){
     QList<Room> attemptedRooms = rooms;
     attemptedRooms[row] = updatedRoom;
 
-    if (!roomRepository->saveRooms(attemptedRooms)) {
-        QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes have not been saved.");
-        return;
-    }
+    // if (!roomRepository->saveRooms(attemptedRooms)) {
+    //     QMessageBox::warning(this, "Save Error", "Failed to save room data to storage. Your changes have not been saved.");
+    //     return;
+    // }
+
+    updateRoomInDatabase(updatedRoom);
 
     rooms = attemptedRooms;
     populateModelRow(row, updatedRoom); // Reflect the change in the table now that it's safely saved
