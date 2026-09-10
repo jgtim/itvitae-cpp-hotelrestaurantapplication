@@ -39,7 +39,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
     QStringList roomStatuses = { "Available", "Occupied", "Reserved", "Maintenance" };
     ui->StatusEdit->addItems(roomStatuses);
 
-    QStringList Cleaningstatuses = { "Clean", "Dirty" };
+    QStringList Cleaningstatuses = { "Clean", "Needs Cleaning" };
     ui->CleaningEdit->addItems(Cleaningstatuses);
 
     // --- later voor SQL aanzetten ---
