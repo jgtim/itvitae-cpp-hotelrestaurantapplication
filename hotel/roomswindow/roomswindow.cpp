@@ -4,6 +4,9 @@
 #include "Room/room.h"
 #include "../../readers/roomrepositoryfactory.h"
 #include "../../readers/roomserializer.h"
+#include "../../readers/reservationrepository.h"
+#include "../reservationstab/editreservationdialog.h"
+#include "../reservationstab/Reservation/reservation.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -13,6 +16,7 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QSqlQuery>
+#include <QListWidgetItem>
 
 
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
@@ -99,6 +103,15 @@ RoomsWindow::RoomsWindow(QWidget *parent)
             {
                 proxyModel->setFilterFixedString(text);
             });
+
+    // Swapped the QScrollArea for a QListWidget so we can fill it with one row per reservation and react to double-clicks.
+    reservationsListWidget = new QListWidget(this);
+    reservationsListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    reservationsListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->existingReservations->setWidget(reservationsListWidget);
+
+    connect(reservationsListWidget, &QListWidget::itemDoubleClicked,
+            this, &RoomsWindow::handleReservationDoubleClicked);
 
     updateRoomColors();
 }
@@ -380,6 +393,9 @@ void RoomsWindow::fillInRoomData(int row){
             ui->NotesEdit->setPlainText(fullComment);
         }
     }
+
+    loadReservationsForRoom(ui->RoomNumEdit->text());
+
     setEditMode(true);
 }
 
@@ -486,4 +502,50 @@ void RoomsWindow::on_CancelButton_clicked()
         fillInRoomData(selectedRow);
         setEditMode(true);
     }
+}
+
+// Rebuilds the reservations list shown on the room details page for the given room.
+void RoomsWindow::loadReservationsForRoom(const QString& roomNumber)
+{
+    reservationsListWidget->clear();
+
+    const QList<Reservation> roomReservations = getReservationsForRoom(db, roomNumber);
+
+    if (roomReservations.isEmpty()) {
+        auto *emptyItem = new QListWidgetItem("No reservations for this room.");
+        emptyItem->setFlags(Qt::NoItemFlags); // not selectable/clickable, just an empty-state message
+        reservationsListWidget->addItem(emptyItem);
+        return;
+    }
+
+    for (const Reservation &res : roomReservations) {
+        QString label = QString("#%1  —  %2  —  %3 to %4")
+                            .arg(res.ReservationID,
+                                 res.guest.name,
+                                 res.checkIn.toString("dd/MM/yyyy"),
+                                 res.checkOut.toString("dd/MM/yyyy"));
+
+        auto *item = new QListWidgetItem(label);
+        item->setData(Qt::UserRole, QVariant::fromValue(res));
+        reservationsListWidget->addItem(item);
+    }
+}
+
+// Double-clicking a reservation in the room details page opens the same
+// EditReservationDialog used on the Reservations tab, read-only, so it acts
+// as an info page rather than a second place edits can be made from.
+void RoomsWindow::handleReservationDoubleClicked(QListWidgetItem *item)
+{
+    if (!item || !(item->flags() & Qt::ItemIsSelectable))
+        return; // the "No reservations for this room." placeholder row
+
+    Reservation res = item->data(Qt::UserRole).value<Reservation>();
+
+    EditReservationDialog dialog(this);
+    dialog.setAvailableRooms(rooms);
+    dialog.setExistingReservations({}); // read-only view, so the room-availability check has nothing to do
+    dialog.setReservationData(res);
+    dialog.setReadOnly(true);
+
+    dialog.exec();
 }

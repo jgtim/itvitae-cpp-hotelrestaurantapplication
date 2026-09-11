@@ -45,6 +45,10 @@ set(PROJECT_SOURCES
         readers/excelroomrepository.cpp
         readers/roomrepositoryfactory.h
         readers/roomrepositoryfactory.cpp
+        readers/reservationserializer.h
+        readers/reservationserializer.cpp
+        readers/reservationrepository.h
+        readers/reservationrepository.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

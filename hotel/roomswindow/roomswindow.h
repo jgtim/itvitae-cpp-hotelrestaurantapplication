@@ -6,12 +6,14 @@
 #include <QSortFilterProxyModel>
 #include <QString>
 #include <QSqlDatabase>
+#include <QListWidget>
 #include <memory>
 
 #include "../../filter/multicolumnfilterproxymodel.h"
 #include "../../hotel/roomswindow/Room/room.h"
 #include "../../readers/iroomrepository.h"
 #include "Room/room.h"
+#include "../reservationstab/Reservation/reservation.h"
 
 namespace Ui {
 class RoomsWindow;
@@ -36,6 +38,7 @@ private:
     std::unique_ptr<IRoomRepository> roomRepository;
     QList<Room> rooms; // Kept index-aligned with model's rows
     QSqlDatabase db;
+    QListWidget *reservationsListWidget = nullptr; // Lives inside ui->existingReservations
 
     void updateRoomColors();
     void filterRooms(const QString &text);
@@ -47,12 +50,15 @@ private:
     void updateRoomPrice(const Room& room);
     Room getRoomFromDatabaseByNumber(const QString& roomNumber);
 
+    void loadReservationsForRoom(const QString& roomNumber);
+
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);
     void on_seeRoomDetails_clicked();
     void on_ReturnButton_clicked();
     void on_EditButton_clicked();
     void on_CancelButton_clicked();
+    void handleReservationDoubleClicked(QListWidgetItem *item);
 };
 
 #endif // ROOMSWINDOW_H
