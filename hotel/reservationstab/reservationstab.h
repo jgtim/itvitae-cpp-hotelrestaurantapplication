@@ -48,6 +48,7 @@ private:
     QList<Reservation> getAllReservations();
     bool isReservationInDatabase(const Reservation &res);
     bool isGuestInDatabase(const Guest &guest);
+    void updateReservationInDatabase(const Reservation &res);
 
     void addMockData();
     void populateReservationList(); // a replacement for addMockData()
