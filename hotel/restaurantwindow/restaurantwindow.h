@@ -1,13 +1,14 @@
 #ifndef RESTAURANTWINDOW_H
 #define RESTAURANTWINDOW_H
 
+#include "hotel/restaurantwindow/Restaurant/table.h"
+
 #include <QWidget>
 #include <QTableWidget>
 #include <QPushButton>
 #include <QSplitter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include "Restaurant/table.h"
 #include <QVector>
 
 namespace Ui {

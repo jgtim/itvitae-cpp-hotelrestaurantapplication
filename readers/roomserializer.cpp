@@ -1,4 +1,4 @@
-#include "roomserializer.h"
+#include "readers/roomserializer.h"
 
 QVariantMap RoomSerializer::toVariantMap(const Room &room) {
     QVariantMap map;

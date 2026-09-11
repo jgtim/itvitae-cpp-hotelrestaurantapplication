@@ -1,10 +1,9 @@
-#include "reservationstab.h"
-#include "ui_reservationstab.h"
-#include "editreservationdialog.h"
-#include "../../readers/reservationserializer.h"
+#include "hotel/reservationstab/reservationstab.h"
+#include "hotel/reservationstab/ui_reservationstab.h"
+#include "hotel/reservationstab/editreservationdialog.h"
+#include "readers/reservationserializer.h"
 
 #include <QMessageBox>
-#include <iostream>
 #include <QDate>
 #include <QDebug>
 #include <QString>
@@ -126,7 +125,7 @@ void ReservationsTab::handleEditReservation()
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
 
-
+        updateReservationInDatabase(updatedRes);
         emit dataChangedNotification();
     }
 }
@@ -252,7 +251,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
         resMap[QStringLiteral("room_number")] = resQuery.value(roomNumberIndex).toString();
         resMap[QStringLiteral("check_in")] = resQuery.value(checkInIndex).toString();
         resMap[QStringLiteral("check_out")] = resQuery.value(checkOutIndex).toString();
-        resMap[QStringLiteral("payemnt_status")] = resQuery.value(paymentStatusIndex).toString();
+        resMap[QStringLiteral("payment_status")] = resQuery.value(paymentStatusIndex).toString();
 
         guestQuery.prepare("SELECT * FROM guests where GuestID = :id;");
         guestQuery.bindValue(":id", resQuery.value(guestIdIndex).toString());
@@ -309,6 +308,43 @@ bool ReservationsTab::isGuestInDatabase(const Guest &guest) {
     }
     // we can potentially add more uniqueness checks later
     return status;
+}
+
+void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
+    QSqlQuery resQuery(db);
+    QSqlQuery guestQuery(db);
+    if (!isReservationInDatabase(res)) {
+        qDebug() << "Reservation cannot be edited because it does not exist!";
+        return;
+    }
+    auto map = ReservationSerializer::toVariantMap(res);
+    resQuery.prepare("UPDATE reservations SET GuestID = :GuestID, NumberOfGuests = :NumberOfGuests, RoomNumber = :RoomNumber, CheckInDate = :CheckInDate, CheckOutDate = :CheckOutDate, PaymentStatus = :PaymentStatus WHERE ReservationID = :id;");
+    resQuery.bindValue(":GuestID", map.value("guest_name"));
+    resQuery.bindValue(":NumberOfGuests", map.value("number_of_guests"));
+    resQuery.bindValue(":RoomNumber", map.value("room_number"));
+    resQuery.bindValue(":CheckInDate", map.value("check_in"));
+    resQuery.bindValue(":CheckOutDate", map.value("check_out"));
+    resQuery.bindValue(":PaymentStatus", map.value("payment_status"));
+    resQuery.bindValue(":id", map.value("reservation_id"));
+    bool status = resQuery.exec();
+    if (!status) {
+        qDebug() << "Error updating reservation: " << resQuery.lastError().text();
+    }
+
+    guestQuery.prepare("UPDATE guests SET GuestPhoneNumber = :GuestPhoneNumber, GuestEmail = :GuestEmail, GuestAddress = :GuestAddress, GuestDateOfBirth = :GuestDateOfBirth, GuestGender = :GuestGender, GuestPaymentMethod = :GuestPaymentMethod, GuestIdType = :GuestIdType WHERE GuestID = :id;");
+    guestQuery.bindValue(":id", map.value("guest_name"));
+    guestQuery.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
+    guestQuery.bindValue(":GuestEmail", map.value("guest_email"));
+    guestQuery.bindValue(":GuestAddress", map.value("address"));
+    guestQuery.bindValue(":GuestDateOfBirth", map.value("date_of_birth"));
+    guestQuery.bindValue(":GuestGender", map.value("gender"));
+    guestQuery.bindValue(":GuestPaymentMethod", map.value("payment_method"));
+    guestQuery.bindValue(":GuestIdType", map.value("id_type"));
+
+    bool guestStatus = guestQuery.exec();
+    if (!guestStatus) {
+        qDebug() << "Error updating guest: " << guestQuery.lastError().text();
+    }
 }
 
 // Placeholder method for adding mock data - REMOVE LATER
@@ -380,6 +416,7 @@ void ReservationsTab::handleViewReservation(const QModelIndex &index)
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
 
+        updateReservationInDatabase(updatedRes);
         emit dataChangedNotification();
     }
 }

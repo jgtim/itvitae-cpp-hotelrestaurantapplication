@@ -1,7 +1,7 @@
 #ifndef EXCELROOMREPOSITORY_H
 #define EXCELROOMREPOSITORY_H
 
-#include "iroomrepository.h"
+#include "readers/iroomrepository.h"
 
 // Placeholder implementation of IRoomRepository: reads and writes the bundled Excel sheet
 // via the existing hotelkamersreader functions. This whole class is what gets swapped out

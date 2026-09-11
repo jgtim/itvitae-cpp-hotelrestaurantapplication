@@ -2,7 +2,7 @@
 #define ROOMREPOSITORYFACTORY_H
 
 #include <memory>
-#include "iroomrepository.h"
+#include "readers/iroomrepository.h"
 
 // Single place that decides which IRoomRepository implementation the app uses.
 // Swapping the Excel placeholder for a real database later is a one-line change here -
