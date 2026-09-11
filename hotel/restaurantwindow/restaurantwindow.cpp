@@ -1,5 +1,5 @@
-#include "restaurantwindow.h"
-#include "ui_restaurantwindow.h"
+#include "hotel/restaurantwindow/restaurantwindow.h"
+
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>

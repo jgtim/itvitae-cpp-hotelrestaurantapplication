@@ -1,5 +1,5 @@
-#include "roomrepositoryfactory.h"
-#include "excelroomrepository.h"
+#include "readers/roomrepositoryfactory.h"
+#include "readers/excelroomrepository.h"
 
 std::unique_ptr<IRoomRepository> createRoomRepository() {
     // TODO: once the database is ready, replace this with e.g.:

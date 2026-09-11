@@ -1,4 +1,4 @@
-#include "hotelkamersreader.h"
+#include "readers/hotelkamersreader.h"
 
 #include <QDebug>
 #include <QDir>

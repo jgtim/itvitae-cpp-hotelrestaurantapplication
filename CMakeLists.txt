@@ -95,6 +95,10 @@ else()
     endif()
 endif()
 
+target_include_directories(MolvenoLakeHotelResort PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 target_link_libraries(MolvenoLakeHotelResort PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     QXlsx::QXlsx

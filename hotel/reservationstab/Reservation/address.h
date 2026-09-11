@@ -16,4 +16,6 @@ struct Address {
     QString toFormattedString() const;
 };
 
+Q_DECLARE_METATYPE(Address)
+
 #endif // ADDRESS_H

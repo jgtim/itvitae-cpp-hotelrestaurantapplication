@@ -3,7 +3,8 @@
 
 #include <xlsxdocument.h>
 #include <QDir>
-#include "../hotel/roomswindow/Room/room.h"
+
+#include "hotel/roomswindow/Room/room.h"
 
 // Define data structure
 // struct RoomRecord {

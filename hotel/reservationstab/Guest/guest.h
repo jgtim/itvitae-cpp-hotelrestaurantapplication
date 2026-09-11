@@ -2,10 +2,11 @@
 #define GUEST_H
 
 #include <QString>
-#include "../Reservation/gender.h"
-#include "../Reservation/address.h"
-#include "PaymentMethod.h"
-#include "IDType.h"
+
+#include "hotel/reservationstab/Reservation/gender.h"
+#include "hotel/reservationstab/Reservation/address.h"
+#include "hotel/reservationstab/Guest/PaymentMethod.h"
+#include "hotel/reservationstab/Guest/IDType.h"
 
 struct Guest {
     QString guestID;
@@ -21,5 +22,7 @@ struct Guest {
     PaymentMethod paymentMethod;
     IDType idType;
 };
+
+Q_DECLARE_METATYPE(Guest)
 
 #endif // GUEST_H

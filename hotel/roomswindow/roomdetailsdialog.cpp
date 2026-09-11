@@ -1,5 +1,6 @@
-#include "roomdetailsdialog.h"
-#include "ui_roomdetailsdialog.h"
+#include "hotel/roomswindow/roomdetailsdialog.h"
+#include "hotel/roomswindow/ui_roomdetailsdialog.h"
+
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>

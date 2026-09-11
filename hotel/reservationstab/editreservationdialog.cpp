@@ -1,7 +1,7 @@
-#include "editreservationdialog.h"
-#include "ui_editreservationdialog.h"
-#include "../reservationstab/Guest/IDType.h"
-#include "../reservationstab/Guest/PaymentMethod.h"
+#include "hotel/reservationstab/editreservationdialog.h"
+#include "hotel/reservationstab/ui_editreservationdialog.h"
+#include "hotel/reservationstab/Guest/IDType.h"
+#include "hotel/reservationstab/Guest/PaymentMethod.h"
 
 #include <QIntValidator>
 #include <QMessageBox>
