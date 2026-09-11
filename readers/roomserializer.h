@@ -2,7 +2,8 @@
 #define ROOMSERIALIZER_H
 
 #include <QVariantMap>
-#include "../hotel/roomswindow/Room/room.h"
+
+#include "hotel/roomswindow/Room/room.h"
 
 class RoomSerializer
 {

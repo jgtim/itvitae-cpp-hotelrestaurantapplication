@@ -1,10 +1,9 @@
-#include "reservationstab.h"
-#include "ui_reservationstab.h"
-#include "editreservationdialog.h"
-#include "../../readers/reservationserializer.h"
+#include "hotel/reservationstab/reservationstab.h"
+#include "hotel/reservationstab/ui_reservationstab.h"
+#include "hotel/reservationstab/editreservationdialog.h"
+#include "readers/reservationserializer.h"
 
 #include <QMessageBox>
-#include <iostream>
 #include <QDate>
 #include <QDebug>
 #include <QString>

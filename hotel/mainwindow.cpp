@@ -1,9 +1,9 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include "reservationstab/reservationstab.h"
-#include "roomswindow/roomswindow.h"
-#include "restaurantwindow/restaurantwindow.h"
+#include "hotel/reservationstab/reservationstab.h"
+#include "hotel/roomswindow//roomswindow.h"
+#include "hotel/restaurantwindow/restaurantwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {

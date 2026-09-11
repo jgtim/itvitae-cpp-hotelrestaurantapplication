@@ -1,16 +1,20 @@
-#include "restaurantwindow.h"
-#include "ui_restaurantwindow.h"
+#include "hotel/restaurantwindow/restaurantwindow.h"
+
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QHeaderView>
 #include <QRandomGenerator>
 #include <QPainter>
+
 #include <QMessageBox>
 #include <cmath>
 
 #include <iostream>
 #include <qevent.h>
+
+
+#include <QScrollArea>
 
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
@@ -27,14 +31,28 @@ public:
         : QWidget(parent), tables(tables)
     {
 
+        updateCanvasSize();
     }
 
+    void updateCanvasSize()
+    {
+        int maxX = 0;
+        int maxY = 0;
+
+        for (const Table& table : tables) {
+            // Each table ellipse is 50x50 at (x, y)
+            if (table.getX() + 50 > maxX) maxX = table.getX() + 50;
+            if (table.getY() + 50 > maxY) maxY = table.getY() + 50;
+        }
+    
     void updateTables(QVector<Table> newTables){
         tables = newTables;
     }
-
     int getSelectedTable(){
-        return selectedTable;
+        return selectedTable;}
+
+        // Add padding around the canvas edge
+        setMinimumSize(maxX + 0, maxY + 0);
     }
 
 
@@ -139,9 +157,9 @@ void RestaurantWindow::setupLayout()
     mainSplitter->addWidget(rightPanel);
 
     // Set splitter sizes (30/70)
-    mainSplitter->setSizes(QList<int>() << 300 << 700);
-    mainSplitter->setStretchFactor(0, 3);
-    mainSplitter->setStretchFactor(1, 7);
+    mainSplitter->setSizes(QList<int>() << 625 << 375);
+    mainSplitter->setStretchFactor(0, 1);
+    mainSplitter->setStretchFactor(1, 1);
 
     mainLayout->addWidget(mainSplitter);
     setLayout(mainLayout);
@@ -170,7 +188,14 @@ void RestaurantWindow::setupLeftPanel()
     reservationTable->setColumnCount(4);
     reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Hotel Room" << "Time");
     reservationTable->setMaximumHeight(120);
-    reservationTable->horizontalHeader()->setStretchLastSection(true);
+    reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    reservationTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
+    reservationTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
+    reservationTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
+    reservationTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
+    reservationTable->verticalHeader()->setVisible(false);                  // Cannot see row numbers
+
     setupReservationTable();
     leftLayout->addWidget(reservationTable);
 
@@ -189,7 +214,14 @@ void RestaurantWindow::setupLeftPanel()
     orderTable->setColumnCount(5);
     orderTable->setHorizontalHeaderLabels(QStringList() << "Status" << "Rooms Number" << "Menu Item(s)" << "Placed at" << "Tables");
     orderTable->setMaximumHeight(120);
-    orderTable->horizontalHeader()->setStretchLastSection(true);
+    orderTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    orderTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
+    orderTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
+    orderTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
+    orderTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
+    orderTable->verticalHeader()->setVisible(false);                  // Cannot see row numbers
+
     setupOrderTable();
     leftLayout->addWidget(orderTable);
 
@@ -249,13 +281,17 @@ void RestaurantWindow::setupRightPanel()
     topButtonLayout->addStretch();
     rightLayout->addLayout(topButtonLayout);
 
-    // === Canvas Area (zwart) ===
     tableCanvas = new TableCanvas(tables);
+
     canvasPointer = qobject_cast<TableCanvas*>(tableCanvas);
+
+
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidget(tableCanvas);
+    scrollArea->setWidgetResizable(true); // Allows canvas to expand automatically when window expands
     tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
 
-    rightLayout->addWidget(tableCanvas);
-
+    rightLayout->addWidget(scrollArea);
     rightPanel->setLayout(rightLayout);
 }
 
@@ -315,9 +351,12 @@ void RestaurantWindow::loadMockTables()
 {
     tables.clear();
 
+    const int columns = 4;
+    const int itemSpacing = 65;
+
     for (int i = 1; i <= 31; ++i) {
-        int x = 15 + ((i - 1) % 8) * 65;
-        int y = 15 + ((i - 1) / 8) * 65;
+        int x = 15 + ((i - 1) % columns) * itemSpacing;
+        int y = 15 + ((i - 1) / columns) * itemSpacing;
 
         int randomStatus = QRandomGenerator::global()->bounded(3);
 

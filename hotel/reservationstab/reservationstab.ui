@@ -16,6 +16,15 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="ReservationsTabhorizontalLayoutTop">
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
+     <property name="topMargin">
+      <number>9</number>
+     </property>
+     <property name="rightMargin">
+      <number>9</number>
+     </property>
      <item>
       <widget class="QLineEdit" name="ReservationsTabSearchfield">
        <property name="placeholderText">
@@ -30,6 +39,12 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="ReservationsTabhorizontalLayoutMiddle">
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
+     <property name="rightMargin">
+      <number>9</number>
+     </property>
      <item>
       <widget class="QTableView" name="ReservationsTabReservationsTable">
        <property name="sizePolicy">
@@ -44,6 +59,12 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
+     <property name="rightMargin">
+      <number>9</number>
+     </property>
      <item>
       <spacer name="ReservationTabEditSpacer">
        <property name="orientation">
@@ -88,6 +109,15 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="ReservationsTabhorizontalLayoutBottom">
+     <property name="leftMargin">
+      <number>9</number>
+     </property>
+     <property name="rightMargin">
+      <number>9</number>
+     </property>
+     <property name="bottomMargin">
+      <number>9</number>
+     </property>
      <item>
       <spacer name="ReservationsTabButtonSpacerLeft">
        <property name="orientation">

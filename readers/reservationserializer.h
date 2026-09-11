@@ -2,7 +2,8 @@
 #define RESERVATIONSERIALIZER_H
 
 #include <QVariantMap>
-#include "../hotel/reservationstab/Reservation/reservation.h"
+
+#include "hotel/reservationstab/Reservation/reservation.h"
 
 class ReservationSerializer {
 public:

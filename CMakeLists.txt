@@ -39,6 +39,12 @@ set(PROJECT_SOURCES
 
         readers/hotelkamersreader.h
         readers/hotelkamersreader.cpp
+
+        readers/iroomrepository.h
+        readers/excelroomrepository.h
+        readers/excelroomrepository.cpp
+        readers/roomrepositoryfactory.h
+        readers/roomrepositoryfactory.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -67,6 +73,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         hotel/restaurantwindow/Restaurant/table.h
         filter/multicolumnfilterproxymodel.h filter/multicolumnfilterproxymodel.cpp
         readers/roomserializer.h readers/roomserializer.cpp
+        hotel/restaurantwindow/TableReservations/tableReservation.h
+        hotel/restaurantwindow/TableReservations/ReservationStatus.h
     )
 
 # Define target properties for Android with Qt 6 as:
@@ -86,6 +94,10 @@ else()
         )
     endif()
 endif()
+
+target_include_directories(MolvenoLakeHotelResort PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 target_link_libraries(MolvenoLakeHotelResort PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets

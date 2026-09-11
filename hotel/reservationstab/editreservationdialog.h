@@ -3,8 +3,9 @@
 
 #include <QDialog>
 #include <qlineedit.h>
-#include "Reservation/reservation.h"
-#include "../../readers/hotelkamersreader.h"
+
+#include "hotel/reservationstab/Reservation/reservation.h"
+#include "readers/hotelkamersreader.h"
 
 namespace Ui {
 class EditReservationDialog;
