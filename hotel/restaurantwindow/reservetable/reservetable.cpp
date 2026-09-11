@@ -4,6 +4,7 @@
 #include "../restaurantwindow.h"
 #include <QMessageBox>
 #include <iostream>
+#include <QTime>
 
 
 reservetable::reservetable(QWidget *parent)
@@ -37,15 +38,64 @@ void reservetable::on_buttonBox_accepted()
 
 void reservetable::accept()
 {
-    QVector<Table> tables = qobject_cast<RestaurantWindow *>(parent())->getTables();
-    for (Table &table : tables) {
-        if (table.getNumber() == ui->tableEdit->text().toInt()) {
+    if (ui->nameEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a name.");
+        ui->nameEdit->setFocus();
+        return;
+    }
+
+    if (ui->guestsEdit->text().trimmed().isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a number of guests.");
+        ui->guestsEdit->setFocus();
+        return;
+    }
+
+    QVector<Table>* tables = qobject_cast<RestaurantWindow *>(parent())->getTables();
+    QTableWidget* reservationTable = qobject_cast<RestaurantWindow *>(parent())->getReservationTable();
+
+    if (ui->tableEdit->text().trimmed().isEmpty()) {
+        for (Table &table : *tables) {
             if(table.getStatus() != TableStatus::OCCUPIED){
-                std::cout << "NOT OCCUPIED" << std::endl;
+                if(table.getStatus() == TableStatus::FREE){
+                    ui->tableEdit->setText(QString::number(table.getNumber()));
+                    break;
+                }else{
+                    bool canReserve = true;
+                    for(int r = 0; r < reservationTable->model()->rowCount(); r++){
+                        int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+                        QTime reservationTime = QTime::fromString(reservationTable->item(r, 3)->text(), "HH:mm");
+                        if(table.getNumber() == tableNumber && reservationTime == ui->reserveTimeEdit->time()){
+                            canReserve = false;
+                            //TODO also set to false for some window before this time
+                            break;
+                        }
+                    }
+                    if(canReserve){
+                        ui->tableEdit->setText(QString::number(table.getNumber()));
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    int currentTable = ui->tableEdit->text().toInt();
+    for (Table &table : *tables) {
+        if (table.getNumber() == currentTable) {
+            if(table.getStatus() != TableStatus::OCCUPIED){
+                for(int r = 0; r < reservationTable->model()->rowCount(); r++){
+                    int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+                    QTime reservationTime = QTime::fromString(reservationTable->item(r, 3)->text(), "HH:mm");
+                    if(currentTable == tableNumber && reservationTime == ui->reserveTimeEdit->time()){
+                        QMessageBox::warning(this, "reserved", "this table is already reserved at that time");
+                        //TODO don't just do the exact time but also some range after it
+                        //TODO table used here is just for current day, make sure to get table for the correct day
+                        return;
+                    }
+                }
                 table.setStatus(TableStatus::RESERVED);
                 QDialog::accept();
                 return;
-                //TODO check if it's reserved at that time
 
             }else{
                 QMessageBox::warning(this, "occupied", "this table is occupied");

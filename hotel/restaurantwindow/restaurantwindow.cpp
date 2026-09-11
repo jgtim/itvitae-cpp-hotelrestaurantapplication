@@ -39,8 +39,8 @@ public:
         return selectedTable;
     }
 
-    QVector<Table> getTables(){
-        return tables;
+    QVector<Table>* getTables(){
+        return &tables;
     }
 
 
@@ -340,8 +340,12 @@ void RestaurantWindow::loadMockTables()
     }
 }
 
-QVector<Table> RestaurantWindow::getTables(){
+QVector<Table>* RestaurantWindow::getTables(){
     return this->canvasPointer->getTables();
+}
+
+QTableWidget* RestaurantWindow::getReservationTable(){
+    return reservationTable;
 }
 
 // Slots
@@ -369,14 +373,12 @@ void RestaurantWindow::onSetFreeClicked()
 {
     int selectedTable = canvasPointer->getSelectedTable();
     if(selectedTable > 0){
-        //TODO: check if there's a reservation on this table, if so set it to reserved instead of free
         for(int r = 0; r < reservationTable->model()->rowCount(); r++){
             int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
             if(selectedTable == tableNumber){
                 tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
                 canvasPointer->updateTables(tables);
                 canvasPointer->update();
-                std::cout << "RESERVED" << std::endl;
                 break;
             }
         }
@@ -413,7 +415,6 @@ void RestaurantWindow::onReservationTableClicked()
         }
         if (dialog.exec() == QDialog::Accepted) {
             //TODO add to list of reservations. Not sure what to do about the comments or hotel room. might also be database later?
-            canvasPointer->update();
             int row = reservationTable->rowCount();
             reservationTable->insertRow(row);
             std::vector<QString> newstring = dialog.getdata();
@@ -421,6 +422,7 @@ void RestaurantWindow::onReservationTableClicked()
             reservationTable->setItem(row, 1, new QTableWidgetItem(newstring[1])); //table number
             reservationTable->setItem(row, 2, new QTableWidgetItem(newstring[2])); //room number pulled from nowhere
             reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); //time, get this from datetime & save date for the sake of detail screen
+            canvasPointer->update();
         }
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
