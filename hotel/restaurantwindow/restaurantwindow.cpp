@@ -6,7 +6,6 @@
 #include <QHeaderView>
 #include <QRandomGenerator>
 #include <QPainter>
-<<<<<<< HEAD
 #include <QMessageBox>
 
 #include <iostream>
@@ -15,9 +14,7 @@
 
 #include "reservetable/reservetable.h"
 
-=======
 #include <QScrollArea>
->>>>>>> main
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent)
@@ -32,9 +29,7 @@ public:
     explicit TableCanvas(const QVector<Table>& tables, QWidget *parent = nullptr)
         : QWidget(parent), tables(tables)
     {
-<<<<<<< HEAD
 
-=======
         updateCanvasSize();
     }
 
@@ -51,7 +46,6 @@ public:
 
         // Add padding around the canvas edge
         setMinimumSize(maxX + 0, maxY + 0);
->>>>>>> main
     }
 
     void updateTables(QVector<Table> newTables){
@@ -293,13 +287,10 @@ void RestaurantWindow::setupRightPanel()
     rightLayout->addLayout(topButtonLayout);
 
     tableCanvas = new TableCanvas(tables);
-<<<<<<< HEAD
     canvasPointer = qobject_cast<TableCanvas*>(tableCanvas);
     tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
 
     rightLayout->addWidget(tableCanvas);
-=======
->>>>>>> main
 
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidget(tableCanvas);
