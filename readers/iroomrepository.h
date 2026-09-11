@@ -4,7 +4,7 @@
 #include <QList>
 #include <optional>
 
-#include "../hotel/roomswindow/Room/room.h"
+#include "hotel/roomswindow/Room/room.h"
 
 // Abstracts *where* room data lives. Right now it's the Excel file (ExcelRoomRepository); can be changed to the database later.
 //

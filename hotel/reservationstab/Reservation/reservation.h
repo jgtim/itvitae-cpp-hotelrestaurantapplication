@@ -3,7 +3,8 @@
 
 #include <QString>
 #include <QDate>
-#include "../Guest/guest.h"
+
+#include "hotel/reservationstab/Guest/guest.h"
 #include "hotel/reservationstab/Reservation/PaymentStatus.h"
 
 struct Reservation {

@@ -7,9 +7,9 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-#include "../../readers/hotelkamersreader.h"
-#include "../../filter/multicolumnfilterproxymodel.h"
-#include "Reservation/reservation.h"
+#include "readers/hotelkamersreader.h"
+#include "filter/multicolumnfilterproxymodel.h"
+#include "hotel/reservationstab/Reservation/reservation.h"
 
 
 namespace Ui {

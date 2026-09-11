@@ -1,9 +1,10 @@
-#include "roomswindow.h"
-#include "ui_roomswindow.h"
-#include "confirmdialog.h"
-#include "Room/room.h"
-#include "../../readers/roomrepositoryfactory.h"
-#include "../../readers/roomserializer.h"
+#include "hotel/roomswindow/roomswindow.h"
+#include "hotel/roomswindow/ui_roomswindow.h"
+#include "hotel/roomswindow/confirmdialog.h"
+#include "hotel/roomswindow/Room/room.h"
+
+#include "readers/roomrepositoryfactory.h"
+#include "readers/roomserializer.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>

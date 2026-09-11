@@ -1,8 +1,9 @@
-#include "reservationserializer.h"
-#include "../hotel/reservationstab/Reservation/gender.h"
-#include "../hotel/reservationstab/Reservation/PaymentStatus.h"
-#include "../hotel/reservationstab/Guest/PaymentMethod.h"
-#include "../hotel/reservationstab/Guest/IDType.h"
+#include "readers/reservationserializer.h"
+
+#include "hotel/reservationstab/Reservation/gender.h"
+#include "hotel/reservationstab/Reservation/PaymentStatus.h"
+#include "hotel/reservationstab/Guest/PaymentMethod.h"
+#include "hotel/reservationstab/Guest/IDType.h"
 
 #include <QJsonObject>
 #include <QJsonDocument>
