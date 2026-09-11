@@ -75,6 +75,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         readers/roomserializer.h readers/roomserializer.cpp
         hotel/restaurantwindow/TableReservations/tableReservation.h
         hotel/restaurantwindow/TableReservations/ReservationStatus.h
+        hotel/reservationstab/Guest/PaymentMethod.cpp
+        hotel/reservationstab/Guest/IDType.cpp
     )
 
 # Define target properties for Android with Qt 6 as:
