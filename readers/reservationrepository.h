@@ -4,7 +4,7 @@
 #include <QList>
 #include <QSqlDatabase>
 #include <QString>
-#include "../hotel/reservationstab/Reservation/reservation.h"
+#include "hotel/reservationstab/Reservation/reservation.h"
 
 // Reads every reservation (and its guest) out of the database and rebuilds full
 // Reservation structs from them. Both ReservationsTab and RoomsWindow read from here

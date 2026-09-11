@@ -5,10 +5,10 @@
 
 #include "readers/roomrepositoryfactory.h"
 #include "readers/roomserializer.h"
-#include "../../readers/reservationrepository.h"
+#include "readers/reservationrepository.h"
 
-#include "../reservationstab/editreservationdialog.h"
-#include "../reservationstab/Reservation/reservation.h"
+#include "hotel/reservationstab/editreservationdialog.h"
+#include "hotel/reservationstab/Reservation/reservation.h"
 
 #include <QStandardItemModel>
 #include <QStandardItem>

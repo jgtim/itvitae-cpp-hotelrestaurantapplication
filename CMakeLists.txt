@@ -69,10 +69,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         hotel/roomswindow/confirmdialog.h hotel/roomswindow/confirmdialog.cpp hotel/roomswindow/confirmdialog.ui
         readers/reservationserializer.h
         readers/reservationserializer.cpp
+        readers/reservationrepository.h
         hotel/reservationstab/Guest/guest.h
         hotel/reservationstab/Guest/IDType.h
         hotel/reservationstab/Guest/PaymentMethod.h
         hotel/reservationstab/Reservation/PaymentStatus.h
+        hotel/reservationstab/editreservationdialog.h
         hotel/restaurantwindow/restaurant_mockdata.h
         hotel/restaurantwindow/Restaurant/table.h
         filter/multicolumnfilterproxymodel.h filter/multicolumnfilterproxymodel.cpp
