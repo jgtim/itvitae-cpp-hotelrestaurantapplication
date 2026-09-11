@@ -190,8 +190,8 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->addWidget(reserveLabel);
 
     reservationTable = new QTableWidget();
-    reservationTable->setColumnCount(4);
-    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Hotel Room" << "Time");
+    reservationTable->setColumnCount(6);
+    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Hotel Room" << "Time" << "Comments");
     reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -306,20 +306,26 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->insertRow(0);
     reservationTable->setItem(0, 0, new QTableWidgetItem("Jansen"));
     reservationTable->setItem(0, 1, new QTableWidgetItem("6"));
-    reservationTable->setItem(0, 2, new QTableWidgetItem("5"));
-    reservationTable->setItem(0, 3, new QTableWidgetItem("15:00"));
+    reservationTable->setItem(0, 2, new QTableWidgetItem("2"));
+    reservationTable->setItem(0, 3, new QTableWidgetItem("5"));
+    reservationTable->setItem(0, 4, new QTableWidgetItem("15:00"));
+    reservationTable->setItem(0, 5, new QTableWidgetItem(""));
 
     reservationTable->insertRow(1);
     reservationTable->setItem(1, 0, new QTableWidgetItem("Smith"));
     reservationTable->setItem(1, 1, new QTableWidgetItem("4"));
-    reservationTable->setItem(1, 2, new QTableWidgetItem("7"));
-    reservationTable->setItem(1, 3, new QTableWidgetItem("17:00"));
+    reservationTable->setItem(1, 2, new QTableWidgetItem("2"));
+    reservationTable->setItem(1, 3, new QTableWidgetItem("7"));
+    reservationTable->setItem(1, 4, new QTableWidgetItem("17:00"));
+    reservationTable->setItem(1, 5, new QTableWidgetItem(""));
 
     reservationTable->insertRow(2);
     reservationTable->setItem(2, 0, new QTableWidgetItem("Janssen"));
     reservationTable->setItem(2, 1, new QTableWidgetItem("3"));
-    reservationTable->setItem(2, 2, new QTableWidgetItem("12"));
-    reservationTable->setItem(2, 3, new QTableWidgetItem("18:00"));
+    reservationTable->setItem(2, 2, new QTableWidgetItem("2"));
+    reservationTable->setItem(2, 3, new QTableWidgetItem("12"));
+    reservationTable->setItem(2, 4, new QTableWidgetItem("18:00"));
+    reservationTable->setItem(2, 5, new QTableWidgetItem(""));
 }
 
 void RestaurantWindow::setupOrderTable()
@@ -459,8 +465,11 @@ void RestaurantWindow::onReservationTableClicked()
             std::vector<QString> newstring = dialog.getdata();
             reservationTable->setItem(row, 0, new QTableWidgetItem(newstring[0])); //name
             reservationTable->setItem(row, 1, new QTableWidgetItem(newstring[1])); //table number
-            reservationTable->setItem(row, 2, new QTableWidgetItem(newstring[2])); //room number pulled from nowhere
-            reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); //time, get this from datetime & save date for the sake of detail screen
+            reservationTable->setItem(row, 2, new QTableWidgetItem(newstring[2])); //number of guests
+            reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); //room number pulled from nowhere
+            reservationTable->setItem(row, 4, new QTableWidgetItem(newstring[4])); //time, get this from datetime & save date for the sake of detail screen
+            reservationTable->setItem(row, 5, new QTableWidgetItem(newstring[5])); //time, get this from datetime & save date for the sake of detail screen
+
             canvasPointer->update();
         }
     }else{

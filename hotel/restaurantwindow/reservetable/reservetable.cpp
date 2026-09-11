@@ -62,7 +62,7 @@ void reservetable::accept()
                 bool canReserve = true;
                 for(int r = 0; r < reservationTable->model()->rowCount(); r++){
                     int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
-                    QTime reservationTime = QTime::fromString(reservationTable->item(r, 3)->text(), "HH:mm");
+                    QTime reservationTime = QTime::fromString(reservationTable->item(r, 4)->text(), "HH:mm");
                     if(table.getNumber() == tableNumber && reservationTime == ui->reserveTimeEdit->time()){
                         canReserve = false;
                         //TODO also set to false for some window before this time
@@ -82,7 +82,7 @@ void reservetable::accept()
         if (table.getNumber() == currentTable) {
             for(int r = 0; r < reservationTable->model()->rowCount(); r++){
                 int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
-                QTime reservationTime = QTime::fromString(reservationTable->item(r, 3)->text(), "HH:mm");
+                QTime reservationTime = QTime::fromString(reservationTable->item(r, 4)->text(), "HH:mm");
                 if(currentTable == tableNumber && reservationTime == ui->reserveTimeEdit->time()){
                     QMessageBox::warning(this, "reserved", "this table is already reserved at that time");
                     //TODO don't just do the exact time but also some range after it
@@ -107,9 +107,11 @@ std::vector<QString> reservetable::getdata(){
     //get 4 in order: name, table number, room number, time
     QString name =  ui->nameEdit->text();
     QString tablenumber = ui->tableEdit->text();
+    QString numguests = ui->guestsEdit->text();
     QString roomnumber = ui->roomNumberEdit->text();
     QString time = ui->reserveTimeEdit->time().toString("HH:mm");
-    return {name, tablenumber, roomnumber, time};
+    QString comments = ui->commentsEdit->toPlainText();
+    return {name, tablenumber, numguests, roomnumber, time, comments};
 }
 
 void reservetable::setTable(int selectedTable){
