@@ -252,7 +252,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
         resMap[QStringLiteral("room_number")] = resQuery.value(roomNumberIndex).toString();
         resMap[QStringLiteral("check_in")] = resQuery.value(checkInIndex).toString();
         resMap[QStringLiteral("check_out")] = resQuery.value(checkOutIndex).toString();
-        resMap[QStringLiteral("payemnt_status")] = resQuery.value(paymentStatusIndex).toString();
+        resMap[QStringLiteral("payement_status")] = resQuery.value(paymentStatusIndex).toString();
 
         guestQuery.prepare("SELECT * FROM guests where GuestID = :id;");
         guestQuery.bindValue(":id", resQuery.value(guestIdIndex).toString());
