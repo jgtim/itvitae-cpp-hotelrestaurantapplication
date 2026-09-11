@@ -15,8 +15,6 @@ namespace Ui {
 class RestaurantWindow;
 }
 
-class TableCanvas;
-
 class RestaurantWindow : public QWidget
 {
     Q_OBJECT
@@ -24,7 +22,6 @@ class RestaurantWindow : public QWidget
 public:
     explicit RestaurantWindow(QWidget *parent = nullptr);
     ~RestaurantWindow();
-    TableCanvas* canvasPointer = nullptr;
 
 public slots:
     void onDataChanged();
