@@ -44,16 +44,18 @@ public:
             if (table.getX() + 50 > maxX) maxX = table.getX() + 50;
             if (table.getY() + 50 > maxY) maxY = table.getY() + 50;
         }
+        // Add padding around the canvas edge
+        setMinimumSize(maxX + 0, maxY + 0);
+    }
     
     void updateTables(QVector<Table> newTables){
         tables = newTables;
     }
+
     int getSelectedTable(){
         return selectedTable;}
 
-        // Add padding around the canvas edge
-        setMinimumSize(maxX + 0, maxY + 0);
-    }
+
 
 
 protected:
