@@ -7,16 +7,7 @@
 #include <optional>
 
 #include "../../reservationstab/Reservation/reservation.h"
-#include "../../roomswindow/Room/room.h"
-
-enum class ReservationStatus {
-    Pending,
-    Confirmed,
-    Seated,
-    Completed,
-    Cancelled,
-    NoShow
-};
+#include "ReservationStatus.h"
 
 struct TableReservation {
     QString ReservationID;
@@ -32,13 +23,7 @@ struct TableReservation {
     QDateTime reservationDateTime;
     int durationMinutes = 120; // default seating length, ASKED MAVI! WHATS ANSWER?
 
-
-    // CHOOSE AS TEAM WHATS BEST ----------------------------------------------------
-    // Option A
     std::optional<Reservation> hotelReservation;
-    // Option B
-    std::optional<Room> assignedRoom;
-
 
     // Extra info
     ReservationStatus status = ReservationStatus::Confirmed;
