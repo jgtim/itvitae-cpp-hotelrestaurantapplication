@@ -1,5 +1,5 @@
-#include "excelroomrepository.h"
-#include "hotelkamersreader.h"
+#include "readers/excelroomrepository.h"
+#include "readers/hotelkamersreader.h"
 
 std::optional<QList<Room>> ExcelRoomRepository::loadRooms() {
     return parseRoomFile();

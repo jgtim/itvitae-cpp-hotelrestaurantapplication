@@ -8,10 +8,13 @@
 #include <QSqlDatabase>
 #include <memory>
 
-#include "../../filter/multicolumnfilterproxymodel.h"
-#include "../../hotel/roomswindow/Room/room.h"
-#include "../../readers/iroomrepository.h"
-#include "Room/room.h"
+#include "hotel/roomswindow/Room/room.h"
+#include "hotel/roomswindow/Room/room.h"
+
+#include "filter/multicolumnfilterproxymodel.h"
+
+#include "readers/iroomrepository.h"
+
 
 namespace Ui {
 class RoomsWindow;

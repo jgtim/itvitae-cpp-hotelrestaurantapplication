@@ -1,12 +1,14 @@
-#include "restaurantwindow.h"
-#include "ui_restaurantwindow.h"
+#include "hotel/restaurantwindow/restaurantwindow.h"
+
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QHeaderView>
 #include <QRandomGenerator>
 #include <QPainter>
+
 #include <QMessageBox>
+#include <cmath>
 
 #include <iostream>
 #include <qevent.h>
@@ -15,6 +17,7 @@
 #include "reservetable/reservetable.h"
 
 #include <QScrollArea>
+
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent)
@@ -43,23 +46,22 @@ public:
             if (table.getX() + 50 > maxX) maxX = table.getX() + 50;
             if (table.getY() + 50 > maxY) maxY = table.getY() + 50;
         }
-
         // Add padding around the canvas edge
         setMinimumSize(maxX + 0, maxY + 0);
     }
 
+
     void updateTables(QVector<Table> newTables){
         tables = newTables;
     }
-
     int getSelectedTable(){
         return selectedTable;
     }
 
+
     QVector<Table>* getTables(){
         return &tables;
     }
-
 
 protected:
     void paintEvent(QPaintEvent *event) override
@@ -292,6 +294,7 @@ void RestaurantWindow::setupRightPanel()
 
     rightLayout->addWidget(tableCanvas);
 
+
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidget(tableCanvas);
     scrollArea->setWidgetResizable(true); // Allows canvas to expand automatically when window expands
@@ -418,20 +421,27 @@ void RestaurantWindow::onSetFreeClicked()
 {
     int selectedTable = canvasPointer->getSelectedTable();
     if(selectedTable > 0){
-        for(int r = 0; r < reservationTable->model()->rowCount(); r++){
-            int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
-            if(selectedTable == tableNumber){
-                tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
-                canvasPointer->updateTables(tables);
-                canvasPointer->update();
+
+        for (Table &table : tables) {
+            if (table.getNumber() == selectedTable) {
+                for(int r = 0; r < reservationTable->model()->rowCount(); r++){
+                    int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+                    if(selectedTable == tableNumber){
+                        table.setStatus(TableStatus::RESERVED);
+                        canvasPointer->updateTables(tables);
+                        canvasPointer->update();
+                        break;
+                    }
+                }
+                if(tables[selectedTable - 1].getStatus() == TableStatus::OCCUPIED){
+                    table.setStatus(TableStatus::FREE);
+                    canvasPointer->updateTables(tables);
+                    canvasPointer->update();
+                }
                 break;
             }
         }
-        if(tables[selectedTable - 1].getStatus() == TableStatus::OCCUPIED){
-            tables[selectedTable - 1].setStatus(TableStatus::FREE);
-            canvasPointer->updateTables(tables);
-            canvasPointer->update();
-        }
+
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }

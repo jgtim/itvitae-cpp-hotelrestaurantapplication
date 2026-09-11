@@ -1,5 +1,5 @@
-#include "../hotel/mainwindow.h"
-#include "../hotel/database/databaseutils.h"
+#include "hotel/mainwindow.h"
+#include "hotel/database/databaseutils.h"
 
 #include <QApplication>
 
