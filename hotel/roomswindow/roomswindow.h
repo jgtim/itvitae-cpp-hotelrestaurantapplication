@@ -43,6 +43,9 @@ private:
     void populateModelRow(int row, const Room &room);
     void addRoomToDatabase(const Room& room);
     bool isRoomInDatabase(const Room& room);
+    void updateRoomInDatabase(const Room& room);
+    void updateRoomPrice(const Room& room);
+    Room getRoomFromDatabaseByNumber(const QString& roomNumber);
 
 private slots:
     void on_roomsTableView_doubleClicked(const QModelIndex &index);
