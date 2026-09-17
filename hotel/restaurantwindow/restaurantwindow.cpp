@@ -6,21 +6,33 @@
 #include <QHeaderView>
 #include <QRandomGenerator>
 #include <QPainter>
+
+#include <QMessageBox>
+#include <cmath>
+
+#include <iostream>
+#include <qevent.h>
+#include <qstandarditemmodel.h>
+
+#include "reservetable/reservetable.h"
+
 #include <QScrollArea>
 
+
 RestaurantWindow::RestaurantWindow(QWidget *parent)
-    : QWidget(parent), ui(nullptr)
+    : QWidget(parent)
 {
     loadMockTables();
     setupLayout();
 }
 
 class TableCanvas : public QWidget
-{
+{Q_OBJECT
 public:
     explicit TableCanvas(const QVector<Table>& tables, QWidget *parent = nullptr)
         : QWidget(parent), tables(tables)
     {
+
         updateCanvasSize();
     }
 
@@ -34,9 +46,23 @@ public:
             if (table.getX() + 50 > maxX) maxX = table.getX() + 50;
             if (table.getY() + 50 > maxY) maxY = table.getY() + 50;
         }
-
         // Add padding around the canvas edge
         setMinimumSize(maxX + 0, maxY + 0);
+    }
+
+    void updateTables(QVector<Table> newTables){
+        tables = newTables;
+    }
+
+    int getSelectedTable(){
+        return selectedTable;
+    }
+
+
+
+
+    QVector<Table>* getTables(){
+        return &tables;
     }
 
 protected:
@@ -48,31 +74,73 @@ protected:
         painter.setRenderHint(QPainter::Antialiasing);
 
         for (const Table& table : tables) {
-            QColor fillColor;
-            QColor textColor = QColor("#F5F5F5");
-
-            if (table.getStatus() == TableStatus::FREE) {
-                fillColor = QColor("#2ECC71"); // some sage green
-                textColor = QColor("#1E1E24"); // better readability
-            }
-            else if (table.getStatus() == TableStatus::OCCUPIED)
-                fillColor = QColor("#D9534F"); // a soft little crimson
-            else
-                fillColor = QColor("#E69F00"); // lovely warm amber
-
-            painter.setBrush(fillColor);
-            painter.setPen(QPen(QColor("#2D2D35"), 2));
-            painter.drawEllipse(table.getX(), table.getY(), 50, 50);
-
-            painter.setPen(textColor);
-            painter.drawText(table.getX(), table.getY(), 50, 50,
-                             Qt::AlignCenter,
-                             QString::number(table.getNumber()));
+            paintTable(table, painter);
         }
+    }
+
+    void mousePressEvent(QMouseEvent *event) override
+    {
+        if (event->button() == Qt::LeftButton) {
+            QPoint mousePos = event->pos();
+
+            for (Table& table : tables) {
+                // Determine circle center and radius based on your drawEllipse dimensions
+                const int radius = 25;
+                QPoint center(table.getX() + radius, table.getY() + radius);
+
+                // Calculate distance from click point to circle center using Pythagorean theorem
+                int dx = mousePos.x() - center.x();
+                int dy = mousePos.y() - center.y();
+                double distance = std::sqrt(dx * dx + dy * dy);
+
+                // If click is within circle radius, trigger action
+                if (distance <= radius) {
+                    onTableClicked(table);
+                    break; // Stop checking further tables once hit is found
+                }
+            }
+
+        }
+
+        QWidget::mousePressEvent(event);
     }
 
 private:
     QVector<Table> tables;
+    int selectedTable = 0;
+    void onTableClicked(Table& table)
+    {
+        selectedTable = table.getNumber();
+
+        update();
+    }
+    void paintTable(const Table& table, QPainter& painter){
+        QColor fillColor;
+        QColor textColor = QColor("#F5F5F5");
+
+        if (table.getStatus() == TableStatus::FREE) {
+            fillColor = QColor("#2ECC71"); // some sage green
+            textColor = QColor("#1E1E24"); // better readability
+        }
+        else if (table.getStatus() == TableStatus::OCCUPIED)
+            fillColor = QColor("#D9534F"); // a soft little crimson
+        else
+            fillColor = QColor("#E69F00"); // lovely warm amber
+
+        painter.setBrush(fillColor);
+        if(table.getNumber() == selectedTable){
+            painter.setPen(QPen(QColor("#ECFA00"), 2));
+        }else{
+            painter.setPen(QPen(QColor("#2D2D35"), 2));
+        }
+        painter.drawEllipse(table.getX(), table.getY(), 50, 50);
+
+        painter.setPen(textColor);
+        painter.drawText(table.getX(), table.getY(), 50, 50,
+                         Qt::AlignCenter,
+                         QString::number(table.getNumber()));
+    }
+
 };
 
 RestaurantWindow::~RestaurantWindow()
@@ -126,8 +194,8 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->addWidget(reserveLabel);
 
     reservationTable = new QTableWidget();
-    reservationTable->setColumnCount(4);
-    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Hotel Room" << "Time");
+    reservationTable->setColumnCount(6);
+    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Hotel Room" << "Time" << "Comments");
     reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -223,6 +291,11 @@ void RestaurantWindow::setupRightPanel()
     rightLayout->addLayout(topButtonLayout);
 
     tableCanvas = new TableCanvas(tables);
+    canvasPointer = qobject_cast<TableCanvas*>(tableCanvas);
+    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
+
+    rightLayout->addWidget(tableCanvas);
+
 
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidget(tableCanvas);
@@ -238,20 +311,26 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->insertRow(0);
     reservationTable->setItem(0, 0, new QTableWidgetItem("Jansen"));
     reservationTable->setItem(0, 1, new QTableWidgetItem("6"));
-    reservationTable->setItem(0, 2, new QTableWidgetItem("5"));
-    reservationTable->setItem(0, 3, new QTableWidgetItem("15:00"));
+    reservationTable->setItem(0, 2, new QTableWidgetItem("2"));
+    reservationTable->setItem(0, 3, new QTableWidgetItem("5"));
+    reservationTable->setItem(0, 4, new QTableWidgetItem("15:00"));
+    reservationTable->setItem(0, 5, new QTableWidgetItem(""));
 
     reservationTable->insertRow(1);
     reservationTable->setItem(1, 0, new QTableWidgetItem("Smith"));
     reservationTable->setItem(1, 1, new QTableWidgetItem("4"));
-    reservationTable->setItem(1, 2, new QTableWidgetItem("7"));
-    reservationTable->setItem(1, 3, new QTableWidgetItem("17:00"));
+    reservationTable->setItem(1, 2, new QTableWidgetItem("2"));
+    reservationTable->setItem(1, 3, new QTableWidgetItem("7"));
+    reservationTable->setItem(1, 4, new QTableWidgetItem("17:00"));
+    reservationTable->setItem(1, 5, new QTableWidgetItem(""));
 
     reservationTable->insertRow(2);
     reservationTable->setItem(2, 0, new QTableWidgetItem("Janssen"));
     reservationTable->setItem(2, 1, new QTableWidgetItem("3"));
-    reservationTable->setItem(2, 2, new QTableWidgetItem("12"));
-    reservationTable->setItem(2, 3, new QTableWidgetItem("18:00"));
+    reservationTable->setItem(2, 2, new QTableWidgetItem("2"));
+    reservationTable->setItem(2, 3, new QTableWidgetItem("12"));
+    reservationTable->setItem(2, 4, new QTableWidgetItem("18:00"));
+    reservationTable->setItem(2, 5, new QTableWidgetItem(""));
 }
 
 void RestaurantWindow::setupOrderTable()
@@ -310,6 +389,15 @@ void RestaurantWindow::loadMockTables()
         tables.append(Table(i, x, y, status));
     }
 }
+
+QVector<Table>* RestaurantWindow::getTables(){
+    return this->canvasPointer->getTables();
+}
+
+QTableWidget* RestaurantWindow::getReservationTable(){
+    return reservationTable;
+}
+
 // Slots
 void RestaurantWindow::onDataChanged()
 {
@@ -333,15 +421,72 @@ void RestaurantWindow::onNewOrderClicked()
 
 void RestaurantWindow::onSetFreeClicked()
 {
-    // TODO: Implementatie
+    int selectedTable = canvasPointer->getSelectedTable();
+    if(selectedTable > 0){
+
+        for (Table &table : tables) {
+            if (table.getNumber() == selectedTable) {
+                for(int r = 0; r < reservationTable->model()->rowCount(); r++){
+                    int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+                    if(selectedTable == tableNumber){
+                        table.setStatus(TableStatus::RESERVED);
+                        canvasPointer->updateTables(tables);
+                        canvasPointer->update();
+                        break;
+                    }
+                }
+                if(tables[selectedTable - 1].getStatus() == TableStatus::OCCUPIED){
+                    table.setStatus(TableStatus::FREE);
+                    canvasPointer->updateTables(tables);
+                    canvasPointer->update();
+                }
+                break;
+            }
+        }
+
+    }else{
+        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
+    }
 }
 
 void RestaurantWindow::onSetOccupiedClicked()
 {
-    // TODO: Implementatie
+    int selectedTable = canvasPointer->getSelectedTable();
+    if(selectedTable > 0){
+        tables[selectedTable - 1].setStatus(TableStatus::OCCUPIED);
+        canvasPointer->updateTables(tables);
+        canvasPointer->update();
+    }else{
+        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
+    }
+
 }
 
 void RestaurantWindow::onReservationTableClicked()
 {
-    // TODO: Implementatie
+    if(canvasPointer->getSelectedTable() > 0){
+        reservetable dialog(this);
+        int selectedTable = canvasPointer->getSelectedTable();
+        if(selectedTable > 0){
+            dialog.setTable(selectedTable);
+        }
+        if (dialog.exec() == QDialog::Accepted) {
+            //TODO add to list of reservations. Not sure what to do about the comments or hotel room. might also be database later?
+            int row = reservationTable->rowCount();
+            reservationTable->insertRow(row);
+            std::vector<QString> newstring = dialog.getdata();
+            reservationTable->setItem(row, 0, new QTableWidgetItem(newstring[0])); //name
+            reservationTable->setItem(row, 1, new QTableWidgetItem(newstring[1])); //table number
+            reservationTable->setItem(row, 2, new QTableWidgetItem(newstring[2])); //number of guests
+            reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); //room number pulled from nowhere
+            reservationTable->setItem(row, 4, new QTableWidgetItem(newstring[4])); //time, get this from datetime & save date for the sake of detail screen
+            reservationTable->setItem(row, 5, new QTableWidgetItem(newstring[5])); //time, get this from datetime & save date for the sake of detail screen
+
+            canvasPointer->update();
+        }
+    }else{
+        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
+    }
 }
+
+#include "restaurantwindow.moc"
