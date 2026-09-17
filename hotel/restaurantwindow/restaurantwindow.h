@@ -49,6 +49,7 @@ private:
 
     // Right Panel - Canvas
     QWidget *rightPanel;
+    TableCanvas *tableCanvas;
     QPushButton *setFreeBtn;
     QPushButton *setOccupiedBtn;
     QPushButton *reservationTableBtn;
