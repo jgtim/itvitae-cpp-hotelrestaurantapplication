@@ -340,6 +340,7 @@ void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
     guestQuery.bindValue(":GuestGender", map.value("gender"));
     guestQuery.bindValue(":GuestPaymentMethod", map.value("payment_method"));
     guestQuery.bindValue(":GuestIdType", map.value("id_type"));
+    guestQuery.bindValue(":GuestName", map.value("guest_name"));
 
     bool guestStatus = guestQuery.exec();
     if (!guestStatus) {
