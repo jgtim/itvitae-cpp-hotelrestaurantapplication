@@ -217,8 +217,8 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->addWidget(reserveLabel);
 
     reservationTable = new QTableWidget();
-    reservationTable->setColumnCount(6);
-    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Hotel Room" << "Time" << "Comments");
+    reservationTable->setColumnCount(5);
+    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Room" << "Time");
     // reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -315,7 +315,7 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->setItem(0, 2, new QTableWidgetItem("2"));
     reservationTable->setItem(0, 3, new QTableWidgetItem("5"));
     reservationTable->setItem(0, 4, new QTableWidgetItem("15:00"));
-    reservationTable->setItem(0, 5, new QTableWidgetItem(""));
+
 
     reservationTable->insertRow(1);
     reservationTable->setItem(1, 0, new QTableWidgetItem("Smith"));
@@ -323,7 +323,7 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->setItem(1, 2, new QTableWidgetItem("2"));
     reservationTable->setItem(1, 3, new QTableWidgetItem("7"));
     reservationTable->setItem(1, 4, new QTableWidgetItem("17:00"));
-    reservationTable->setItem(1, 5, new QTableWidgetItem(""));
+
 
     reservationTable->insertRow(2);
     reservationTable->setItem(2, 0, new QTableWidgetItem("Janssen"));
@@ -331,7 +331,7 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->setItem(2, 2, new QTableWidgetItem("2"));
     reservationTable->setItem(2, 3, new QTableWidgetItem("12"));
     reservationTable->setItem(2, 4, new QTableWidgetItem("18:00"));
-    reservationTable->setItem(2, 5, new QTableWidgetItem(""));
+
 }
 
 void RestaurantWindow::loadMockTables()
