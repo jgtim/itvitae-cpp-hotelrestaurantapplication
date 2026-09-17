@@ -18,9 +18,8 @@
 
 #include <QScrollArea>
 
-
 RestaurantWindow::RestaurantWindow(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), ui(nullptr)
 {
     loadMockTables();
     setupLayout();
