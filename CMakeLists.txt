@@ -24,12 +24,15 @@ file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS
 
 # Exclude things that aren't part of this target's own sources:
 # - the QXlsx subdirectory (it has its own CMakeLists.txt / target)
-# - the build directory itself, in case of in-source or nested builds
+# - the *current* build directory, in case of in-source or nested builds
+# - ANY other build directory that happens to be sitting in the tree
 list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/.*")
 list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_CURRENT_BINARY_DIR}/.*")
 if(DEFINED CMAKE_BINARY_DIR)
     list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
 endif()
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/(build|cmake-build-[^/]*)/")
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/(CMakeFiles|.*_autogen)/")
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MolvenoLakeHotelResort
