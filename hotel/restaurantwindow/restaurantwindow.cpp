@@ -305,6 +305,23 @@ void RestaurantWindow::setupRightPanel()
     rightPanel->setLayout(rightLayout);
 }
 
+void RestaurantWindow::populateReservationTable(const QVector<TableReservation>& reservations)
+{
+    reservationTable->setRowCount(0);
+
+    for (int i = 0; i < reservations.size(); ++i) {
+        const TableReservation& res = reservations[i];
+
+        reservationTable->insertRow(i);
+        reservationTable->setItem(i, 0, new QTableWidgetItem(res.guestName));
+        reservationTable->setItem(i, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
+        reservationTable->setItem(i, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
+        reservationTable->setItem(i, 3, new QTableWidgetItem("Room XX"));  // placeholder
+        reservationTable->setItem(i, 4, new QTableWidgetItem(res.reservationDateTime.toString("HH:mm")));
+        reservationTable->setItem(i, 5, new QTableWidgetItem("→"));
+    }
+}
+
 void RestaurantWindow::setupReservationTable()
 {
     reservationTable->insertRow(0);

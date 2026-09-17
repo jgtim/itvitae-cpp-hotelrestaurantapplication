@@ -2,6 +2,7 @@
 #define RESTAURANTWINDOW_H
 
 #include "hotel/restaurantwindow/Restaurant/table.h"
+#include "hotel/restaurantwindow/TableReservations/tableReservation.h"
 
 #include <QWidget>
 #include <QTableWidget>
@@ -35,6 +36,7 @@ signals:
     void dataChanged();
 
 private:
+    void populateReservationTable(const QVector<TableReservation>& reservations);
     Ui::RestaurantWindow *ui;
 
     // Main layout components
