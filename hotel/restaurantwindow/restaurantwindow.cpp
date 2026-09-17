@@ -274,16 +274,10 @@ void RestaurantWindow::setupRightPanel()
     connect(reservationTableBtn, &QPushButton::clicked, this, &RestaurantWindow::onReservationTableClicked);
     topButtonLayout->addWidget(reservationTableBtn);
 
-    // OUT OF SERVICE
-    QPushButton *outOfServiceBtn = new QPushButton("Out of Service");
-    outOfServiceBtn->setStyleSheet(
-        "background-color: #808080; "
-        "color: #F5F5F5; "
-        "padding: 10px; "
-        "font-weight: bold; "
-        "border-radius: 5px;"
-        );
+    outOfServiceBtn = new QPushButton("Out of Service");
+    outOfServiceBtn->setStyleSheet("background-color: #808080; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
     outOfServiceBtn->setFixedHeight(40);
+    connect(outOfServiceBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetOutOfServiceClicked);
     topButtonLayout->addWidget(outOfServiceBtn);
 
     topButtonLayout->addStretch();
@@ -471,6 +465,19 @@ void RestaurantWindow::onSetOccupiedClicked()
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
 
+}
+
+void RestaurantWindow::onSetOutOfServiceClicked()
+{
+    int selectedTable = canvasPointer->getSelectedTable();
+
+    if(selectedTable > 0){
+        tables[selectedTable - 1].setStatus(TableStatus::OUT_OF_SERVICE);
+        canvasPointer->updateTables(tables);
+        canvasPointer->update();
+    }else{
+        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
+    }
 }
 
 void RestaurantWindow::onReservationTableClicked()
