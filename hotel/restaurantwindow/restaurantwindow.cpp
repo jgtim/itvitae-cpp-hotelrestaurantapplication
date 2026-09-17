@@ -14,7 +14,7 @@
 #include <qevent.h>
 #include <qstandarditemmodel.h>
 
-#include "reservetable/reservetable.h"
+#include "hotel/restaurantwindow/reservetable/reservetable.h"
 
 #include <QScrollArea>
 

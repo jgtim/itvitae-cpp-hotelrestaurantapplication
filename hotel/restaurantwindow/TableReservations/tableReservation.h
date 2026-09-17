@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "hotel/reservationstab/Reservation/reservation.h"
-#include "ReservationStatus.h"
+#include "hotel/restaurantwindow/TableReservations/ReservationStatus.h"
 
 struct TableReservation {
     QString ReservationID;

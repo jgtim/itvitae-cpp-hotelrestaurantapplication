@@ -1,4 +1,4 @@
-#include "multicolumnfilterproxymodel.h"
+#include "filter/multicolumnfilterproxymodel.h"
 
 void MultiColumnFilterProxyModel::setFilterColumns(const QList<int> &columns)
 {

@@ -1,5 +1,5 @@
-#include "reservationrepository.h"
-#include "reservationserializer.h"
+#include "readers/reservationrepository.h"
+#include "readers/reservationserializer.h"
 
 #include <QSqlQuery>
 #include <QSqlRecord>

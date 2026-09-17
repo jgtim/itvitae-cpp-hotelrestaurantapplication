@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "hotel/mainwindow.h"
+#include "hotel/ui_mainwindow.h"
 
 #include "hotel/reservationstab/reservationstab.h"
 #include "hotel/roomswindow//roomswindow.h"
