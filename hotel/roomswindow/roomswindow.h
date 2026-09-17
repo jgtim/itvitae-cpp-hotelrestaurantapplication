@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "hotel/roomswindow/Room/room.h"
-#include "hotel/roomswindow/Room/room.h"
 
 #include "filter/multicolumnfilterproxymodel.h"
 
