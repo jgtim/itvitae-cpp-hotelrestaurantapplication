@@ -10,9 +10,14 @@ reservetable::reservetable(QWidget *parent)
     , ui(new Ui::reservetable)
 {
     ui->setupUi(this);
-    ui->guestsEdit->setValidator(new QIntValidator(0, 6, this)); //maximum to max number of guests per table?
-    ui->tableEdit->setValidator(new QIntValidator(0, 50, this)); //set maximum to highest table number if that can be pulled from somewhere
-    ui->roomNumberEdit->setValidator(new QIntValidator(0, 100, this));
+
+    QRegularExpression nameRegex("^[A-Za-z\\s'-]{2,50}$");
+    ui->nameEdit->setValidator(new QRegularExpressionValidator(nameRegex, this));
+
+    ui->guestsEdit->setValidator(new QIntValidator(1, 6, this)); //maximum to max number of guests per table?
+
+    ui->tableEdit->setValidator(new QIntValidator(1, 50, this)); //set maximum to highest table number if that can be pulled from somewhere
+    ui->roomNumberEdit->setValidator(new QIntValidator(1, 100, this));
 
     ui->dateEdit->setDate(QDate::currentDate());
     ui->dateEdit->setMinimumDate(QDate::currentDate());
@@ -21,6 +26,17 @@ reservetable::reservetable(QWidget *parent)
     ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Morning),   static_cast<int>(TimeBlock::Morning));
     ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Afternoon), static_cast<int>(TimeBlock::Afternoon));
     ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Evening),   static_cast<int>(TimeBlock::Evening));
+
+    connect(ui->commentsEdit, &QTextEdit::textChanged, this, [this]() {
+        if (ui->commentsEdit->toPlainText().length() > 100) {
+            QString txt = ui->commentsEdit->toPlainText();
+            txt.truncate(100);
+            ui->commentsEdit->setPlainText(txt);
+            QTextCursor cursor = ui->commentsEdit->textCursor();
+            cursor.movePosition(QTextCursor::End);
+            ui->commentsEdit->setTextCursor(cursor);
+        }
+    });
 }
 
 reservetable::~reservetable()
@@ -44,15 +60,34 @@ void reservetable::on_buttonBox_accepted()
 
 void reservetable::accept()
 {
-    if (ui->nameEdit->text().trimmed().isEmpty()) {
-        QMessageBox::warning(this, "Missing Information", "Please enter a name.");
+
+    QString name = ui->nameEdit->text().trimmed();
+    QString guestsStr = ui->guestsEdit->text().trimmed();
+    QString comments = ui->commentsEdit->toPlainText().trimmed();
+
+    if (name.isEmpty()) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a guest name.");
         ui->nameEdit->setFocus();
         return;
     }
 
-    if (ui->guestsEdit->text().trimmed().isEmpty()) {
-        QMessageBox::warning(this, "Missing Information", "Please enter number of guests.");
+    if (name.length() < 2) {
+        QMessageBox::warning(this, "Missing Information", "Name must be at least 2 characters long.");
+        ui->nameEdit->setFocus();
+        return;
+    }
+
+    bool ok;
+    int guests = guestsStr.toInt(&ok);
+    if (guestsStr.isEmpty() || !ok || guests < 1) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a valid number of guests (at least 1).");
         ui->guestsEdit->setFocus();
+        return;
+    }
+
+    if (comments.length() > 100) {
+        QMessageBox::warning(this, "Exceeded Maximum", "Comments cannot exceed 250 characters.");
+        ui->commentsEdit->setFocus();
         return;
     }
 
