@@ -1,4 +1,5 @@
 #include "hotel/restaurantwindow/restaurantwindow.h"
+#include "hotel/restaurantwindow/reservetable/timeBlock.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -305,9 +306,8 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
         reservationTable->setItem(i, 0, new QTableWidgetItem(res.guestName));
         reservationTable->setItem(i, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
         reservationTable->setItem(i, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
-        reservationTable->setItem(i, 3, new QTableWidgetItem("Room XX"));  // placeholder
-        reservationTable->setItem(i, 4, new QTableWidgetItem(res.reservationDateTime.toString("HH:mm")));
-        reservationTable->setItem(i, 5, new QTableWidgetItem("→"));
+        reservationTable->setItem(i, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
+        reservationTable->setItem(i, 4, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
     }
 }
 
