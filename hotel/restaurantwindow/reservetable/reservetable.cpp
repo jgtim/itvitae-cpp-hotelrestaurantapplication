@@ -1,9 +1,8 @@
-#include "reservetable.h"
+#include "hotel/restaurantwindow/reservetable/reservetable.h"
 #include "hotel/restaurantwindow/reservetable/ui_reservetable.h"
-//#include "ui_reservetable.h"
-#include "../restaurantwindow.h"
+#include "hotel/restaurantwindow/restaurantwindow.h"
+
 #include <QMessageBox>
-#include <iostream>
 #include <QTime>
 
 
@@ -12,9 +11,13 @@ reservetable::reservetable(QWidget *parent)
     , ui(new Ui::reservetable)
 {
     ui->setupUi(this);
-    ui->guestsEdit->setValidator(new QIntValidator(0, 100, this)); //maximum to max number of guests per table?
-    ui->tableEdit->setValidator(new QIntValidator(0, 100, this)); //set maximum to highest table number if that can be pulled from somewhere
+    ui->guestsEdit->setValidator(new QIntValidator(0, 6, this)); //maximum to max number of guests per table?
+    ui->tableEdit->setValidator(new QIntValidator(0, 50, this)); //set maximum to highest table number if that can be pulled from somewhere
     ui->roomNumberEdit->setValidator(new QIntValidator(0, 100, this));
+
+    QDateTime current = QDateTime::currentDateTime();
+    ui->reserveTimeEdit->setDateTime(current);
+    ui->reserveTimeEdit->setMinimumDateTime(current);
 }
 
 reservetable::~reservetable()
@@ -109,9 +112,12 @@ std::vector<QString> reservetable::getdata(){
     QString tablenumber = ui->tableEdit->text();
     QString numguests = ui->guestsEdit->text();
     QString roomnumber = ui->roomNumberEdit->text();
-    QString time = ui->reserveTimeEdit->time().toString("HH:mm");
+
+    QString dateTime = ui->reserveTimeEdit->dateTime().toString("dd-MM-yyy HH:mm");
+
     QString comments = ui->commentsEdit->toPlainText();
-    return {name, tablenumber, numguests, roomnumber, time, comments};
+
+    return {name, tablenumber, numguests, roomnumber, dateTime, comments};
 }
 
 void reservetable::setTable(int selectedTable){
