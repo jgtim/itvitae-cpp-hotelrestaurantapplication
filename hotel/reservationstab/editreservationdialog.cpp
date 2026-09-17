@@ -171,6 +171,7 @@ Reservation EditReservationDialog::getReservationData() const
     // Details
     res.numberOfGuests = ui->guestNumEdit->text().toInt();
     res.roomNumber = ui->roomEdit->currentData().toString();
+    std::string a = ui->roomEdit->currentData().toString().toStdString();
 
     // Dates
     res.checkIn = ui->checkInEdit->date();
