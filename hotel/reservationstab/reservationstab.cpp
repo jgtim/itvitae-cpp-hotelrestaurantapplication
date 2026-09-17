@@ -184,7 +184,7 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
         auto map = serializer.toVariantMap(res);
         query.prepare("insert into reservations values (:ReservationID, :GuestID, :NumberOfGuests, :RoomNumber, :CheckInDate, :CheckOutDate, :PaymentStatus);");
         query.bindValue(":ReservationID", map.value("reservation_id"));
-        query.bindValue(":GuestID", map.value("guest_name"));
+        query.bindValue(":GuestID", map.value("guest_name")); //TODO should be id?
         query.bindValue(":NumberOfGuests", map.value("number_of_guests"));
         query.bindValue(":RoomNumber", map.value("room_number"));
         query.bindValue(":CheckInDate", map.value("check_in"));
@@ -194,7 +194,7 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
 
         if (!isGuestInDatabase(res.guest)) {
             query.prepare("insert into guests values (:GuestID, :GuestName, :GuestPhoneNumber, :GuestEmail, :GuestAddress, :GuestDateOfBirth, :GuestGender, :GuestPaymentMethod, :GuestIdType);");
-            query.bindValue(":GuestID", map.value("guest_name")); //TODO only place where ID is just name
+            query.bindValue(":GuestID", map.value("guest_name")); //TODO only place where ID is just name because it's adding something new
             query.bindValue(":GuestName", map.value("guest_name"));
             query.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
             query.bindValue(":GuestEmail", map.value("guest_email"));
@@ -226,6 +226,16 @@ QList<Reservation> ReservationsTab::getAllReservations()
     QList<Reservation> reservations;
     QSqlQuery resQuery("SELECT * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
+    // while (guestQuery.next()) {
+    //     QString id = guestQuery.value(0).toString();
+    //     QString name = guestQuery.value(1).toString();
+    //     QString name2 = guestQuery.value(2).toString();
+    //     qDebug() << id << name << name2;
+    // }
+    // while (resQuery.next()) {
+    //     QString guestid = resQuery.value(1).toString();
+    //     qDebug() << guestid;
+    // }
 
     int resIdIndex = resQuery.record().indexOf("ReservationID");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
@@ -235,6 +245,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
     int checkOutIndex = resQuery.record().indexOf("CheckOutDate");
     int paymentStatusIndex = resQuery.record().indexOf("PaymentStatus");
 
+    int IdIndex = guestQuery.record().indexOf("GuestID");
     int guestNameIndex = guestQuery.record().indexOf("GuestName");
     int guestPhoneNumberIndex = guestQuery.record().indexOf("GuestPhoneNumber");
     int guestEmailIndex = guestQuery.record().indexOf("GuestEmail");
@@ -257,7 +268,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
         guestQuery.bindValue(":id", resQuery.value(guestIdIndex).toString());
         guestQuery.exec();
         if (guestQuery.next()) {
-            resMap[QStringLiteral("guest_id")] = guestQuery.value(guestIdIndex).toString();
+            resMap[QStringLiteral("guest_id")] = guestQuery.value(IdIndex).toString();
             resMap[QStringLiteral("guest_name")] = guestQuery.value(guestNameIndex).toString();
             resMap[QStringLiteral("guest_phone")] = guestQuery.value(guestPhoneNumberIndex).toString();
             resMap[QStringLiteral("guest_email")] = guestQuery.value(guestEmailIndex).toString();
@@ -333,7 +344,7 @@ void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
     }
 
     guestQuery.prepare("UPDATE guests SET GuestName = :GuestName, GuestPhoneNumber = :GuestPhoneNumber, GuestEmail = :GuestEmail, GuestAddress = :GuestAddress, GuestDateOfBirth = :GuestDateOfBirth, GuestGender = :GuestGender, GuestPaymentMethod = :GuestPaymentMethod, GuestIdType = :GuestIdType WHERE GuestID = :id;");
-    guestQuery.bindValue(":id", map.value("guest_id"));
+    guestQuery.bindValue(":id", map.value("guest_id")); //TODO this seems to be not recognized; where do these map values come from?
     guestQuery.bindValue(":GuestName", map.value("guest_name"));
     guestQuery.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
     guestQuery.bindValue(":GuestEmail", map.value("guest_email"));
