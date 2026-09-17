@@ -73,17 +73,17 @@ protected:
         painter.setRenderHint(QPainter::Antialiasing);
 
         // =========================
-        // Titel BINNEN
+
         // =========================
         painter.setPen(QColor("#1E1E24"));
         painter.setFont(QFont("Arial", 16, QFont::Bold));
-        painter.drawText(30, 30, "BINNEN");
+        painter.drawText(30, 30, "Inside");
 
 
         // =========================
         // Titel TERRAS
         // =========================
-        painter.drawText(30, 245, "TERRAS");
+        painter.drawText(30, 245, "Terrace");
 
 
         // =========================
