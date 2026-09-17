@@ -72,9 +72,7 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
-        // =========================
 
-        // =========================
         painter.setPen(QColor("#1E1E24"));
         painter.setFont(QFont("Arial", 16, QFont::Bold));
         painter.drawText(30, 30, "Inside");
@@ -157,7 +155,7 @@ private:
 
         painter.setBrush(fillColor);
         if(table.getNumber() == selectedTable){
-            painter.setPen(QPen(QColor("#ECFA00"), 2));
+            painter.setPen(QPen(Qt::black, 3));
         }else{
             painter.setPen(QPen(QColor("#2D2D35"), 2));
         }
@@ -276,12 +274,17 @@ void RestaurantWindow::setupRightPanel()
     connect(reservationTableBtn, &QPushButton::clicked, this, &RestaurantWindow::onReservationTableClicked);
     topButtonLayout->addWidget(reservationTableBtn);
 
-
-    reservationTableBtn = new QPushButton("Out of Service");
-    reservationTableBtn->setStyleSheet("background-color: ##808080; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
-    reservationTableBtn->setFixedHeight(40);
-    connect(reservationTableBtn, &QPushButton::clicked, this, &RestaurantWindow::onReservationTableClicked);
-    topButtonLayout->addWidget(reservationTableBtn);
+    // OUT OF SERVICE
+    QPushButton *outOfServiceBtn = new QPushButton("Out of Service");
+    outOfServiceBtn->setStyleSheet(
+        "background-color: #808080; "
+        "color: #F5F5F5; "
+        "padding: 10px; "
+        "font-weight: bold; "
+        "border-radius: 5px;"
+        );
+    outOfServiceBtn->setFixedHeight(40);
+    topButtonLayout->addWidget(outOfServiceBtn);
 
     topButtonLayout->addStretch();
     rightLayout->addLayout(topButtonLayout);
