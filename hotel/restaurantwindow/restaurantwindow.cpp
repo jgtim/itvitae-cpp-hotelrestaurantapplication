@@ -18,9 +18,8 @@
 
 #include <QScrollArea>
 
-
 RestaurantWindow::RestaurantWindow(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), ui(nullptr)
 {
     loadMockTables();
     setupLayout();
@@ -73,6 +72,30 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
+        // =========================
+
+        // =========================
+        painter.setPen(QColor("#1E1E24"));
+        painter.setFont(QFont("Arial", 16, QFont::Bold));
+        painter.drawText(30, 30, "Inside");
+
+
+        // =========================
+        // Titel TERRAS
+        // =========================
+        painter.drawText(30, 245, "Terrace");
+
+
+        // =========================
+        // Scheidingslijn
+        // =========================
+        painter.setPen(QPen(QColor("#2D2D35"), 2));
+        painter.drawLine(20, 225, width() - 20, 225);
+
+
+        // =========================
+        // Tafels tekenen
+        // =========================
         for (const Table& table : tables) {
             paintTable(table, painter);
         }
@@ -165,8 +188,8 @@ void RestaurantWindow::setupLayout()
     setupRightPanel();
     mainSplitter->addWidget(rightPanel);
 
-    // Set splitter sizes (30/70)
-    mainSplitter->setSizes(QList<int>() << 625 << 375);
+    // Set splitter sizes (45/55)
+    mainSplitter->setSizes(QList<int>() << 450 << 550);
     mainSplitter->setStretchFactor(0, 1);
     mainSplitter->setStretchFactor(1, 1);
 
@@ -194,9 +217,9 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->addWidget(reserveLabel);
 
     reservationTable = new QTableWidget();
-    reservationTable->setColumnCount(6);
-    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Hotel Room" << "Time" << "Comments");
-    reservationTable->setMaximumHeight(120);
+    reservationTable->setColumnCount(5);
+    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Room" << "Time");
+    // reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     reservationTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
@@ -214,52 +237,13 @@ void RestaurantWindow::setupLeftPanel()
     connect(viewReservationBtn, &QPushButton::clicked, this, &RestaurantWindow::onViewReservationClicked);
     leftLayout->addWidget(viewReservationBtn);
 
-    // === Bestellingen Tabel ===
-    QLabel *orderLabel = new QLabel("Orders");
-    orderLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-    leftLayout->addWidget(orderLabel);
-
-    orderTable = new QTableWidget();
-    orderTable->setColumnCount(5);
-    orderTable->setHorizontalHeaderLabels(QStringList() << "Status" << "Rooms Number" << "Menu Item(s)" << "Placed at" << "Tables");
-    orderTable->setMaximumHeight(120);
-    orderTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    orderTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
-    orderTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
-    orderTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
-    orderTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
-    orderTable->verticalHeader()->setVisible(false);                  // Cannot see row numbers
-
-    setupOrderTable();
-    leftLayout->addWidget(orderTable);
-
-    // === Spacer (push buttons down) ===
-    leftLayout->addStretch();
-
-    // === Bottom Buttons ===
-    QHBoxLayout *bottomButtonLayout = new QHBoxLayout();
-    bottomButtonLayout->setSpacing(10);
-
-    allOrdersBtn = new QPushButton("All Orders");
-    allOrdersBtn->setFixedHeight(35);
-    connect(allOrdersBtn, &QPushButton::clicked, this, &RestaurantWindow::onAllOrdersClicked);
-    bottomButtonLayout->addWidget(allOrdersBtn);
-
-    newOrderBtn = new QPushButton("New Order");
-    newOrderBtn->setFixedHeight(35);
-    connect(newOrderBtn, &QPushButton::clicked, this, &RestaurantWindow::onNewOrderClicked);
-    bottomButtonLayout->addWidget(newOrderBtn);
-
-    leftLayout->addLayout(bottomButtonLayout);
-
     leftPanel->setLayout(leftLayout);
 }
 
 void RestaurantWindow::setupRightPanel()
 {
     rightPanel = new QWidget();
-    rightPanel->setStyleSheet("background-color: #1E1E24;");
+    rightPanel->setStyleSheet("background-color: white;");
 
     QVBoxLayout *rightLayout = new QVBoxLayout(rightPanel);
     rightLayout->setContentsMargins(10, 10, 10, 10);
@@ -292,7 +276,7 @@ void RestaurantWindow::setupRightPanel()
 
     tableCanvas = new TableCanvas(tables);
     canvasPointer = qobject_cast<TableCanvas*>(tableCanvas);
-    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
+    tableCanvas->setStyleSheet("background-color: white; border: 2px solid #2D2D35;");
 
     rightLayout->addWidget(tableCanvas);
 
@@ -300,10 +284,27 @@ void RestaurantWindow::setupRightPanel()
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidget(tableCanvas);
     scrollArea->setWidgetResizable(true); // Allows canvas to expand automatically when window expands
-    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
+    tableCanvas->setStyleSheet("background-color: white; border: 2px solid #2D2D35;");
 
     rightLayout->addWidget(scrollArea);
     rightPanel->setLayout(rightLayout);
+}
+
+void RestaurantWindow::populateReservationTable(const QVector<TableReservation>& reservations)
+{
+    reservationTable->setRowCount(0);
+
+    for (int i = 0; i < reservations.size(); ++i) {
+        const TableReservation& res = reservations[i];
+
+        reservationTable->insertRow(i);
+        reservationTable->setItem(i, 0, new QTableWidgetItem(res.guestName));
+        reservationTable->setItem(i, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
+        reservationTable->setItem(i, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
+        reservationTable->setItem(i, 3, new QTableWidgetItem("Room XX"));  // placeholder
+        reservationTable->setItem(i, 4, new QTableWidgetItem(res.reservationDateTime.toString("HH:mm")));
+        reservationTable->setItem(i, 5, new QTableWidgetItem("→"));
+    }
 }
 
 void RestaurantWindow::setupReservationTable()
@@ -314,7 +315,7 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->setItem(0, 2, new QTableWidgetItem("2"));
     reservationTable->setItem(0, 3, new QTableWidgetItem("5"));
     reservationTable->setItem(0, 4, new QTableWidgetItem("15:00"));
-    reservationTable->setItem(0, 5, new QTableWidgetItem(""));
+
 
     reservationTable->insertRow(1);
     reservationTable->setItem(1, 0, new QTableWidgetItem("Smith"));
@@ -322,7 +323,7 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->setItem(1, 2, new QTableWidgetItem("2"));
     reservationTable->setItem(1, 3, new QTableWidgetItem("7"));
     reservationTable->setItem(1, 4, new QTableWidgetItem("17:00"));
-    reservationTable->setItem(1, 5, new QTableWidgetItem(""));
+
 
     reservationTable->insertRow(2);
     reservationTable->setItem(2, 0, new QTableWidgetItem("Janssen"));
@@ -330,50 +331,51 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->setItem(2, 2, new QTableWidgetItem("2"));
     reservationTable->setItem(2, 3, new QTableWidgetItem("12"));
     reservationTable->setItem(2, 4, new QTableWidgetItem("18:00"));
-    reservationTable->setItem(2, 5, new QTableWidgetItem(""));
-}
 
-void RestaurantWindow::setupOrderTable()
-{
-    orderTable->insertRow(0);
-    orderTable->setItem(0, 0, new QTableWidgetItem("Wordt bezorgd"));
-    orderTable->setItem(0, 1, new QTableWidgetItem("5"));
-    orderTable->setItem(0, 2, new QTableWidgetItem("Tosti × 2"));
-    orderTable->setItem(0, 3, new QTableWidgetItem("15:42"));
-    orderTable->setItem(0, 4, new QTableWidgetItem("Room Service"));
-
-    orderTable->insertRow(1);
-    orderTable->setItem(1, 0, new QTableWidgetItem("Klaar voor bezorging"));
-    orderTable->setItem(1, 1, new QTableWidgetItem("12"));
-    orderTable->setItem(1, 2, new QTableWidgetItem("Spaghetti Bolognese"));
-    orderTable->setItem(1, 3, new QTableWidgetItem("16:03"));
-    orderTable->setItem(1, 4, new QTableWidgetItem("Room Service"));
-
-    orderTable->insertRow(2);
-    orderTable->setItem(2, 0, new QTableWidgetItem("Wordt bereid"));
-    orderTable->setItem(2, 1, new QTableWidgetItem("3"));
-    orderTable->setItem(2, 2, new QTableWidgetItem("Gegrilleerde zalm + 1"));
-    orderTable->setItem(2, 3, new QTableWidgetItem("16:05"));
-    orderTable->setItem(2, 4, new QTableWidgetItem("7"));
-
-    orderTable->insertRow(3);
-    orderTable->setItem(3, 0, new QTableWidgetItem("Nog niet begonnen"));
-    orderTable->setItem(3, 1, new QTableWidgetItem("6"));
-    orderTable->setItem(3, 2, new QTableWidgetItem("Zoete aardappels"));
-    orderTable->setItem(3, 3, new QTableWidgetItem("16:12"));
-    orderTable->setItem(3, 4, new QTableWidgetItem("1"));
 }
 
 void RestaurantWindow::loadMockTables()
 {
     tables.clear();
 
-    const int columns = 4;
-    const int itemSpacing = 65;
+    const int columns = 5;
+    const int itemSpacingX = 75;
+    const int itemSpacingY = 55;
 
-    for (int i = 1; i <= 31; ++i) {
-        int x = 15 + ((i - 1) % columns) * itemSpacing;
-        int y = 15 + ((i - 1) / columns) * itemSpacing;
+    // =========================
+    // BINNEN - tafels 1 t/m 15
+    // =========================
+    for (int i = 1; i <= 15; ++i) {
+
+        int index = i - 1;
+
+        int x = 30 + (index % columns) * itemSpacingX;
+        int y = 50 + (index / columns) * itemSpacingY;
+
+        int randomStatus = QRandomGenerator::global()->bounded(3);
+
+        TableStatus status;
+
+        if (randomStatus == 0)
+            status = TableStatus::FREE;
+        else if (randomStatus == 1)
+            status = TableStatus::OCCUPIED;
+        else
+            status = TableStatus::RESERVED;
+
+        tables.append(Table(i, x, y, status));
+    }
+
+
+    // =========================
+    // TERRAS - tafels 16 t/m 31
+    // =========================
+    for (int i = 16; i <= 31; ++i) {
+
+        int index = i - 16;
+
+        int x = 30 + (index % columns) * itemSpacingX;
+        int y = 250 + (index / columns) * itemSpacingY;
 
         int randomStatus = QRandomGenerator::global()->bounded(3);
 
@@ -405,16 +407,6 @@ void RestaurantWindow::onDataChanged()
 }
 
 void RestaurantWindow::onViewReservationClicked()
-{
-    // TODO: Implementatie
-}
-
-void RestaurantWindow::onAllOrdersClicked()
-{
-    // TODO: Implementatie
-}
-
-void RestaurantWindow::onNewOrderClicked()
 {
     // TODO: Implementatie
 }

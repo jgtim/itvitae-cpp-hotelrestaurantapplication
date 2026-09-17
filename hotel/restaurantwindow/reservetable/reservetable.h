@@ -1,7 +1,10 @@
 #ifndef RESERVETABLE_H
 #define RESERVETABLE_H
 
+#include "hotel/restaurantwindow/reservetable/timeBlock.h"
+
 #include <QDialog>
+
 
 namespace Ui {
 class reservetable;
@@ -16,6 +19,8 @@ public:
     ~reservetable();
     std::vector<QString> getdata();
     void setTable(int);
+    TimeBlock getSelectedTimeBlock() const;
+    QDate getSelectedDate() const;
 
 private slots:
     void on_tableSelectButton_clicked();
