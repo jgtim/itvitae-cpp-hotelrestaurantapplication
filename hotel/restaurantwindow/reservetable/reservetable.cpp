@@ -156,12 +156,11 @@ std::vector<QString> reservetable::getdata(){
     QString name =  ui->nameEdit->text();
     QString tablenumber = ui->tableEdit->text();
     QString numguests = ui->guestsEdit->text();
-    QString roomnumber = ui->roomNumberEdit->text();
     QString dateStr = getSelectedDate().toString("yyyy-MM-dd");
     QString timeBlockStr = ui->timeBlockComboBox->currentText();
     QString comments = ui->commentsEdit->toPlainText();
 
-    return {name, tablenumber, numguests, roomnumber, dateStr, timeBlockStr, comments};
+    return {name, tablenumber, numguests, dateStr, timeBlockStr, comments};
 }
 
 void reservetable::setTable(int selectedTable){

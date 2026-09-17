@@ -10,7 +10,6 @@
 #include <QMessageBox>
 #include <cmath>
 
-#include <iostream>
 #include <qevent.h>
 #include <qstandarditemmodel.h>
 
@@ -194,7 +193,7 @@ void RestaurantWindow::setupLeftPanel()
 
     reservationTable = new QTableWidget();
     reservationTable->setColumnCount(6);
-    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Hotel Room" << "Time" << "Comments");
+    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Date" << "Time Block" << "Comments");
     // reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -285,29 +284,26 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
 
 void RestaurantWindow::setupReservationTable()
 {
-    reservationTable->insertRow(0);
-    reservationTable->setItem(0, 0, new QTableWidgetItem("Jansen"));
-    reservationTable->setItem(0, 1, new QTableWidgetItem("6"));
-    reservationTable->setItem(0, 2, new QTableWidgetItem("2"));
-    reservationTable->setItem(0, 3, new QTableWidgetItem("5"));
-    reservationTable->setItem(0, 4, new QTableWidgetItem("15:00"));
-    reservationTable->setItem(0, 5, new QTableWidgetItem(""));
 
-    reservationTable->insertRow(1);
-    reservationTable->setItem(1, 0, new QTableWidgetItem("Smith"));
-    reservationTable->setItem(1, 1, new QTableWidgetItem("4"));
-    reservationTable->setItem(1, 2, new QTableWidgetItem("2"));
-    reservationTable->setItem(1, 3, new QTableWidgetItem("7"));
-    reservationTable->setItem(1, 4, new QTableWidgetItem("17:00"));
-    reservationTable->setItem(1, 5, new QTableWidgetItem(""));
+    reservationTable->setRowCount(0); // Ensure table starts clean
 
-    reservationTable->insertRow(2);
-    reservationTable->setItem(2, 0, new QTableWidgetItem("Janssen"));
-    reservationTable->setItem(2, 1, new QTableWidgetItem("3"));
-    reservationTable->setItem(2, 2, new QTableWidgetItem("2"));
-    reservationTable->setItem(2, 3, new QTableWidgetItem("12"));
-    reservationTable->setItem(2, 4, new QTableWidgetItem("18:00"));
-    reservationTable->setItem(2, 5, new QTableWidgetItem(""));
+    auto addMockRow = [this](int row, const QString &name, const QString &table,
+                             const QString &guests,
+                             const QString &date, const QString &timeBlock,
+                             const QString &comments) {
+        reservationTable->insertRow(row);
+        reservationTable->setItem(row, 0, new QTableWidgetItem(name));
+        reservationTable->setItem(row, 1, new QTableWidgetItem(table));
+        reservationTable->setItem(row, 2, new QTableWidgetItem(guests));
+        reservationTable->setItem(row, 3, new QTableWidgetItem(date));
+        reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlock));
+        reservationTable->setItem(row, 5, new QTableWidgetItem(comments));
+    };
+
+    addMockRow(0, "Jansen",  "6", "2", "2026-09-17", "Afternoon", "Window seat");
+    addMockRow(1, "Smith",   "4", "2", "2026-09-17", "Evening", "High chair needed");
+    addMockRow(2, "Janssen", "3", "2", "2026-09-18", "Morning", "");
+
 }
 
 
@@ -416,9 +412,9 @@ void RestaurantWindow::onReservationTableClicked()
             reservationTable->setItem(row, 0, new QTableWidgetItem(newstring[0])); //name
             reservationTable->setItem(row, 1, new QTableWidgetItem(newstring[1])); //table number
             reservationTable->setItem(row, 2, new QTableWidgetItem(newstring[2])); //number of guests
-            reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); //room number pulled from nowhere
-            reservationTable->setItem(row, 4, new QTableWidgetItem(newstring[4])); //time, get this from datetime & save date for the sake of detail screen
-            reservationTable->setItem(row, 5, new QTableWidgetItem(newstring[5])); //time, get this from datetime & save date for the sake of detail screen
+            reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); // Date
+            reservationTable->setItem(row, 4, new QTableWidgetItem(newstring[4])); // TimeBlock
+            reservationTable->setItem(row, 5, new QTableWidgetItem(newstring[5])); // Comments
 
             canvasPointer->update();
         }
