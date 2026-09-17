@@ -6,7 +6,7 @@
 #include <QMetaType>
 #include <optional>
 
-#include "../../reservationstab/Reservation/reservation.h"
+#include "hotel/reservationstab/Reservation/reservation.h"
 #include "ReservationStatus.h"
 
 struct TableReservation {
