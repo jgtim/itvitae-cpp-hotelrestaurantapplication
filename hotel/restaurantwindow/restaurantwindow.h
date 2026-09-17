@@ -45,10 +45,7 @@ private:
     // Left Panel - Sidebar
     QWidget *leftPanel;
     QTableWidget *reservationTable;
-    QTableWidget *orderTable;
     QPushButton *viewReservationBtn;
-    QPushButton *allOrdersBtn;
-    QPushButton *newOrderBtn;
 
     // Right Panel - Canvas
     QWidget *rightPanel;
@@ -63,19 +60,17 @@ private:
     void setupLeftPanel();
     void setupRightPanel();
     void setupReservationTable();
-    void setupOrderTable();
     void setupTableButtons();
     void loadMockTables();
+private:
+    void populateReservationTable(const QVector<TableReservation>& reservations);
 
     // Mock data
     void loadMockReservations();
     void loadMockOrders();
 
 private slots:
-    // Button slots - temporary, for now empty
     void onViewReservationClicked();
-    void onAllOrdersClicked();
-    void onNewOrderClicked();
     void onSetFreeClicked();
     void onSetOccupiedClicked();
     void onReservationTableClicked();
