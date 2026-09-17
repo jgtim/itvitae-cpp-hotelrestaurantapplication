@@ -62,12 +62,11 @@ private:
     void setupReservationTable();
     void setupTableButtons();
     void loadMockTables();
-private:
-    void populateReservationTable(const QVector<TableReservation>& reservations);
+
 
     // Mock data
     void loadMockReservations();
-    void loadMockOrders();
+
 
 private slots:
     void onViewReservationClicked();
