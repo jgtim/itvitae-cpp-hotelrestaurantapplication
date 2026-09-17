@@ -194,7 +194,7 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
 
         if (!isGuestInDatabase(res.guest)) {
             query.prepare("insert into guests values (:GuestID, :GuestName, :GuestPhoneNumber, :GuestEmail, :GuestAddress, :GuestDateOfBirth, :GuestGender, :GuestPaymentMethod, :GuestIdType);");
-            query.bindValue(":GuestID", map.value("guest_name"));
+            query.bindValue(":GuestID", map.value("guest_name")); //TODO only place where ID is just name
             query.bindValue(":GuestName", map.value("guest_name"));
             query.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
             query.bindValue(":GuestEmail", map.value("guest_email"));
@@ -257,6 +257,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
         guestQuery.bindValue(":id", resQuery.value(guestIdIndex).toString());
         guestQuery.exec();
         if (guestQuery.next()) {
+            resMap[QStringLiteral("guest_id")] = guestQuery.value(guestIdIndex).toString();
             resMap[QStringLiteral("guest_name")] = guestQuery.value(guestNameIndex).toString();
             resMap[QStringLiteral("guest_phone")] = guestQuery.value(guestPhoneNumberIndex).toString();
             resMap[QStringLiteral("guest_email")] = guestQuery.value(guestEmailIndex).toString();
@@ -319,7 +320,7 @@ void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
     }
     auto map = ReservationSerializer::toVariantMap(res);
     resQuery.prepare("UPDATE reservations SET GuestID = :GuestID, NumberOfGuests = :NumberOfGuests, RoomNumber = :RoomNumber, CheckInDate = :CheckInDate, CheckOutDate = :CheckOutDate, PaymentStatus = :PaymentStatus WHERE ReservationID = :id;");
-    resQuery.bindValue(":GuestID", map.value("guest_name"));
+    resQuery.bindValue(":GuestID", map.value("guest_id"));
     resQuery.bindValue(":NumberOfGuests", map.value("number_of_guests"));
     resQuery.bindValue(":RoomNumber", map.value("room_number"));
     resQuery.bindValue(":CheckInDate", map.value("check_in"));
@@ -331,8 +332,9 @@ void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
         qDebug() << "Error updating reservation: " << resQuery.lastError().text();
     }
 
-    guestQuery.prepare("UPDATE guests SET GuestPhoneNumber = :GuestPhoneNumber, GuestEmail = :GuestEmail, GuestAddress = :GuestAddress, GuestDateOfBirth = :GuestDateOfBirth, GuestGender = :GuestGender, GuestPaymentMethod = :GuestPaymentMethod, GuestIdType = :GuestIdType WHERE GuestID = :id;");
-    guestQuery.bindValue(":id", map.value("guest_name"));
+    guestQuery.prepare("UPDATE guests SET GuestName = :GuestName, GuestPhoneNumber = :GuestPhoneNumber, GuestEmail = :GuestEmail, GuestAddress = :GuestAddress, GuestDateOfBirth = :GuestDateOfBirth, GuestGender = :GuestGender, GuestPaymentMethod = :GuestPaymentMethod, GuestIdType = :GuestIdType WHERE GuestID = :id;");
+    guestQuery.bindValue(":id", map.value("guest_id"));
+    guestQuery.bindValue(":GuestName", map.value("guest_name"));
     guestQuery.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
     guestQuery.bindValue(":GuestEmail", map.value("guest_email"));
     guestQuery.bindValue(":GuestAddress", map.value("address"));
@@ -340,7 +342,6 @@ void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
     guestQuery.bindValue(":GuestGender", map.value("gender"));
     guestQuery.bindValue(":GuestPaymentMethod", map.value("payment_method"));
     guestQuery.bindValue(":GuestIdType", map.value("id_type"));
-    guestQuery.bindValue(":GuestName", map.value("guest_name"));
 
     bool guestStatus = guestQuery.exec();
     if (!guestStatus) {
