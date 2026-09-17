@@ -14,76 +14,30 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
 add_subdirectory(QXlsx)
 
-set(PROJECT_SOURCES
-        main/main.cpp
-
-        hotel/mainwindow.cpp
-        hotel/mainwindow.h
-        hotel/mainwindow.ui
-
-        hotel/reservationstab/reservationstab.h
-        hotel/reservationstab/reservationstab.cpp
-        hotel/reservationstab/reservationstab.ui
-
-        hotel/reservationstab/editreservationdialog.h
-        hotel/reservationstab/editreservationdialog.cpp
-        hotel/reservationstab/editreservationdialog.ui
-
-        hotel/roomswindow/roomswindow.h
-        hotel/roomswindow/roomswindow.cpp
-        hotel/roomswindow/roomswindow.ui
-
-        hotel/restaurantwindow/restaurantwindow.h
-        hotel/restaurantwindow/restaurantwindow.cpp
-        hotel/restaurantwindow/restaurantwindow.ui
-
-        readers/hotelkamersreader.h
-        readers/hotelkamersreader.cpp
-
-        readers/iroomrepository.h
-        readers/excelroomrepository.h
-        readers/excelroomrepository.cpp
-        readers/roomrepositoryfactory.h
-        readers/roomrepositoryfactory.cpp
-        readers/reservationserializer.h
-        readers/reservationserializer.cpp
-        readers/reservationrepository.h
-        readers/reservationrepository.cpp
+# Automatically pick up every .cpp/.h/.ui file under the project root.
+# CONFIGURE_DEPENDS tells CMake to re-check the glob on every build
+file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.ui"
 )
+
+# Exclude things that aren't part of this target's own sources:
+# - the QXlsx subdirectory (it has its own CMakeLists.txt / target)
+# - the *current* build directory, in case of in-source or nested builds
+# - ANY other build directory that happens to be sitting in the tree
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_CURRENT_SOURCE_DIR}/QXlsx/.*")
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_CURRENT_BINARY_DIR}/.*")
+if(DEFINED CMAKE_BINARY_DIR)
+    list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+endif()
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/(build|cmake-build-[^/]*)/")
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/(CMakeFiles|.*_autogen)/")
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MolvenoLakeHotelResort
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        hotel/restaurantwindow/Restaurant/table.h
-        hotel/roomswindow/roomdetailsdialog.h hotel/roomswindow/roomdetailsdialog.cpp hotel/roomswindow/roomdetailsdialog.ui
-
-        hotel/reservationstab/Reservation/reservation.h
-        hotel/reservationstab/Reservation/address.h
-        hotel/reservationstab/Reservation/gender.h
-        hotel/reservationstab/Reservation/address.cpp
-        hotel/roomswindow/Room/room.h
-        hotel/roomswindow/Room/room.cpp
-        hotel/database/databaseutils.h
-        hotel/database/databaseutils.cpp
-        hotel/roomswindow/confirmdialog.h hotel/roomswindow/confirmdialog.cpp hotel/roomswindow/confirmdialog.ui
-        readers/reservationserializer.h
-        readers/reservationserializer.cpp
-        readers/reservationrepository.h
-        hotel/reservationstab/Guest/guest.h
-        hotel/reservationstab/Guest/IDType.h
-        hotel/reservationstab/Guest/PaymentMethod.h
-        hotel/reservationstab/Reservation/PaymentStatus.h
-        hotel/reservationstab/editreservationdialog.h
-        hotel/restaurantwindow/restaurant_mockdata.h
-        hotel/restaurantwindow/Restaurant/table.h
-        filter/multicolumnfilterproxymodel.h filter/multicolumnfilterproxymodel.cpp
-        readers/roomserializer.h readers/roomserializer.cpp
-        hotel/restaurantwindow/reservetable/reservetable.h hotel/restaurantwindow/reservetable/reservetable.cpp hotel/restaurantwindow/reservetable/reservetable.ui
-        hotel/restaurantwindow/reservetable/reservetable.cpp
-        hotel/restaurantwindow/TableReservations/tableReservation.h
-        hotel/restaurantwindow/TableReservations/ReservationStatus.h
-        hotel/restaurantwindow/reservetable/timeBlock.h
     )
 
 # Define target properties for Android with Qt 6 as:
