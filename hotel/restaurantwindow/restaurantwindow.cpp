@@ -195,7 +195,7 @@ void RestaurantWindow::setupLeftPanel()
     reservationTable = new QTableWidget();
     reservationTable->setColumnCount(6);
     reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Hotel Room" << "Time" << "Comments");
-    reservationTable->setMaximumHeight(120);
+    // reservationTable->setMaximumHeight(120);
     reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     reservationTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
@@ -212,45 +212,6 @@ void RestaurantWindow::setupLeftPanel()
     viewReservationBtn->setFixedHeight(35);
     connect(viewReservationBtn, &QPushButton::clicked, this, &RestaurantWindow::onViewReservationClicked);
     leftLayout->addWidget(viewReservationBtn);
-
-    // === Bestellingen Tabel ===
-    QLabel *orderLabel = new QLabel("Orders");
-    orderLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-    leftLayout->addWidget(orderLabel);
-
-    orderTable = new QTableWidget();
-    orderTable->setColumnCount(5);
-    orderTable->setHorizontalHeaderLabels(QStringList() << "Status" << "Rooms Number" << "Menu Item(s)" << "Placed at" << "Tables");
-    orderTable->setMaximumHeight(120);
-    orderTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    orderTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
-    orderTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
-    orderTable->setSelectionMode(QAbstractItemView::SingleSelection); // User can only select one row at a time
-    orderTable->horizontalHeader()->setSectionsClickable(false);      // User cannot click a column header to highlight all rows beneath it
-    orderTable->verticalHeader()->setVisible(false);                  // Cannot see row numbers
-
-    setupOrderTable();
-    leftLayout->addWidget(orderTable);
-
-    // === Spacer (push buttons down) ===
-    leftLayout->addStretch();
-
-    // === Bottom Buttons ===
-    QHBoxLayout *bottomButtonLayout = new QHBoxLayout();
-    bottomButtonLayout->setSpacing(10);
-
-    allOrdersBtn = new QPushButton("All Orders");
-    allOrdersBtn->setFixedHeight(35);
-    connect(allOrdersBtn, &QPushButton::clicked, this, &RestaurantWindow::onAllOrdersClicked);
-    bottomButtonLayout->addWidget(allOrdersBtn);
-
-    newOrderBtn = new QPushButton("New Order");
-    newOrderBtn->setFixedHeight(35);
-    connect(newOrderBtn, &QPushButton::clicked, this, &RestaurantWindow::onNewOrderClicked);
-    bottomButtonLayout->addWidget(newOrderBtn);
-
-    leftLayout->addLayout(bottomButtonLayout);
 
     leftPanel->setLayout(leftLayout);
 }
@@ -305,6 +266,23 @@ void RestaurantWindow::setupRightPanel()
     rightPanel->setLayout(rightLayout);
 }
 
+void RestaurantWindow::populateReservationTable(const QVector<TableReservation>& reservations)
+{
+    reservationTable->setRowCount(0);
+
+    for (int i = 0; i < reservations.size(); ++i) {
+        const TableReservation& res = reservations[i];
+
+        reservationTable->insertRow(i);
+        reservationTable->setItem(i, 0, new QTableWidgetItem(res.guestName));
+        reservationTable->setItem(i, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
+        reservationTable->setItem(i, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
+        reservationTable->setItem(i, 3, new QTableWidgetItem("Room XX"));  // placeholder
+        reservationTable->setItem(i, 4, new QTableWidgetItem(res.reservationDateTime.toString("HH:mm")));
+        reservationTable->setItem(i, 5, new QTableWidgetItem("→"));
+    }
+}
+
 void RestaurantWindow::setupReservationTable()
 {
     reservationTable->insertRow(0);
@@ -332,36 +310,7 @@ void RestaurantWindow::setupReservationTable()
     reservationTable->setItem(2, 5, new QTableWidgetItem(""));
 }
 
-void RestaurantWindow::setupOrderTable()
-{
-    orderTable->insertRow(0);
-    orderTable->setItem(0, 0, new QTableWidgetItem("Wordt bezorgd"));
-    orderTable->setItem(0, 1, new QTableWidgetItem("5"));
-    orderTable->setItem(0, 2, new QTableWidgetItem("Tosti × 2"));
-    orderTable->setItem(0, 3, new QTableWidgetItem("15:42"));
-    orderTable->setItem(0, 4, new QTableWidgetItem("Room Service"));
 
-    orderTable->insertRow(1);
-    orderTable->setItem(1, 0, new QTableWidgetItem("Klaar voor bezorging"));
-    orderTable->setItem(1, 1, new QTableWidgetItem("12"));
-    orderTable->setItem(1, 2, new QTableWidgetItem("Spaghetti Bolognese"));
-    orderTable->setItem(1, 3, new QTableWidgetItem("16:03"));
-    orderTable->setItem(1, 4, new QTableWidgetItem("Room Service"));
-
-    orderTable->insertRow(2);
-    orderTable->setItem(2, 0, new QTableWidgetItem("Wordt bereid"));
-    orderTable->setItem(2, 1, new QTableWidgetItem("3"));
-    orderTable->setItem(2, 2, new QTableWidgetItem("Gegrilleerde zalm + 1"));
-    orderTable->setItem(2, 3, new QTableWidgetItem("16:05"));
-    orderTable->setItem(2, 4, new QTableWidgetItem("7"));
-
-    orderTable->insertRow(3);
-    orderTable->setItem(3, 0, new QTableWidgetItem("Nog niet begonnen"));
-    orderTable->setItem(3, 1, new QTableWidgetItem("6"));
-    orderTable->setItem(3, 2, new QTableWidgetItem("Zoete aardappels"));
-    orderTable->setItem(3, 3, new QTableWidgetItem("16:12"));
-    orderTable->setItem(3, 4, new QTableWidgetItem("1"));
-}
 
 void RestaurantWindow::loadMockTables()
 {
@@ -404,16 +353,6 @@ void RestaurantWindow::onDataChanged()
 }
 
 void RestaurantWindow::onViewReservationClicked()
-{
-    // TODO: Implementatie
-}
-
-void RestaurantWindow::onAllOrdersClicked()
-{
-    // TODO: Implementatie
-}
-
-void RestaurantWindow::onNewOrderClicked()
 {
     // TODO: Implementatie
 }
