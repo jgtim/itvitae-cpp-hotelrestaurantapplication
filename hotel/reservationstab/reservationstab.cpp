@@ -344,7 +344,7 @@ void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
     }
 
     guestQuery.prepare("UPDATE guests SET GuestName = :GuestName, GuestPhoneNumber = :GuestPhoneNumber, GuestEmail = :GuestEmail, GuestAddress = :GuestAddress, GuestDateOfBirth = :GuestDateOfBirth, GuestGender = :GuestGender, GuestPaymentMethod = :GuestPaymentMethod, GuestIdType = :GuestIdType WHERE GuestID = :id;");
-    guestQuery.bindValue(":id", map.value("guest_id")); //TODO this seems to be not recognized; where do these map values come from?
+    guestQuery.bindValue(":id", map.value("guest_id")); //TODO this seems to be not recognized
     guestQuery.bindValue(":GuestName", map.value("guest_name"));
     guestQuery.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
     guestQuery.bindValue(":GuestEmail", map.value("guest_email"));
