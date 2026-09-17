@@ -142,13 +142,18 @@ private:
         QColor textColor = QColor("#F5F5F5");
 
         if (table.getStatus() == TableStatus::FREE) {
-            fillColor = QColor("#2ECC71"); // some sage green
-            textColor = QColor("#1E1E24"); // better readability
+            fillColor = QColor("#2ECC71");
+            textColor = QColor("#1E1E24");
         }
-        else if (table.getStatus() == TableStatus::OCCUPIED)
-            fillColor = QColor("#D9534F"); // a soft little crimson
-        else
-            fillColor = QColor("#E69F00"); // lovely warm amber
+        else if (table.getStatus() == TableStatus::OCCUPIED) {
+            fillColor = QColor("#D9534F");
+        }
+        else if (table.getStatus() == TableStatus::RESERVED) {
+            fillColor = QColor("#E69F00");
+        }
+        else if (table.getStatus() == TableStatus::OUT_OF_SERVICE) {
+            fillColor = QColor("#808080");
+        }
 
         painter.setBrush(fillColor);
         if(table.getNumber() == selectedTable){
@@ -259,14 +264,21 @@ void RestaurantWindow::setupRightPanel()
     connect(setFreeBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetFreeClicked);
     topButtonLayout->addWidget(setFreeBtn);
 
-    setOccupiedBtn = new QPushButton("Occupy");
+    setOccupiedBtn = new QPushButton("Occupied");
     setOccupiedBtn->setStyleSheet("background-color: #D9534F; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
     setOccupiedBtn->setFixedHeight(40);
     connect(setOccupiedBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetOccupiedClicked);
     topButtonLayout->addWidget(setOccupiedBtn);
 
-    reservationTableBtn = new QPushButton("Reserve");
+    reservationTableBtn = new QPushButton("Reserved");
     reservationTableBtn->setStyleSheet("background-color: #E69F00; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
+    reservationTableBtn->setFixedHeight(40);
+    connect(reservationTableBtn, &QPushButton::clicked, this, &RestaurantWindow::onReservationTableClicked);
+    topButtonLayout->addWidget(reservationTableBtn);
+
+
+    reservationTableBtn = new QPushButton("Out of Service");
+    reservationTableBtn->setStyleSheet("background-color: ##808080; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
     reservationTableBtn->setFixedHeight(40);
     connect(reservationTableBtn, &QPushButton::clicked, this, &RestaurantWindow::onReservationTableClicked);
     topButtonLayout->addWidget(reservationTableBtn);
@@ -377,18 +389,22 @@ void RestaurantWindow::loadMockTables()
         int x = 30 + (index % columns) * itemSpacingX;
         int y = 250 + (index / columns) * itemSpacingY;
 
-        int randomStatus = QRandomGenerator::global()->bounded(3);
-
-        TableStatus status;
-
-        if (randomStatus == 0)
-            status = TableStatus::FREE;
-        else if (randomStatus == 1)
-            status = TableStatus::OCCUPIED;
-        else
-            status = TableStatus::RESERVED;
+        TableStatus status = TableStatus::OUT_OF_SERVICE;
 
         tables.append(Table(i, x, y, status));
+
+        // int randomStatus = QRandomGenerator::global()->bounded(3);
+
+        // TableStatus status;
+
+        // if (randomStatus == 0)
+        //     status = TableStatus::FREE;
+        // else if (randomStatus == 1)
+        //     status = TableStatus::OCCUPIED;
+        // else
+        //     status = TableStatus::RESERVED;
+
+        // tables.append(Table(i, x, y, status));
     }
 }
 
