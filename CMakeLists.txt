@@ -83,6 +83,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         hotel/restaurantwindow/reservetable/reservetable.cpp
         hotel/restaurantwindow/TableReservations/tableReservation.h
         hotel/restaurantwindow/TableReservations/ReservationStatus.h
+        hotel/restaurantwindow/reservetable/timeBlock.h
     )
 
 # Define target properties for Android with Qt 6 as:
