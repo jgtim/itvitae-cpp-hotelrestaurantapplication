@@ -25,6 +25,8 @@ public:
     explicit RestaurantWindow(QWidget *parent = nullptr);
     ~RestaurantWindow();
     TableCanvas* canvasPointer = nullptr;
+    QVector<Table>* getTables();
+    QTableWidget* getReservationTable();
 
 public slots:
     void onDataChanged();
