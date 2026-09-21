@@ -231,16 +231,6 @@ QList<Reservation> ReservationsTab::getAllReservations()
     QList<Reservation> reservations;
     QSqlQuery resQuery("SELECT * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
-    // while (guestQuery.next()) {
-    //     QString id = guestQuery.value(0).toString();
-    //     QString name = guestQuery.value(1).toString();
-    //     QString name2 = guestQuery.value(2).toString();
-    //     qDebug() << id << name << name2;
-    // }
-    // while (resQuery.next()) {
-    //     QString guestid = resQuery.value(1).toString();
-    //     qDebug() << guestid;
-    // }
 
     int resIdIndex = resQuery.record().indexOf("ReservationID");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
@@ -350,7 +340,7 @@ void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
     }
 
     guestQuery.prepare("UPDATE guests SET GuestName = :GuestName, GuestPhoneNumber = :GuestPhoneNumber, GuestEmail = :GuestEmail, GuestAddress = :GuestAddress, GuestDateOfBirth = :GuestDateOfBirth, GuestGender = :GuestGender, GuestPaymentMethod = :GuestPaymentMethod, GuestIdType = :GuestIdType WHERE GuestID = :id;");
-    guestQuery.bindValue(":id", map.value("guest_id")); //TODO this seems to be not recognized
+    guestQuery.bindValue(":id", map.value("guest_id"));
     guestQuery.bindValue(":GuestName", map.value("guest_name"));
     guestQuery.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
     guestQuery.bindValue(":GuestEmail", map.value("guest_email"));
@@ -462,8 +452,14 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         // Retrieve filled struct from dialog
         newRes = dialog.getReservationData();
 
-        // Generate a temporary ID
-        newRes.ReservationID = QString::number(model->rowCount() + 1);
+
+        //this adds ID to table
+        QSqlQuery nextrowid("SELECT COALESCE(MAX(rowid), 0) + 1 AS next_rowid FROM reservations;");
+        QString rowid;
+        while (nextrowid.next()) {
+            rowid = nextrowid.value(0).toString();
+        }
+        newRes.ReservationID = rowid;
 
         // Add to table model
         addReservationToModel(newRes);
