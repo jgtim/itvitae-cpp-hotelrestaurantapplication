@@ -6,7 +6,8 @@
 enum class TableStatus {
     FREE,       // Groen
     OCCUPIED,   // Rood
-    RESERVED    // Oranje
+    RESERVED,    // Oranje
+    OUT_OF_SERVICE //Grijs
 };
 
 class Table

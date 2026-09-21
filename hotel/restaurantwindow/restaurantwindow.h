@@ -49,10 +49,11 @@ private:
 
     // Right Panel - Canvas
     QWidget *rightPanel;
+    TableCanvas *tableCanvas;
     QPushButton *setFreeBtn;
     QPushButton *setOccupiedBtn;
     QPushButton *reservationTableBtn;
-    QWidget *tableCanvas;
+    QPushButton *outOfServiceBtn;
     QVector<Table> tables;
 
     // Setup functions
@@ -73,6 +74,7 @@ private slots:
     void onSetFreeClicked();
     void onSetOccupiedClicked();
     void onReservationTableClicked();
+    void onSetOutOfServiceClicked();
 };
 
 #endif // RESTAURANTWINDOW_H

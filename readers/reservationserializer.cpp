@@ -14,6 +14,7 @@ QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
     // Can use the String data field directly
     map[QStringLiteral("reservation_id")]    = res.ReservationID;
     map[QStringLiteral("guest_name")]        = res.guest.name;
+    map[QStringLiteral("guest_id")]        = res.guest.guestID;
     map[QStringLiteral("guest_phone")]       = res.guest.phoneNumber;
     map[QStringLiteral("guest_email")]       = res.guest.email;
     map[QStringLiteral("room_number")]       = res.roomNumber;
@@ -56,6 +57,7 @@ Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
 
     res.ReservationID      = map.value(QStringLiteral("reservation_id")).toString();
     res.guest.name         = map.value(QStringLiteral("guest_name")).toString();
+    res.guest.guestID         = map.value(QStringLiteral("guest_id")).toString();
     res.guest.phoneNumber  = map.value(QStringLiteral("guest_phone")).toString();
     res.guest.email        = map.value(QStringLiteral("guest_email")).toString();
 
