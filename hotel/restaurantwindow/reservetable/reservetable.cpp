@@ -22,7 +22,13 @@ reservetable::reservetable(QWidget *parent)
 
     ui->guestsEdit->setValidator(new QIntValidator(1, 6, this)); //maximum to max number of guests per table?
 
-    ui->tableEdit->setValidator(new QIntValidator(1, 50, this)); //set maximum to highest table number if that can be pulled from somewhere
+    int maxTableNumber = 50; // fallback if the parent/table list isn't available
+    if (RestaurantWindow* parentWin = qobject_cast<RestaurantWindow *>(parent)) {
+        if (QVector<Table>* tables = parentWin->getTables(); tables && !tables->isEmpty()) {
+            maxTableNumber = tables->size();
+        }
+    }
+    ui->tableEdit->setValidator(new QIntValidator(1, maxTableNumber, this));
     ui->roomNumberEdit->setValidator(new QIntValidator(1, 100, this));
 
     ui->dateEdit->setDate(QDate::currentDate());
@@ -137,8 +143,24 @@ void reservetable::accept()
         }
     }
 
-    // Validate table availability
+    // Validate that the table number actually exists
     int currentTable = ui->tableEdit->text().toInt();
+    bool tableExists = false;
+    if (tables) {
+        for (const Table &table : *tables) {
+            if (table.getNumber() == currentTable) {
+                tableExists = true;
+                break;
+            }
+        }
+    }
+    if (!tableExists) {
+        QMessageBox::warning(this, "Invalid Table", "There is no table with that number.");
+        ui->tableEdit->setFocus();
+        return;
+    }
+
+    // Validate table availability
     for (int r = 0; r < reservationTable->rowCount(); r++) {
         int tableNumber = reservationTable->item(r, 1) ? reservationTable->item(r, 1)->text().toInt() : -1;
         QDate resDate = reservationTable->item(r, 3) ? QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyyy") : QDate();
