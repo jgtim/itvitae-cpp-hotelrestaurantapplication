@@ -11,6 +11,7 @@ QVariantMap tableReservationSerializer::toVariantMap(const TableReservation &res
     map[QStringLiteral("number_of_guests")] =  reservation.numberOfGuests;
     map[QStringLiteral("table_number")]       = reservation.tableNumber;
     map[QStringLiteral("reservation_datetime")] = reservation.reservationDateTime.toString(Qt::ISODate);
+    map[QStringLiteral("time_block")] = timeBlockToString(reservation.timeBlock);
     map[QStringLiteral("duration_minutes")] = reservation.durationMinutes;
 
     map[QStringLiteral("status")] = reservationStatusToString(reservation.status);
@@ -31,6 +32,7 @@ TableReservation tableReservationSerializer::fromVariantMap(const QVariantMap &m
     reservation.tableNumber = map.value(QStringLiteral("table_number")).toInt();
     reservation.reservationDateTime = QDateTime::fromString(map.value(QStringLiteral("reservation_datetime")).toString(), Qt::ISODate);
     reservation.durationMinutes = map.value(QStringLiteral("duration_minutes")).toInt();
+    reservation.timeBlock = stringToTimeBlock(map.value(QStringLiteral("time_block")).toString());
     reservation.status = stringToReservationStatus(map.value(QStringLiteral("status")).toString());
     reservation.specialRequests = map.value(QStringLiteral("special_requests")).toString();
     reservation.createdAt = QDateTime::fromString(map.value(QStringLiteral("created_at")).toString(), Qt::ISODate);

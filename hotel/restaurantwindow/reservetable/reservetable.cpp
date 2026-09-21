@@ -185,7 +185,7 @@ QDate reservetable::getSelectedDate() const {
 
 void reservetable::saveTableToDatabase(TableReservation res){
     QSqlQuery tableQuery(db);
-    tableQuery.prepare("INSERT INTO tableReservations values (:ReservationID, :GuestName, :GuestEmail, :GuestPhoneNumber, :NumberOfGuests, :TableNumber, :ReservationDateTime, :DurationMinutes, :Status, :SpecialRequests, :CreatedAt);");
+    tableQuery.prepare("INSERT INTO tableReservations values (:ReservationID, :GuestName, :GuestEmail, :GuestPhoneNumber, :NumberOfGuests, :TableNumber, :ReservationDateTime, :TimeBlock, :DurationMinutes, :Status, :SpecialRequests, :CreatedAt);");
 
     auto map = tableReservationSerializer::toVariantMap(res);
 
@@ -196,6 +196,7 @@ void reservetable::saveTableToDatabase(TableReservation res){
     tableQuery.bindValue(":NumberOfGuests", map.value(QStringLiteral("number_of_guests")));
     tableQuery.bindValue(":TableNumber", map.value(QStringLiteral("table_number")));
     tableQuery.bindValue(":ReservationDateTime", map.value(QStringLiteral("reservation_datetime")).toString());
+    tableQuery.bindValue(":TimeBlock", map.value(QStringLiteral("time_block")).toString());
     tableQuery.bindValue(":DurationMinutes", map.value(QStringLiteral("duration_minutes")).toString());
     tableQuery.bindValue(":Status", map.value(QStringLiteral("status")).toString());
     tableQuery.bindValue(":SpecialRequests", map.value(QStringLiteral("special_requests")).toString());
