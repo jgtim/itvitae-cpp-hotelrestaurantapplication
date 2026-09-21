@@ -17,6 +17,7 @@ struct TableReservation {
     QString guestName;
     QString guestEmail;
     QString guestPhoneNumber;
+    QString roomNumber = "";
 
     // Reservation details
     int numberOfGuests = 1;
