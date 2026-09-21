@@ -1,4 +1,4 @@
-#include "tablereservationserializer.h"
+#include "readers/tablereservationserializer.h"
 
 QVariantMap tableReservationSerializer::toVariantMap(const TableReservation &reservation) {
     QVariantMap map;
