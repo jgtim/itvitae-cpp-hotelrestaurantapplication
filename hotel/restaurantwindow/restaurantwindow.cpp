@@ -72,9 +72,7 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
-        // =========================
 
-        // =========================
         painter.setPen(QColor("#1E1E24"));
         painter.setFont(QFont("Arial", 16, QFont::Bold));
         painter.drawText(30, 30, "Inside");
@@ -142,17 +140,22 @@ private:
         QColor textColor = QColor("#F5F5F5");
 
         if (table.getStatus() == TableStatus::FREE) {
-            fillColor = QColor("#2ECC71"); // some sage green
-            textColor = QColor("#1E1E24"); // better readability
+            fillColor = QColor("#2ECC71");
+            textColor = QColor("#1E1E24");
         }
-        else if (table.getStatus() == TableStatus::OCCUPIED)
-            fillColor = QColor("#D9534F"); // a soft little crimson
-        else
-            fillColor = QColor("#E69F00"); // lovely warm amber
+        else if (table.getStatus() == TableStatus::OCCUPIED) {
+            fillColor = QColor("#D9534F");
+        }
+        else if (table.getStatus() == TableStatus::RESERVED) {
+            fillColor = QColor("#E69F00");
+        }
+        else if (table.getStatus() == TableStatus::OUT_OF_SERVICE) {
+            fillColor = QColor("#808080");
+        }
 
         painter.setBrush(fillColor);
         if(table.getNumber() == selectedTable){
-            painter.setPen(QPen(QColor("#ECFA00"), 2));
+            painter.setPen(QPen(Qt::black, 3));
         }else{
             painter.setPen(QPen(QColor("#2D2D35"), 2));
         }
@@ -267,17 +270,23 @@ void RestaurantWindow::setupRightPanel()
     connect(setFreeBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetFreeClicked);
     topButtonLayout->addWidget(setFreeBtn);
 
-    setOccupiedBtn = new QPushButton("Occupy");
+    setOccupiedBtn = new QPushButton("Occupied");
     setOccupiedBtn->setStyleSheet("background-color: #D9534F; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
     setOccupiedBtn->setFixedHeight(40);
     connect(setOccupiedBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetOccupiedClicked);
     topButtonLayout->addWidget(setOccupiedBtn);
 
-    reservationTableBtn = new QPushButton("Reserve");
+    reservationTableBtn = new QPushButton("Reserved");
     reservationTableBtn->setStyleSheet("background-color: #E69F00; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
     reservationTableBtn->setFixedHeight(40);
     connect(reservationTableBtn, &QPushButton::clicked, this, &RestaurantWindow::onReservationTableClicked);
     topButtonLayout->addWidget(reservationTableBtn);
+
+    outOfServiceBtn = new QPushButton("Out of Service");
+    outOfServiceBtn->setStyleSheet("background-color: #808080; color: #F5F5F5; padding: 10px; font-weight: bold; border-radius: 5px;");
+    outOfServiceBtn->setFixedHeight(40);
+    connect(outOfServiceBtn, &QPushButton::clicked, this, &RestaurantWindow::onSetOutOfServiceClicked);
+    topButtonLayout->addWidget(outOfServiceBtn);
 
     topButtonLayout->addStretch();
     rightLayout->addLayout(topButtonLayout);
@@ -375,18 +384,22 @@ void RestaurantWindow::loadMockTables()
         int x = 30 + (index % columns) * itemSpacingX;
         int y = 250 + (index / columns) * itemSpacingY;
 
-        int randomStatus = QRandomGenerator::global()->bounded(3);
-
-        TableStatus status;
-
-        if (randomStatus == 0)
-            status = TableStatus::FREE;
-        else if (randomStatus == 1)
-            status = TableStatus::OCCUPIED;
-        else
-            status = TableStatus::RESERVED;
+        TableStatus status = TableStatus::OUT_OF_SERVICE;
 
         tables.append(Table(i, x, y, status));
+
+        // int randomStatus = QRandomGenerator::global()->bounded(3);
+
+        // TableStatus status;
+
+        // if (randomStatus == 0)
+        //     status = TableStatus::FREE;
+        // else if (randomStatus == 1)
+        //     status = TableStatus::OCCUPIED;
+        // else
+        //     status = TableStatus::RESERVED;
+
+        // tables.append(Table(i, x, y, status));
     }
 }
 
@@ -450,6 +463,49 @@ void RestaurantWindow::onSetOccupiedClicked()
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
 
+}
+
+void RestaurantWindow::onSetOutOfServiceClicked()
+{
+    int selectedTable = canvasPointer->getSelectedTable();
+
+    if(selectedTable > 0){
+
+        // Check if this table has a reservation
+        for(int r = 0; r < reservationTable->model()->rowCount(); r++){
+            int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+
+            if(selectedTable == tableNumber){
+                QMessageBox::warning(
+                    this,
+                    "Table Reserved",
+                    "This table is reserved, please move the reservation before completing this action"
+                    );
+                return;
+            }
+        }
+
+        // Table is not reserved, ask for confirmation
+        QMessageBox::StandardButton reply = QMessageBox::question(
+            this,
+            "Out of Service",
+            "Are you sure this table is out of service?",
+            QMessageBox::Yes | QMessageBox::No
+            );
+
+        if(reply == QMessageBox::Yes){
+            tables[selectedTable - 1].setStatus(TableStatus::OUT_OF_SERVICE);
+            canvasPointer->updateTables(tables);
+            canvasPointer->update();
+        }
+
+    }else{
+        QMessageBox::warning(
+            this,
+            "No Table Selected",
+            "Please select a table first."
+            );
+    }
 }
 
 void RestaurantWindow::onReservationTableClicked()
