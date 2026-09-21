@@ -224,7 +224,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
 {
     ReservationSerializer serializer;
     QList<Reservation> reservations;
-    QSqlQuery resQuery("SELECT rowid, * FROM reservations;");
+    QSqlQuery resQuery("SELECT * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
 
     QSqlQuery testQuery("SELECT rowid FROM reservations;");
@@ -233,7 +233,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
         qDebug() << id;
     }
 
-    int resIdIndex = resQuery.record().indexOf("rowid");
+    int resIdIndex = resQuery.record().indexOf("ReservationID");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
     int numberOfGuestsIndex = resQuery.record().indexOf("NumberOfGuests");
     int roomNumberIndex = resQuery.record().indexOf("RoomNumber");
@@ -455,7 +455,7 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         // Generate a temporary ID
         //newRes.ReservationID = QString::number(model->rowCount() + 1);
 
-        //(this adds ID to table) TODO activate this when I fix the bug
+        //this adds ID to table? maybe does nothing?
         // ReservationSerializer serializer;
         // auto map = serializer.toVariantMap(newRes);
         // newRes.ReservationID = map.value("reservation_id").toString();
