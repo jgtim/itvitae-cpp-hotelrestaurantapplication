@@ -180,11 +180,16 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
 
 
     if (!isReservationInDatabase(res)) {
+        QSqlQuery nextrowid("SELECT COALESCE(MAX(rowid), 0) + 1 AS next_rowid FROM guests;");
+        QString rowid;
+        while (nextrowid.next()) {
+            rowid = nextrowid.value(0).toString();
+        }
         ReservationSerializer serializer;
         auto map = serializer.toVariantMap(res);
         query.prepare("insert into reservations values (:ReservationID, :GuestID, :NumberOfGuests, :RoomNumber, :CheckInDate, :CheckOutDate, :PaymentStatus);");
         query.bindValue(":ReservationID", map.value("reservation_id"));
-        query.bindValue(":GuestID", map.value("guest_name")); //TODO should be id?
+        query.bindValue(":GuestID", rowid);
         query.bindValue(":NumberOfGuests", map.value("number_of_guests"));
         query.bindValue(":RoomNumber", map.value("room_number"));
         query.bindValue(":CheckInDate", map.value("check_in"));
@@ -194,7 +199,7 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
 
         if (!isGuestInDatabase(res.guest)) {
             query.prepare("insert into guests values (:GuestID, :GuestName, :GuestPhoneNumber, :GuestEmail, :GuestAddress, :GuestDateOfBirth, :GuestGender, :GuestPaymentMethod, :GuestIdType);");
-            query.bindValue(":GuestID", map.value("guest_name")); //TODO only place where ID is just name because it's adding something new
+            query.bindValue(":GuestID", rowid);
             query.bindValue(":GuestName", map.value("guest_name"));
             query.bindValue(":GuestPhoneNumber", map.value("guest_phone"));
             query.bindValue(":GuestEmail", map.value("guest_email"));
@@ -319,7 +324,8 @@ bool ReservationsTab::isGuestInDatabase(const Guest &guest) {
         }
     }
     // we can potentially add more uniqueness checks later
-    return status;
+    //return status;
+    return false; //TODO this function does nothing for now because there's not currently a way to assign a reservation to an existing guest
 }
 
 void ReservationsTab::updateReservationInDatabase(const Reservation &res) {
