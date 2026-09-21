@@ -54,7 +54,6 @@ QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
 
 Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
     Reservation res;
-
     res.ReservationID      = map.value(QStringLiteral("reservation_id")).toString();
     res.guest.name         = map.value(QStringLiteral("guest_name")).toString();
     res.guest.guestID         = map.value(QStringLiteral("guest_id")).toString();
