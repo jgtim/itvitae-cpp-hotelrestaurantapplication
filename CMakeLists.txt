@@ -4,6 +4,7 @@ project(MolvenoLakeHotelResort VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOMOC_PATH_PREFIX ON)
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -31,13 +32,28 @@ list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_CURRENT_BINARY_DIR}/.*")
 if(DEFINED CMAKE_BINARY_DIR)
     list(FILTER PROJECT_SOURCES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
 endif()
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/tests/.*")
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/temp-example-proj-dir/.*")
 list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/(build|cmake-build-[^/]*)/")
 list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/(CMakeFiles|.*_autogen)/")
+
+set(APP_SOURCES ${PROJECT_SOURCES})
+list(REMOVE_ITEM APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main/main.cpp")
+
+add_library(MolvenoLakeHotelResortCore STATIC ${APP_SOURCES})
+target_include_directories(MolvenoLakeHotelResortCore PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(MolvenoLakeHotelResortCore PUBLIC
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Sql
+    QXlsx::QXlsx
+)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(MolvenoLakeHotelResort
         MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
+        main/main.cpp
     )
 
 # Define target properties for Android with Qt 6 as:
@@ -47,13 +63,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 else()
     if(ANDROID)
         add_library(MolvenoLakeHotelResort SHARED
-            ${PROJECT_SOURCES}
+            main/main.cpp
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(MolvenoLakeHotelResort
-            ${PROJECT_SOURCES}
+            main/main.cpp
         )
     endif()
 endif()
@@ -63,9 +79,7 @@ target_include_directories(MolvenoLakeHotelResort PRIVATE
 )
 
 target_link_libraries(MolvenoLakeHotelResort PRIVATE
-    Qt${QT_VERSION_MAJOR}::Widgets
-    QXlsx::QXlsx
-    Qt${QT_VERSION_MAJOR}::Sql
+    MolvenoLakeHotelResortCore
 )
 
 add_custom_command(TARGET MolvenoLakeHotelResort POST_BUILD
@@ -97,4 +111,29 @@ install(TARGETS MolvenoLakeHotelResort
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(MolvenoLakeHotelResort)
+endif()
+
+include(CTest)
+if(BUILD_TESTING)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.18.0
+    )
+    FetchContent_MakeAvailable(googletest)
+
+    file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp"
+    )
+
+    add_executable(MolvenoLakeHotelResortTests ${TEST_SOURCES})
+    target_link_libraries(MolvenoLakeHotelResortTests PRIVATE
+        MolvenoLakeHotelResortCore
+        GTest::gtest_main
+    )
+
+    include(GoogleTest)
+    gtest_discover_tests(MolvenoLakeHotelResortTests)
 endif()
