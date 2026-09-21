@@ -143,19 +143,28 @@ void reservetable::accept()
         }
     }
 
-    // Validate that the table number actually exists
+    // Validate that the table number actually exists and if it's Out Of Service
     int currentTable = ui->tableEdit->text().toInt();
     bool tableExists = false;
+    bool tableIsOutOfService = false;
     if (tables) {
         for (const Table &table : *tables) {
             if (table.getNumber() == currentTable) {
                 tableExists = true;
+                if (table.getStatus() == TableStatus::OUT_OF_SERVICE){
+                    tableIsOutOfService = true;
+                }
                 break;
             }
         }
     }
     if (!tableExists) {
         QMessageBox::warning(this, "Invalid Table", "There is no table with that number.");
+        ui->tableEdit->setFocus();
+        return;
+    }
+    if (tableIsOutOfService){
+        QMessageBox::warning(this, "Reserving not possible", "This table is out of service.");
         ui->tableEdit->setFocus();
         return;
     }
