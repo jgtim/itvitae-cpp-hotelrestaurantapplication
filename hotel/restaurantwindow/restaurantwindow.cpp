@@ -207,12 +207,12 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->setContentsMargins(10, 10, 10, 10);
     leftLayout->setSpacing(10);
 
-    // === Menukaart Header ===
-    QLabel *menuLabel = new QLabel("Menu");
-    menuLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-    menuLabel->setAlignment(Qt::AlignCenter);
-    menuLabel->setFixedHeight(40);
-    leftLayout->addWidget(menuLabel);
+    // // === Menukaart Header ===
+    // QLabel *menuLabel = new QLabel("Menu");
+    // menuLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
+    // menuLabel->setAlignment(Qt::AlignCenter);
+    // menuLabel->setFixedHeight(40);
+    // leftLayout->addWidget(menuLabel);
 
     // === Reserveringen Tabel ===
     QLabel *reserveLabel = new QLabel("Reservations");
