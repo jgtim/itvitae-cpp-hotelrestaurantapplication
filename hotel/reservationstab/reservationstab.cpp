@@ -455,6 +455,11 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         // Generate a temporary ID
         //newRes.ReservationID = QString::number(model->rowCount() + 1);
 
+        //(this adds ID to table) TODO activate this when I fix the bug
+        // ReservationSerializer serializer;
+        // auto map = serializer.toVariantMap(newRes);
+        // newRes.ReservationID = map.value("reservation_id").toString();
+
         // Add to table model
         addReservationToModel(newRes);
 
