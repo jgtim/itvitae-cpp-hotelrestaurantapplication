@@ -4,6 +4,7 @@ QVariantMap tableReservationSerializer::toVariantMap(const TableReservation &res
     QVariantMap map;
 
     map[QStringLiteral("reservation_id")]    = reservation.ReservationID;
+    map[QStringLiteral("room_number")]        = reservation.roomNumber;
     map[QStringLiteral("guest_name")]        = reservation.guestName;
     map[QStringLiteral("guest_email")]       = reservation.guestEmail;
     map[QStringLiteral("guest_phone")]       = reservation.guestPhoneNumber;
@@ -25,6 +26,7 @@ TableReservation tableReservationSerializer::fromVariantMap(const QVariantMap &m
     TableReservation reservation;
 
     reservation.ReservationID = map.value(QStringLiteral("reservation_id")).toString();
+    reservation.roomNumber = map.value(QStringLiteral("room_number")).toString();
     reservation.guestName = map.value(QStringLiteral("guest_name")).toString();
     reservation.guestEmail = map.value(QStringLiteral("guest_email")).toString();
     reservation.guestPhoneNumber = map.value(QStringLiteral("guest_phone")).toString();

@@ -15,7 +15,7 @@ void prepareDatabaseFile() {
     query.exec("create table reservations(ReservationID INT, GuestID TEXT, NumberOfGuests INT, RoomNumber TEXT, CheckInDate TEXT, CheckOutDate TEXT, PaymentStatus TEXT);");
     query.exec("create table guests(GuestID TEXT, GuestName TEXT, GuestPhoneNumber TEXT, GuestEmail TEXT, GuestAddress TEXT, GuestDateOfBirth TEXT, GuestGender TEXT, GuestPaymentMethod TEXT, GuestIdType TEXT);");
     query.exec("create table rooms(RoomNumber TEXT, RoomType TEXT, Adults INT, RoomView TEXT, BabyBed TEXT, Beds TEXT, Comments TEXT, PricePerNight TEXT, RoomStatus TEXT, HousekeepingStatus TEXT);");
-    query.exec("create table tableReservations(ReservationID TEXT, GuestName TEXT, GuestEmail TEXT, GuestPhoneNumber TEXT, NumberOfGuests INT, TableNumber INT, ReservationDateTime TEXT, TimeBlock TEXT, DurationMinutes INT, Status TEXT, SpecialRequests TEXT, CreatedAt TEXT);");
+    query.exec("create table tableReservations(ReservationID TEXT, GuestName TEXT, GuestEmail TEXT, GuestPhoneNumber TEXT, RoomNumber TEXT, NumberOfGuests INT, TableNumber INT, ReservationDateTime TEXT, TimeBlock TEXT, DurationMinutes INT, Status TEXT, SpecialRequests TEXT, CreatedAt TEXT);");
 
     QSqlDatabase::removeDatabase("QSQLITE");
     db.close();

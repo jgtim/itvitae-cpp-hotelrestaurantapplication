@@ -139,6 +139,7 @@ void reservetable::accept()
                                      .guestName = name,
                                      .guestEmail = "email",
                                      .guestPhoneNumber = "phone number",
+                                     .roomNumber = ui->roomNumberEdit->text(),
                                      .numberOfGuests = guests,
                                      .tableNumber = currentTable,
                                      .reservationDateTime = QDateTime(selectedDate, QTime()),
@@ -186,7 +187,7 @@ QDate reservetable::getSelectedDate() const {
 
 void reservetable::saveTableToDatabase(TableReservation res){
     QSqlQuery tableQuery(db);
-    tableQuery.prepare("INSERT INTO tableReservations values (:ReservationID, :GuestName, :GuestEmail, :GuestPhoneNumber, :NumberOfGuests, :TableNumber, :ReservationDateTime, :TimeBlock, :DurationMinutes, :Status, :SpecialRequests, :CreatedAt);");
+    tableQuery.prepare("INSERT INTO tableReservations values (:ReservationID, :GuestName, :GuestEmail, :GuestPhoneNumber, :RoomNumber, :NumberOfGuests, :TableNumber, :ReservationDateTime, :TimeBlock, :DurationMinutes, :Status, :SpecialRequests, :CreatedAt);");
 
     auto map = tableReservationSerializer::toVariantMap(res);
 
@@ -194,6 +195,7 @@ void reservetable::saveTableToDatabase(TableReservation res){
     tableQuery.bindValue(":GuestName", map.value(QStringLiteral("guest_name")).toString());
     tableQuery.bindValue(":GuestEmail", map.value(QStringLiteral("guest_email")).toString());
     tableQuery.bindValue(":GuestPhoneNumber", map.value(QStringLiteral("guest_phone")).toString());
+    tableQuery.bindValue(":RoomNumber", map.value("room_number").toString());
     tableQuery.bindValue(":NumberOfGuests", map.value(QStringLiteral("number_of_guests")));
     tableQuery.bindValue(":TableNumber", map.value(QStringLiteral("table_number")));
     tableQuery.bindValue(":ReservationDateTime", map.value(QStringLiteral("reservation_datetime")).toString());
@@ -217,6 +219,7 @@ QList<TableReservation> reservetable::getAllTableReservations() {
     int guestNameIndex = resQuery.record().indexOf("GuestName");
     int guestEmailIndex = resQuery.record().indexOf("GuestEmail");
     int guestPhoneNumberIndex = resQuery.record().indexOf("GuestPhoneNumber");
+    int roomNumberIndex = resQuery.record().indexOf("RoomNumber");
     int numberOfGuestsIndex = resQuery.record().indexOf("NumberOfGuests");
     int tableNumberIndex = resQuery.record().indexOf("TableNumber");
     int reservationDateTimeIndex = resQuery.record().indexOf("ReservationDateTime");
@@ -233,6 +236,7 @@ QList<TableReservation> reservetable::getAllTableReservations() {
         resMap[QStringLiteral("guest_name")] = resQuery.value(guestNameIndex).toString();
         resMap[QStringLiteral("guest_email")] = resQuery.value(guestEmailIndex).toString();
         resMap[QStringLiteral("guest_phone")] = resQuery.value(guestPhoneNumberIndex).toString();
+        resMap[QStringLiteral("room_number")] = resQuery.value(roomNumberIndex).toString();
         resMap[QStringLiteral("number_of_guests")] = resQuery.value(numberOfGuestsIndex).toString();
         resMap[QStringLiteral("table_number")] = resQuery.value(tableNumberIndex).toString();
         resMap[QStringLiteral("reservation_datetime")] = resQuery.value(reservationDateTimeIndex).toString();
