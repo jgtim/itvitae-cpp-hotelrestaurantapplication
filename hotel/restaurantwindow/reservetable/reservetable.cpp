@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlRecord>
 
 
 reservetable::reservetable(QWidget *parent)
@@ -207,3 +208,42 @@ void reservetable::saveTableToDatabase(TableReservation res){
     }
 }
 
+QList<TableReservation> reservetable::getAllTableReservations() {
+    QList<TableReservation> reservations;
+
+    QSqlQuery resQuery("SELECT * FROM tableReservations;");
+
+    int reservationIDIndex = resQuery.record().indexOf("ReservationID");
+    int guestNameIndex = resQuery.record().indexOf("GuestName");
+    int guestEmailIndex = resQuery.record().indexOf("GuestEmail");
+    int guestPhoneNumberIndex = resQuery.record().indexOf("GuestPhoneNumber");
+    int numberOfGuestsIndex = resQuery.record().indexOf("NumberOfGuests");
+    int tableNumberIndex = resQuery.record().indexOf("TableNumber");
+    int reservationDateTimeIndex = resQuery.record().indexOf("ReservationDateTime");
+    int durationMinutesIndex = resQuery.record().indexOf("DurationMinutes");
+    int timeBlockIndex = resQuery.record().indexOf("TimeBlock");
+    int statusIndex = resQuery.record().indexOf("Status");
+    int specialRequestsIndex = resQuery.record().indexOf("SpecialRequests");
+    int createdAtIndex = resQuery.record().indexOf("CreatedAt");
+
+    while (resQuery.next()) {
+        QVariantMap resMap;
+
+        resMap[QStringLiteral("reservation_id")] = resQuery.value(reservationIDIndex).toString();
+        resMap[QStringLiteral("guest_name")] = resQuery.value(guestNameIndex).toString();
+        resMap[QStringLiteral("guest_email")] = resQuery.value(guestEmailIndex).toString();
+        resMap[QStringLiteral("guest_phone")] = resQuery.value(guestPhoneNumberIndex).toString();
+        resMap[QStringLiteral("number_of_guests")] = resQuery.value(numberOfGuestsIndex).toString();
+        resMap[QStringLiteral("table_number")] = resQuery.value(tableNumberIndex).toString();
+        resMap[QStringLiteral("reservation_datetime")] = resQuery.value(reservationDateTimeIndex).toString();
+        resMap[QStringLiteral("time_block")] = resQuery.value(timeBlockIndex).toString();
+        resMap[QStringLiteral("duration_minutes")] = resQuery.value(durationMinutesIndex).toString();
+        resMap[QStringLiteral("status")] = resQuery.value(statusIndex).toString();
+        resMap[QStringLiteral("special_requests")] = resQuery.value(specialRequestsIndex).toString();
+        resMap[QStringLiteral("created_at")] = resQuery.value(createdAtIndex).toString();
+
+        reservations.append(tableReservationSerializer::fromVariantMap(resMap));
+    }
+
+    return reservations;
+}

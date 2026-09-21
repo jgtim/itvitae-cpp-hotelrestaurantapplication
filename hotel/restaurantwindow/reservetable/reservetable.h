@@ -23,6 +23,7 @@ public:
     void setTable(int);
     TimeBlock getSelectedTimeBlock() const;
     QDate getSelectedDate() const;
+    static QList<TableReservation> getAllTableReservations();
 
 private slots:
     void on_tableSelectButton_clicked();
