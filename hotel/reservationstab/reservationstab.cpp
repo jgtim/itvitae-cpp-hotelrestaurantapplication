@@ -224,10 +224,10 @@ QList<Reservation> ReservationsTab::getAllReservations()
 {
     ReservationSerializer serializer;
     QList<Reservation> reservations;
-    QSqlQuery resQuery("SELECT rowid, * FROM reservations ORDER BY rowid;");
+    QSqlQuery resQuery("SELECT rowid, * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
 
-    QSqlQuery testQuery("SELECT rowid FROM reservations;");
+    QSqlQuery testQuery("SELECT rowid, * FROM reservations;");
     while (testQuery.next()) {
         QString id = testQuery.value(0).toString();
         qDebug() << id;
@@ -455,12 +455,18 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         newRes = dialog.getReservationData();
 
         // Generate a temporary ID
-        newRes.ReservationID = QString::number(model->rowCount() + 1);
+        //newRes.ReservationID = QString::number(model->rowCount() + 1);
 
-        //this adds ID to table? maybe does nothing?
-        ReservationSerializer serializer;
-        auto map = serializer.toVariantMap(newRes);
-        newRes.ReservationID = map.value("row_id").toString();
+        //this adds ID to table
+        //ReservationSerializer serializer;
+        //auto map = serializer.toVariantMap(newRes);
+        //newRes.ReservationID = map.value("row_id").toString();
+        QSqlQuery nextrowid("SELECT COALESCE(MAX(rowid), 0) + 1 AS next_rowid FROM reservations;");
+        QString rowid;
+        while (nextrowid.next()) {
+            rowid = nextrowid.value(0).toString();
+        }
+        newRes.ReservationID = rowid;
 
         // Add to table model
         addReservationToModel(newRes);
