@@ -453,7 +453,7 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         newRes = dialog.getReservationData();
 
         // Generate a temporary ID
-        //newRes.ReservationID = QString::number(model->rowCount() + 1);
+        newRes.ReservationID = QString::number(model->rowCount() + 1);
 
         //this adds ID to table? maybe does nothing?
         // ReservationSerializer serializer;
