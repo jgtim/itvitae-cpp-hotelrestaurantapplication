@@ -324,21 +324,24 @@ void RestaurantWindow::setupReservationTable()
 {
     reservationTable->setRowCount(0); // Ensure table starts clean
 
-    auto addMockRow = [this](int row, const QString &name, const QString &table,
-                             const QString &guests,
-                             const QString &date, const QString &timeBlock)
-    {
-        reservationTable->insertRow(row);
-        reservationTable->setItem(row, 0, new QTableWidgetItem(name));
-        reservationTable->setItem(row, 1, new QTableWidgetItem(table));
-        reservationTable->setItem(row, 2, new QTableWidgetItem(guests));
-        reservationTable->setItem(row, 3, new QTableWidgetItem(date));
-        reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlock));
-    };
+    // auto addMockRow = [this](int row, const QString &name, const QString &table,
+    //                          const QString &guests,
+    //                          const QString &date, const QString &timeBlock)
+    // {
+    //     reservationTable->insertRow(row);
+    //     reservationTable->setItem(row, 0, new QTableWidgetItem(name));
+    //     reservationTable->setItem(row, 1, new QTableWidgetItem(table));
+    //     reservationTable->setItem(row, 2, new QTableWidgetItem(guests));
+    //     reservationTable->setItem(row, 3, new QTableWidgetItem(date));
+    //     reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlock));
+    // };
 
-    addMockRow(0, "Jansen",  "6", "2", "2026-09-17", "Afternoon");
-    addMockRow(1, "Smith",   "4", "2", "2026-09-17", "Evening");
-    addMockRow(2, "Janssen", "3", "2", "2026-09-18", "Morning");
+    // addMockRow(0, "Jansen",  "6", "2", "2026-09-17", "Afternoon");
+    // addMockRow(1, "Smith",   "4", "2", "2026-09-17", "Evening");
+    // addMockRow(2, "Janssen", "3", "2", "2026-09-18", "Morning");
+
+    auto reservations = reservetable::getAllTableReservations();
+    populateReservationTable(reservations);
 }
 
 void RestaurantWindow::loadMockTables()
