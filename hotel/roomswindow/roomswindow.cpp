@@ -23,7 +23,6 @@
 
 // #include <QSqlTableModel> -- Later voor SQL aanzetten
 
-//TEST
 
 RoomsWindow::RoomsWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -465,7 +464,6 @@ void RoomsWindow::setEditMode(bool readMode){
     const QString newEditButtonText = (readMode) ? "Edit" : "Save";
     ui->EditButton->setText(newEditButtonText);
     ui->CancelButton->setVisible(!readMode);
-    ui->RoomNumEdit->setReadOnly(readMode);
     ui->RoomTypeEdit->setDisabled(readMode);
     ui->CapacityEdit->setReadOnly(readMode);
     ui->StatusEdit->setDisabled(readMode);

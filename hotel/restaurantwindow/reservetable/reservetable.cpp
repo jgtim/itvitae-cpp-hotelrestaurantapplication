@@ -2,6 +2,7 @@
 #include "hotel/restaurantwindow/reservetable/ui_reservetable.h"
 #include "hotel/restaurantwindow/restaurantwindow.h"
 #include "readers/tablereservationserializer.h"
+#include "hotel/restaurantwindow/selecttabledialog.h"
 
 #include <QMessageBox>
 #include <QSqlQuery>
@@ -51,7 +52,25 @@ reservetable::~reservetable()
 
 void reservetable::on_tableSelectButton_clicked()
 {
-    //TODO go to new pop-up that copies the same canvas from restaurantwindow.
+    RestaurantWindow* parentWin = qobject_cast<RestaurantWindow *>(parent());
+    if (!parentWin) {
+        QMessageBox::warning(this, "Error", "Could not access restaurant data.");
+        return;
+    }
+
+    QVector<Table>* tables = parentWin->getTables();
+    if (!tables) {
+        QMessageBox::warning(this, "Error", "No tables available.");
+        return;
+    }
+
+    SelectTableDialog dialog(*tables, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        int selectedTable = dialog.getSelectedTable();
+        if (selectedTable > 0) {
+            setTable(selectedTable);
+        }
+    }
 }
 
 
