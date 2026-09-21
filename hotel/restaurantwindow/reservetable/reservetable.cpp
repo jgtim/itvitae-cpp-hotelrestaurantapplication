@@ -1,13 +1,17 @@
 #include "hotel/restaurantwindow/reservetable/reservetable.h"
 #include "hotel/restaurantwindow/reservetable/ui_reservetable.h"
 #include "hotel/restaurantwindow/restaurantwindow.h"
+#include "readers/tablereservationserializer.h"
 
 #include <QMessageBox>
+#include <QSqlQuery>
+#include <QSqlError>
 
 
 reservetable::reservetable(QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::reservetable)
+    , ui(new Ui::reservetable),
+    db(QSqlDatabase::database())
 {
     ui->setupUi(this);
 
@@ -130,6 +134,16 @@ void reservetable::accept()
     if (tables) {
         for (Table &table : *tables) {
             if (table.getNumber() == currentTable) {
+                TableReservation res{.ReservationID = "unique ID",
+                                     .guestName = name,
+                                     .guestEmail = "email",
+                                     .guestPhoneNumber = "phone number",
+                                     .numberOfGuests = guests,
+                                     .tableNumber = currentTable,
+                                     .reservationDateTime = QDateTime(selectedDate, QTime()),
+                                     .timeBlock = selectedBlock,
+                                     .specialRequests = comments};
+                saveTableToDatabase(res);
                 table.setStatus(TableStatus::RESERVED);
                 break;
             }
@@ -169,4 +183,26 @@ QDate reservetable::getSelectedDate() const {
     return ui->dateEdit->date();
 }
 
+void reservetable::saveTableToDatabase(TableReservation res){
+    QSqlQuery tableQuery(db);
+    tableQuery.prepare("INSERT INTO tableReservations values (:ReservationID, :GuestName, :GuestEmail, :GuestPhoneNumber, :NumberOfGuests, :TableNumber, :ReservationDateTime, :DurationMinutes, :Status, :SpecialRequests, :CreatedAt);");
+
+    auto map = tableReservationSerializer::toVariantMap(res);
+
+    tableQuery.bindValue(":ReservationID", map.value(QStringLiteral("reservation_id")).toString());
+    tableQuery.bindValue(":GuestName", map.value(QStringLiteral("guest_name")).toString());
+    tableQuery.bindValue(":GuestEmail", map.value(QStringLiteral("guest_email")).toString());
+    tableQuery.bindValue(":GuestPhoneNumber", map.value(QStringLiteral("guest_phone")).toString());
+    tableQuery.bindValue(":NumberOfGuests", map.value(QStringLiteral("number_of_guests")));
+    tableQuery.bindValue(":TableNumber", map.value(QStringLiteral("table_number")));
+    tableQuery.bindValue(":ReservationDateTime", map.value(QStringLiteral("reservation_datetime")).toString());
+    tableQuery.bindValue(":DurationMinutes", map.value(QStringLiteral("duration_minutes")).toString());
+    tableQuery.bindValue(":Status", map.value(QStringLiteral("status")).toString());
+    tableQuery.bindValue(":SpecialRequests", map.value(QStringLiteral("special_requests")).toString());
+    tableQuery.bindValue(":CreatedAt", map.value(QStringLiteral("created_at")).toString());
+
+    if (!tableQuery.exec()) {
+        qDebug() << "Failed to insert reservation: " << tableQuery.lastError().text();
+    }
+}
 

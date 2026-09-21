@@ -2,8 +2,10 @@
 #define RESERVETABLE_H
 
 #include "hotel/restaurantwindow/reservetable/timeBlock.h"
+#include "hotel/restaurantwindow/TableReservations/tableReservation.h"
 
 #include <QDialog>
+#include <QSqlDatabase>
 
 
 namespace Ui {
@@ -32,7 +34,10 @@ private slots:
     void accept();
 
 private:
+    void saveTableToDatabase(TableReservation res);
+
     Ui::reservetable *ui;
+    QSqlDatabase db;
 };
 
 #endif // RESERVETABLE_H
