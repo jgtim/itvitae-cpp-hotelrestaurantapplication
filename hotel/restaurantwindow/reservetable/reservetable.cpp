@@ -60,24 +60,17 @@ void reservetable::on_buttonBox_accepted()
 
 void reservetable::accept()
 {
-
     QString name = ui->nameEdit->text().trimmed();
     QString guestsStr = ui->guestsEdit->text().trimmed();
     QString comments = ui->commentsEdit->toPlainText().trimmed();
 
-    if (name.isEmpty()) {
-        QMessageBox::warning(this, "Missing Information", "Please enter a guest name.");
+    if (name.isEmpty() || name.length() < 2) {
+        QMessageBox::warning(this, "Missing Information", "Please enter a valid guest name (at least 2 characters).");
         ui->nameEdit->setFocus();
         return;
     }
 
-    if (name.length() < 2) {
-        QMessageBox::warning(this, "Missing Information", "Name must be at least 2 characters long.");
-        ui->nameEdit->setFocus();
-        return;
-    }
-
-    bool ok;
+    bool ok = false;
     int guests = guestsStr.toInt(&ok);
     if (guestsStr.isEmpty() || !ok || guests < 1) {
         QMessageBox::warning(this, "Missing Information", "Please enter a valid number of guests (at least 1).");
@@ -85,65 +78,66 @@ void reservetable::accept()
         return;
     }
 
-    if (comments.length() > 100) {
-        QMessageBox::warning(this, "Exceeded Maximum", "Comments cannot exceed 250 characters.");
-        ui->commentsEdit->setFocus();
+    RestaurantWindow* parentWin = qobject_cast<RestaurantWindow *>(parent());
+    if (!parentWin) {
+        QDialog::accept();
         return;
     }
 
-    QVector<Table>* tables = qobject_cast<RestaurantWindow *>(parent())->getTables();
-    QTableWidget* reservationTable = qobject_cast<RestaurantWindow *>(parent())->getReservationTable();
+    QVector<Table>* tables = parentWin->getTables();
+    QTableWidget* reservationTable = parentWin->getReservationTable();
 
     QDate selectedDate = getSelectedDate();
     TimeBlock selectedBlock = getSelectedTimeBlock();
 
-    if (ui->tableEdit->text().trimmed().isEmpty()) {
+    // Auto-assign table if field is left empty
+    if (ui->tableEdit->text().trimmed().isEmpty() && tables) {
         for (Table &table : *tables) {
-            if(table.getStatus() == TableStatus::FREE){
-                ui->tableEdit->setText(QString::number(table.getNumber()));
-                break;
-            } else {
-                bool canReserve = true;
+            bool canReserve = true;
 
-                for (int r = 0; r < reservationTable->model()->rowCount(); r++) {
-                    int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
-                    QDate resDate = QDate::fromString(reservationTable->item(r, 4)->text(), "yyyy-MM-dd");
-                    TimeBlock resBlock = stringToTimeBlock(reservationTable->item(r, 5)->text());
+            for (int r = 0; r < reservationTable->rowCount(); r++) {
+                int tableNumber = reservationTable->item(r, 1) ? reservationTable->item(r, 1)->text().toInt() : -1;
+                QDate resDate = reservationTable->item(r, 3) ? QDate::fromString(reservationTable->item(r, 3)->text(), "yyyy-MM-dd") : QDate();
+                TimeBlock resBlock = reservationTable->item(r, 4) ? stringToTimeBlock(reservationTable->item(r, 4)->text()) : TimeBlock::Morning;
 
-                    if (table.getNumber() == tableNumber && resDate == selectedDate && resBlock == selectedBlock) {
-                        canReserve = false;
-                        break;
-                    }
-                }
-
-                if (canReserve){
-                    ui->tableEdit->setText(QString::number(table.getNumber()));
+                if (table.getNumber() == tableNumber && resDate == selectedDate && resBlock == selectedBlock) {
+                    canReserve = false;
                     break;
                 }
             }
+
+            if (canReserve && table.getStatus() != TableStatus::OCCUPIED) {
+                ui->tableEdit->setText(QString::number(table.getNumber()));
+                break;
+            }
         }
     }
 
+    // Validate table availability
     int currentTable = ui->tableEdit->text().toInt();
-    for (Table &table : *tables) {
-        if (table.getNumber() == currentTable) {
-            for (int r = 0; r < reservationTable->rowCount(); r++) {
-                int tableNumber = reservationTable->item(r, 1)->text().toInt();
-                QDate resDate = QDate::fromString(reservationTable->item(r, 4)->text(), "dd-MM-yyy");
-                TimeBlock resBlock = stringToTimeBlock(reservationTable->item(r, 5)->text());
+    for (int r = 0; r < reservationTable->rowCount(); r++) {
+        int tableNumber = reservationTable->item(r, 1) ? reservationTable->item(r, 1)->text().toInt() : -1;
+        QDate resDate = reservationTable->item(r, 3) ? QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyy") : QDate();
+        TimeBlock resBlock = reservationTable->item(r, 4) ? stringToTimeBlock(reservationTable->item(r, 4)->text()) : TimeBlock::Morning;
 
-                if (currentTable == tableNumber && resDate == selectedDate && resBlock == selectedBlock) {
-                    QMessageBox::warning(this, "Reserved", "This table is already reserved for this time block..");
-                    return;
-                }
-            }
-            table.setStatus(TableStatus::RESERVED);
-            QDialog::accept();
+        if (currentTable == tableNumber && resDate == selectedDate && resBlock == selectedBlock) {
+            QMessageBox::warning(this, "Reserved", "This table is already reserved for this date and time block.");
             return;
         }
     }
-}
 
+    // Update status in the shared vector
+    if (tables) {
+        for (Table &table : *tables) {
+            if (table.getNumber() == currentTable) {
+                table.setStatus(TableStatus::RESERVED);
+                break;
+            }
+        }
+    }
+
+    QDialog::accept();
+}
 
 
 void reservetable::on_buttonBox_rejected()
@@ -156,12 +150,11 @@ std::vector<QString> reservetable::getdata(){
     QString name =  ui->nameEdit->text();
     QString tablenumber = ui->tableEdit->text();
     QString numguests = ui->guestsEdit->text();
-    QString roomnumber = ui->roomNumberEdit->text();
     QString dateStr = getSelectedDate().toString("yyyy-MM-dd");
     QString timeBlockStr = ui->timeBlockComboBox->currentText();
     QString comments = ui->commentsEdit->toPlainText();
 
-    return {name, tablenumber, numguests, roomnumber, dateStr, timeBlockStr, comments};
+    return {name, tablenumber, numguests, dateStr, timeBlockStr, comments};
 }
 
 void reservetable::setTable(int selectedTable){
