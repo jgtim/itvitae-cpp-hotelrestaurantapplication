@@ -31,6 +31,7 @@ QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
     map[QStringLiteral("id_type")]           = idTypeToString(res.guest.idType);
 
     // Putting in the Integers directly
+    map[QStringLiteral("row_id")]    = res.rowid;
     map[QStringLiteral("number_of_guests")]  = res.numberOfGuests;
 
 
@@ -54,7 +55,6 @@ QVariantMap ReservationSerializer::toVariantMap(const Reservation &res) {
 
 Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
     Reservation res;
-
     res.ReservationID      = map.value(QStringLiteral("reservation_id")).toString();
     res.guest.name         = map.value(QStringLiteral("guest_name")).toString();
     res.guest.guestID         = map.value(QStringLiteral("guest_id")).toString();
@@ -73,6 +73,7 @@ Reservation ReservationSerializer::fromVariantMap(const QVariantMap &map) {
     res.guest.idType        = stringToIDType(map.value(QStringLiteral("id_type")).toString());
 
     // Converting back to Int automatically
+    res.rowid      = map.value(QStringLiteral("row_id")).toInt();
     res.numberOfGuests     = map.value(QStringLiteral("number_of_guests")).toInt();
     res.roomNumber         = map.value(QStringLiteral("room_number")).toString();
 

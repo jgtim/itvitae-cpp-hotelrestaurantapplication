@@ -224,7 +224,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
 {
     ReservationSerializer serializer;
     QList<Reservation> reservations;
-    QSqlQuery resQuery("SELECT * FROM reservations;");
+    QSqlQuery resQuery("SELECT rowid, * FROM reservations ORDER BY rowid;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
 
     QSqlQuery testQuery("SELECT rowid FROM reservations;");
@@ -233,6 +233,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
         qDebug() << id;
     }
 
+    int rowIdIndex = resQuery.record().indexOf("rowid");
     int resIdIndex = resQuery.record().indexOf("ReservationID");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
     int numberOfGuestsIndex = resQuery.record().indexOf("NumberOfGuests");
@@ -253,6 +254,7 @@ QList<Reservation> ReservationsTab::getAllReservations()
 
     while (resQuery.next()) {
         QVariantMap resMap;
+        resMap[QStringLiteral("row_id")] = resQuery.value(rowIdIndex).toString();
         resMap[QStringLiteral("reservation_id")] = resQuery.value(resIdIndex).toString();
         resMap[QStringLiteral("number_of_guests")] = resQuery.value(numberOfGuestsIndex).toString();
         resMap[QStringLiteral("room_number")] = resQuery.value(roomNumberIndex).toString();
@@ -456,9 +458,9 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         newRes.ReservationID = QString::number(model->rowCount() + 1);
 
         //this adds ID to table? maybe does nothing?
-        // ReservationSerializer serializer;
-        // auto map = serializer.toVariantMap(newRes);
-        // newRes.ReservationID = map.value("reservation_id").toString();
+        ReservationSerializer serializer;
+        auto map = serializer.toVariantMap(newRes);
+        newRes.ReservationID = map.value("row_id").toString();
 
         // Add to table model
         addReservationToModel(newRes);
