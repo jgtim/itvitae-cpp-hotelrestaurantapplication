@@ -1,4 +1,5 @@
 #include "hotel/restaurantwindow/restaurantwindow.h"
+#include "hotel/restaurantwindow/reservetable/timeBlock.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -10,7 +11,6 @@
 #include <QMessageBox>
 #include <cmath>
 
-#include <iostream>
 #include <qevent.h>
 #include <qstandarditemmodel.h>
 
@@ -72,6 +72,30 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
 
+        // =========================
+
+        // =========================
+        painter.setPen(QColor("#1E1E24"));
+        painter.setFont(QFont("Arial", 16, QFont::Bold));
+        painter.drawText(30, 30, "Inside");
+
+
+        // =========================
+        // Titel TERRAS
+        // =========================
+        painter.drawText(30, 245, "Terrace");
+
+
+        // =========================
+        // Scheidingslijn
+        // =========================
+        painter.setPen(QPen(QColor("#2D2D35"), 2));
+        painter.drawLine(20, 225, width() - 20, 225);
+
+
+        // =========================
+        // Tafels tekenen
+        // =========================
         for (const Table& table : tables) {
             paintTable(table, painter);
         }
@@ -164,8 +188,8 @@ void RestaurantWindow::setupLayout()
     setupRightPanel();
     mainSplitter->addWidget(rightPanel);
 
-    // Set splitter sizes (30/70)
-    mainSplitter->setSizes(QList<int>() << 625 << 375);
+    // Set splitter sizes (45/55)
+    mainSplitter->setSizes(QList<int>() << 450 << 550);
     mainSplitter->setStretchFactor(0, 1);
     mainSplitter->setStretchFactor(1, 1);
 
@@ -193,10 +217,18 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->addWidget(reserveLabel);
 
     reservationTable = new QTableWidget();
-    reservationTable->setColumnCount(6);
-    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Hotel Room" << "Time" << "Comments");
-    // reservationTable->setMaximumHeight(120);
-    reservationTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    reservationTable->setColumnCount(5);
+    reservationTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table" << "Guests" << "Date" << "Time Block");
+
+    QHeaderView *header = reservationTable->horizontalHeader();
+    header->setSectionResizeMode(0, QHeaderView::Stretch);
+    header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+
+    reservationTable->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    reservationTable->verticalHeader()->setDefaultSectionSize(35);
 
     reservationTable->setEditTriggers(QAbstractItemView::NoEditTriggers);   // Make table fields itself non-editable
     reservationTable->setSelectionBehavior(QAbstractItemView::SelectRows);  // Clicking any cell highlights whole row
@@ -219,7 +251,7 @@ void RestaurantWindow::setupLeftPanel()
 void RestaurantWindow::setupRightPanel()
 {
     rightPanel = new QWidget();
-    rightPanel->setStyleSheet("background-color: #1E1E24;");
+    rightPanel->setStyleSheet("background-color: #F8F9FA;");
 
     QVBoxLayout *rightLayout = new QVBoxLayout(rightPanel);
     rightLayout->setContentsMargins(10, 10, 10, 10);
@@ -252,15 +284,12 @@ void RestaurantWindow::setupRightPanel()
 
     tableCanvas = new TableCanvas(tables);
     canvasPointer = qobject_cast<TableCanvas*>(tableCanvas);
-    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
-
-    rightLayout->addWidget(tableCanvas);
-
+    tableCanvas->setStyleSheet("background-color: #F8F9FA; border: 2px solid #2D2D35;");
 
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidget(tableCanvas);
     scrollArea->setWidgetResizable(true); // Allows canvas to expand automatically when window expands
-    tableCanvas->setStyleSheet("background-color: #1E1E24; border: 2px solid #2D2D35;");
+    tableCanvas->setStyleSheet("background-color: #F8F9FA; border: 2px solid #2D2D35;");
 
     rightLayout->addWidget(scrollArea);
     rightPanel->setLayout(rightLayout);
@@ -277,51 +306,74 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
         reservationTable->setItem(i, 0, new QTableWidgetItem(res.guestName));
         reservationTable->setItem(i, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
         reservationTable->setItem(i, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
-        reservationTable->setItem(i, 3, new QTableWidgetItem("Room XX"));  // placeholder
-        reservationTable->setItem(i, 4, new QTableWidgetItem(res.reservationDateTime.toString("HH:mm")));
-        reservationTable->setItem(i, 5, new QTableWidgetItem("→"));
+        reservationTable->setItem(i, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
+        reservationTable->setItem(i, 4, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
     }
 }
 
 void RestaurantWindow::setupReservationTable()
 {
-    reservationTable->insertRow(0);
-    reservationTable->setItem(0, 0, new QTableWidgetItem("Jansen"));
-    reservationTable->setItem(0, 1, new QTableWidgetItem("6"));
-    reservationTable->setItem(0, 2, new QTableWidgetItem("2"));
-    reservationTable->setItem(0, 3, new QTableWidgetItem("5"));
-    reservationTable->setItem(0, 4, new QTableWidgetItem("15:00"));
-    reservationTable->setItem(0, 5, new QTableWidgetItem(""));
+    reservationTable->setRowCount(0); // Ensure table starts clean
 
-    reservationTable->insertRow(1);
-    reservationTable->setItem(1, 0, new QTableWidgetItem("Smith"));
-    reservationTable->setItem(1, 1, new QTableWidgetItem("4"));
-    reservationTable->setItem(1, 2, new QTableWidgetItem("2"));
-    reservationTable->setItem(1, 3, new QTableWidgetItem("7"));
-    reservationTable->setItem(1, 4, new QTableWidgetItem("17:00"));
-    reservationTable->setItem(1, 5, new QTableWidgetItem(""));
+    auto addMockRow = [this](int row, const QString &name, const QString &table,
+                             const QString &guests,
+                             const QString &date, const QString &timeBlock)
+    {
+        reservationTable->insertRow(row);
+        reservationTable->setItem(row, 0, new QTableWidgetItem(name));
+        reservationTable->setItem(row, 1, new QTableWidgetItem(table));
+        reservationTable->setItem(row, 2, new QTableWidgetItem(guests));
+        reservationTable->setItem(row, 3, new QTableWidgetItem(date));
+        reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlock));
+    };
 
-    reservationTable->insertRow(2);
-    reservationTable->setItem(2, 0, new QTableWidgetItem("Janssen"));
-    reservationTable->setItem(2, 1, new QTableWidgetItem("3"));
-    reservationTable->setItem(2, 2, new QTableWidgetItem("2"));
-    reservationTable->setItem(2, 3, new QTableWidgetItem("12"));
-    reservationTable->setItem(2, 4, new QTableWidgetItem("18:00"));
-    reservationTable->setItem(2, 5, new QTableWidgetItem(""));
+    addMockRow(0, "Jansen",  "6", "2", "2026-09-17", "Afternoon");
+    addMockRow(1, "Smith",   "4", "2", "2026-09-17", "Evening");
+    addMockRow(2, "Janssen", "3", "2", "2026-09-18", "Morning");
 }
-
-
 
 void RestaurantWindow::loadMockTables()
 {
     tables.clear();
 
-    const int columns = 4;
-    const int itemSpacing = 65;
+    const int columns = 5;
+    const int itemSpacingX = 75;
+    const int itemSpacingY = 55;
 
-    for (int i = 1; i <= 31; ++i) {
-        int x = 15 + ((i - 1) % columns) * itemSpacing;
-        int y = 15 + ((i - 1) / columns) * itemSpacing;
+    // =========================
+    // BINNEN - tafels 1 t/m 15
+    // =========================
+    for (int i = 1; i <= 15; ++i) {
+
+        int index = i - 1;
+
+        int x = 30 + (index % columns) * itemSpacingX;
+        int y = 50 + (index / columns) * itemSpacingY;
+
+        int randomStatus = QRandomGenerator::global()->bounded(3);
+
+        TableStatus status;
+
+        if (randomStatus == 0)
+            status = TableStatus::FREE;
+        else if (randomStatus == 1)
+            status = TableStatus::OCCUPIED;
+        else
+            status = TableStatus::RESERVED;
+
+        tables.append(Table(i, x, y, status));
+    }
+
+
+    // =========================
+    // TERRAS - tafels 16 t/m 31
+    // =========================
+    for (int i = 16; i <= 31; ++i) {
+
+        int index = i - 16;
+
+        int x = 30 + (index % columns) * itemSpacingX;
+        int y = 250 + (index / columns) * itemSpacingY;
 
         int randomStatus = QRandomGenerator::global()->bounded(3);
 
@@ -402,28 +454,30 @@ void RestaurantWindow::onSetOccupiedClicked()
 
 void RestaurantWindow::onReservationTableClicked()
 {
-    if(canvasPointer->getSelectedTable() > 0){
-        reservetable dialog(this);
-        int selectedTable = canvasPointer->getSelectedTable();
-        if(selectedTable > 0){
-            dialog.setTable(selectedTable);
-        }
-        if (dialog.exec() == QDialog::Accepted) {
-            //TODO add to list of reservations. Not sure what to do about the comments or hotel room. might also be database later?
-            int row = reservationTable->rowCount();
-            reservationTable->insertRow(row);
-            std::vector<QString> newstring = dialog.getdata();
-            reservationTable->setItem(row, 0, new QTableWidgetItem(newstring[0])); //name
-            reservationTable->setItem(row, 1, new QTableWidgetItem(newstring[1])); //table number
-            reservationTable->setItem(row, 2, new QTableWidgetItem(newstring[2])); //number of guests
-            reservationTable->setItem(row, 3, new QTableWidgetItem(newstring[3])); //room number pulled from nowhere
-            reservationTable->setItem(row, 4, new QTableWidgetItem(newstring[4])); //time, get this from datetime & save date for the sake of detail screen
-            reservationTable->setItem(row, 5, new QTableWidgetItem(newstring[5])); //time, get this from datetime & save date for the sake of detail screen
+    int selectedTable = canvasPointer ? canvasPointer->getSelectedTable() : 0;
 
+    reservetable dialog(this);
+    if (selectedTable > 0) {
+        dialog.setTable(selectedTable);
+    }
+
+    if (dialog.exec() == QDialog::Accepted) {
+        std::vector<QString> data = dialog.getdata();
+        // Index 0: Name, 1: Table, 2: Guests, 3: Date, 4: TimeBlock
+
+        int row = reservationTable->rowCount();
+        reservationTable->insertRow(row);
+        reservationTable->setItem(row, 0, new QTableWidgetItem(data[0])); // Name
+        reservationTable->setItem(row, 1, new QTableWidgetItem(data[1])); // Table
+        reservationTable->setItem(row, 2, new QTableWidgetItem(data[2])); // Guests
+        reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
+        reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
+
+        // Sync local window copy to canvas and force canvas repaint
+        if (canvasPointer && canvasPointer->getTables()) {
+            tables = *(canvasPointer->getTables());
             canvasPointer->update();
         }
-    }else{
-        QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
 }
 

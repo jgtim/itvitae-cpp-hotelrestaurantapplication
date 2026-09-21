@@ -8,6 +8,7 @@
 
 #include "hotel/reservationstab/Reservation/reservation.h"
 #include "hotel/restaurantwindow/TableReservations/ReservationStatus.h"
+#include "hotel/restaurantwindow/reservetable/timeBlock.h"
 
 struct TableReservation {
     QString ReservationID;
@@ -21,6 +22,7 @@ struct TableReservation {
     int numberOfGuests = 1;
     int tableNumber = 1; // Should be between 1 and 31
     QDateTime reservationDateTime;
+    TimeBlock timeBlock = TimeBlock::Evening;
     int durationMinutes = 120; // default seating length, ASKED MAVI! WHATS ANSWER?
 
     std::optional<Reservation> hotelReservation;
