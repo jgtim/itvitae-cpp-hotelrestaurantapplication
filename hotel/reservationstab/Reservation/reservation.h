@@ -8,7 +8,6 @@
 #include "hotel/reservationstab/Reservation/PaymentStatus.h"
 
 struct Reservation {
-    int rowid;
     QString ReservationID;
 
     Guest guest;
