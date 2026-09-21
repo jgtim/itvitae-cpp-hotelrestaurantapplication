@@ -141,7 +141,7 @@ void reservetable::accept()
     int currentTable = ui->tableEdit->text().toInt();
     for (int r = 0; r < reservationTable->rowCount(); r++) {
         int tableNumber = reservationTable->item(r, 1) ? reservationTable->item(r, 1)->text().toInt() : -1;
-        QDate resDate = reservationTable->item(r, 3) ? QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyy") : QDate();
+        QDate resDate = reservationTable->item(r, 3) ? QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyyy") : QDate();
         TimeBlock resBlock = reservationTable->item(r, 4) ? stringToTimeBlock(reservationTable->item(r, 4)->text()) : TimeBlock::Morning;
 
         if (currentTable == tableNumber && resDate == selectedDate && resBlock == selectedBlock) {
