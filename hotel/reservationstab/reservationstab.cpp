@@ -184,7 +184,7 @@ void ReservationsTab::addReservationToModel(const Reservation &res) {
         auto map = serializer.toVariantMap(res);
         query.prepare("insert into reservations values (:ReservationID, :GuestID, :NumberOfGuests, :RoomNumber, :CheckInDate, :CheckOutDate, :PaymentStatus);");
         query.bindValue(":ReservationID", map.value("reservation_id"));
-        query.bindValue(":GuestID", map.value("guest_name")); //TODO should be id?
+        query.bindValue(":GuestID", map.value("guest_name"));
         query.bindValue(":NumberOfGuests", map.value("number_of_guests"));
         query.bindValue(":RoomNumber", map.value("room_number"));
         query.bindValue(":CheckInDate", map.value("check_in"));
@@ -226,16 +226,6 @@ QList<Reservation> ReservationsTab::getAllReservations()
     QList<Reservation> reservations;
     QSqlQuery resQuery("SELECT * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
-    // while (guestQuery.next()) {
-    //     QString id = guestQuery.value(0).toString();
-    //     QString name = guestQuery.value(1).toString();
-    //     QString name2 = guestQuery.value(2).toString();
-    //     qDebug() << id << name << name2;
-    // }
-    // while (resQuery.next()) {
-    //     QString guestid = resQuery.value(1).toString();
-    //     qDebug() << guestid;
-    // }
 
     int resIdIndex = resQuery.record().indexOf("ReservationID");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
