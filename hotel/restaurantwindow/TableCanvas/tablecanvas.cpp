@@ -1,4 +1,4 @@
-#include "tablecanvas.h"
+#include "hotel/restaurantwindow/TableCanvas/tablecanvas.h"
 
 #include <QPainter>
 #include <QMouseEvent>
