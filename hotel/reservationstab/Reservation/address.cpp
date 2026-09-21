@@ -1,5 +1,4 @@
-#include "address.h"
-
+#include "hotel/reservationstab/Reservation/address.h"
 QString Address::toFormattedString() const {
     QString formatted = streetLine1;
 
