@@ -224,10 +224,16 @@ QList<Reservation> ReservationsTab::getAllReservations()
 {
     ReservationSerializer serializer;
     QList<Reservation> reservations;
-    QSqlQuery resQuery("SELECT * FROM reservations;");
+    QSqlQuery resQuery("SELECT rowid, * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
 
-    int resIdIndex = resQuery.record().indexOf("ReservationID");
+    QSqlQuery testQuery("SELECT rowid FROM reservations;");
+    while (testQuery.next()) {
+        QString id = testQuery.value(0).toString();
+        qDebug() << id;
+    }
+
+    int resIdIndex = resQuery.record().indexOf("rowid");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
     int numberOfGuestsIndex = resQuery.record().indexOf("NumberOfGuests");
     int roomNumberIndex = resQuery.record().indexOf("RoomNumber");
@@ -447,7 +453,7 @@ void ReservationsTab::on_ReservationsTabNewReservationButton_clicked()
         newRes = dialog.getReservationData();
 
         // Generate a temporary ID
-        newRes.ReservationID = QString::number(model->rowCount() + 1);
+        //newRes.ReservationID = QString::number(model->rowCount() + 1);
 
         // Add to table model
         addReservationToModel(newRes);
