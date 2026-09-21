@@ -2,8 +2,10 @@
 #define RESERVETABLE_H
 
 #include "hotel/restaurantwindow/reservetable/timeBlock.h"
+#include "hotel/restaurantwindow/TableReservations/tableReservation.h"
 
 #include <QDialog>
+#include <QSqlDatabase>
 
 
 namespace Ui {
@@ -21,6 +23,7 @@ public:
     void setTable(int);
     TimeBlock getSelectedTimeBlock() const;
     QDate getSelectedDate() const;
+    static QList<TableReservation> getAllTableReservations();
 
 private slots:
     void on_tableSelectButton_clicked();
@@ -32,7 +35,10 @@ private slots:
     void accept();
 
 private:
+    void saveTableToDatabase(TableReservation res);
+
     Ui::reservetable *ui;
+    QSqlDatabase db;
 };
 
 #endif // RESERVETABLE_H
