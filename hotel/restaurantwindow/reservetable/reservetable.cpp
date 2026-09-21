@@ -121,7 +121,7 @@ void reservetable::accept()
 
             for (int r = 0; r < reservationTable->rowCount(); r++) {
                 int tableNumber = reservationTable->item(r, 1) ? reservationTable->item(r, 1)->text().toInt() : -1;
-                QDate resDate = reservationTable->item(r, 3) ? QDate::fromString(reservationTable->item(r, 3)->text(), "yyyy-MM-dd") : QDate();
+                QDate resDate = reservationTable->item(r, 3) ? QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyyy") : QDate();
                 TimeBlock resBlock = reservationTable->item(r, 4) ? stringToTimeBlock(reservationTable->item(r, 4)->text()) : TimeBlock::Morning;
 
                 if (table.getNumber() == tableNumber && resDate == selectedDate && resBlock == selectedBlock) {
@@ -185,7 +185,7 @@ std::vector<QString> reservetable::getdata(){
     QString name =  ui->nameEdit->text();
     QString tablenumber = ui->tableEdit->text();
     QString numguests = ui->guestsEdit->text();
-    QString dateStr = getSelectedDate().toString("yyyy-MM-dd");
+    QString dateStr = getSelectedDate().toString("dd-MM-yyyy");
     QString timeBlockStr = ui->timeBlockComboBox->currentText();
     QString comments = ui->commentsEdit->toPlainText();
 
