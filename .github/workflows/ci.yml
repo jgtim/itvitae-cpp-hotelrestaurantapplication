@@ -25,7 +25,6 @@ jobs:
           version: "6.8.3"
           host: linux
           target: desktop
-          modules: qttools
 
       - name: Cache compiler results
         uses: actions/cache@v4
