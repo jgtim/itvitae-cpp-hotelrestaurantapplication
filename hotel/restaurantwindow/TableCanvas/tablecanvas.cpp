@@ -39,7 +39,6 @@ QString TableCanvas::getTableFilePath(){
     QString dirPath = QCoreApplication::applicationDirPath();
     QDir dir(dirPath);
     QString filePath = dir.filePath("tables.bin");
-    qDebug() << filePath;
     return filePath;
 }
 
@@ -90,17 +89,6 @@ QVector<Table>* TableCanvas::getTables() {
             TableStatus status = TableStatus::OUT_OF_SERVICE;
 
             tables.append(Table(i, x, y, status));
-            // QFile file;
-            // file.setFileName("hotel/restaurantwindow/TableCanvas/tables.bin");
-            // if(file.open(QIODevice::WriteOnly|QIODevice::Text))
-            // {
-            //     qDebug("Success!");
-            // }
-            // else
-            // {
-            //     qDebug("Failed!");
-            // }
-            // file.close();
             if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
                 qDebug() << "File created successfully";
             } else {
@@ -226,7 +214,8 @@ void TableCanvas::saveTables(const QVector<Table> &vector) {
 }
 
 QVector<Table> TableCanvas::loadTables() {
-    QVector<Table> tables;
+    qDebug() << "LOADTABLES";
+    //QVector<Table> tables;
     QFile file(getTableFilePath());
 
     if (file.open(QIODevice::ReadOnly)) {
@@ -241,6 +230,10 @@ QVector<Table> TableCanvas::loadTables() {
         file.close();
     } else {
         qWarning() << "Could not open file for reading:" << file.errorString();
+    }
+    for (Table &table : tables) {
+        qDebug() << "table.getNumber()";
+        qDebug() << table.getNumber();
     }
 
     return tables;

@@ -35,6 +35,7 @@ public:
 
     // Overload the operator to allow loading from a stream
     friend QDataStream &operator>>(QDataStream &in, Table &table) {
+
         in >> table.number >> table.x >> table.y >> table.status;
         return in;
     }
