@@ -8,6 +8,9 @@
 #include <QVector>
 #include <QDebug>
 
+#include <sys/stat.h>
+
+
 void TableCanvas::updateCanvasSize() {
         int maxX = 0;
         int maxY = 0;
@@ -23,15 +26,57 @@ void TableCanvas::updateCanvasSize() {
 
 void TableCanvas::updateTables(QVector<Table> newTables) {
     //TODO use saveTables function to save to the database
+    saveTables(newTables);
     tables = newTables;
 }
-
 int TableCanvas::getSelectedTable() {
     return selectedTable;
 }
 
 QVector<Table>* TableCanvas::getTables() {
     //TODO check if file exists and either create it (check mock tables function) or read the data from loadTables
+    struct stat buffer;
+    if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) != 0){
+        //TODO create tables vector & save that to the file using saveTables
+        tables.clear();
+
+        const int columns = 5;
+        const int itemSpacingX = 75;
+        const int itemSpacingY = 55;
+
+        // =========================
+        // BINNEN - tafels 1 t/m 15
+        // =========================
+        for (int i = 1; i <= 15; ++i) {
+
+            int index = i - 1;
+
+            int x = 30 + (index % columns) * itemSpacingX;
+            int y = 50 + (index / columns) * itemSpacingY;
+
+            TableStatus status;
+
+            status = TableStatus::FREE;
+
+            tables.append(Table(i, x, y, status));
+        }
+
+
+        // =========================
+        // TERRAS - tafels 16 t/m 31
+        // =========================
+        for (int i = 16; i <= 31; ++i) {
+
+            int index = i - 16;
+
+            int x = 30 + (index % columns) * itemSpacingX;
+            int y = 250 + (index / columns) * itemSpacingY;
+
+            TableStatus status = TableStatus::OUT_OF_SERVICE;
+
+            tables.append(Table(i, x, y, status));
+        }
+    }
     return &tables;
 }
 
@@ -130,7 +175,7 @@ void TableCanvas::paintTable(const Table& table, QPainter& painter) {
                          QString::number(table.getNumber()));
 }
 
-void saveTables(const QVector<Table> &vector) {
+void TableCanvas::saveTables(const QVector<Table> &vector) {
     QFile file("hotel/restaurantwindow/TableCanvas/tables.bin");
 
     if (file.open(QIODevice::WriteOnly)) {
@@ -146,7 +191,7 @@ void saveTables(const QVector<Table> &vector) {
     }
 }
 
-QVector<Table> loadTables() {
+QVector<Table> TableCanvas::loadTables() {
     QVector<Table> tables;
     QFile file("hotel/restaurantwindow/TableCanvas/tables.bin");
 

@@ -25,6 +25,8 @@ private:
 
     void onTableClicked(const Table& table);
     void paintTable(const Table& table, QPainter& painter);
+    void saveTables(const QVector<Table> &vector);
+    QVector<Table> loadTables();
 };
 
 #endif // TABLECANVAS_H
