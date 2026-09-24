@@ -143,7 +143,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
         QString searchText = searchField->text().toLower();
         bool matchesSearch = res.guestName.toLower().contains(searchText) ||
                              res.roomNumber.toLower().contains(searchText);
-
+                             QString::number(res.tableNumber).contains(searchText);
         if (!matchesSearch) continue;
 
         if (resDate == today) {
@@ -152,7 +152,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
             todayTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
             todayTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
             todayTable->setItem(row, 2, new QTableWidgetItem(res.roomNumber));
-            todayTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("HH:mm")));
+            todayTable->setItem(row, 3, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
         } else if (resDate > today) {
             int row = upcomingTable->rowCount();
             upcomingTable->insertRow(row);
