@@ -388,7 +388,12 @@ void ReservationsTab::addMockData()
 }
 
 void ReservationsTab::populateReservationList() {
-    for (auto &res : getAllReservations()) {
+    QDate today = QDate::currentDate();
+
+    for (const auto &res : getAllReservations()) {
+        if (res.checkOut < today) {
+            continue;
+        }
         addReservationToModel(res);
     }
 }
