@@ -94,8 +94,8 @@ void RestaurantReservationsDetailsDialog::setupSearchBar()
 void RestaurantReservationsDetailsDialog::setupTodayTable()
 {
     todayTable = new QTableWidget();
-    todayTable->setColumnCount(4);
-    todayTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Hotelkamer" << "Dagdeel");
+    todayTable->setColumnCount(3);
+    todayTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Dagdeel");
 
     QHeaderView *header = todayTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -112,8 +112,8 @@ void RestaurantReservationsDetailsDialog::setupTodayTable()
 void RestaurantReservationsDetailsDialog::setupUpcomingTable()
 {
     upcomingTable = new QTableWidget();
-    upcomingTable->setColumnCount(5);
-    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Hotelkamer" << "Dagdeel" << "Datum");
+    upcomingTable->setColumnCount(4);
+    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Dagdeel" << "Datum");
 
     QHeaderView *header = upcomingTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -151,16 +151,14 @@ void RestaurantReservationsDetailsDialog::populateTables()
             todayTable->insertRow(row);
             todayTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
             todayTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
-            todayTable->setItem(row, 2, new QTableWidgetItem(res.roomNumber));
-            todayTable->setItem(row, 3, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
+            todayTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
         } else if (resDate > today) {
             int row = upcomingTable->rowCount();
             upcomingTable->insertRow(row);
             upcomingTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
             upcomingTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
-            upcomingTable->setItem(row, 2, new QTableWidgetItem(res.roomNumber));
-            upcomingTable->setItem(row, 3, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
-            upcomingTable->setItem(row, 4, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
+            upcomingTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
+            upcomingTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
         }
     }
 }
