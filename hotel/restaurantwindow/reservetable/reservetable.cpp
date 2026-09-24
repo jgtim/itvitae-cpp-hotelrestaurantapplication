@@ -34,10 +34,19 @@ reservetable::reservetable(QWidget *parent)
     ui->dateEdit->setDate(QDate::currentDate());
     ui->dateEdit->setMinimumDate(QDate::currentDate());
 
-    ui->timeBlockComboBox->clear();
-    ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Morning),   static_cast<int>(TimeBlock::Morning));
-    ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Afternoon), static_cast<int>(TimeBlock::Afternoon));
-    ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Evening),   static_cast<int>(TimeBlock::Evening));
+    connect(ui->dateEdit, &QDateEdit::dateChanged, this, [this](const QDate &date) {
+        ui->timeBlockComboBox->clear();
+
+        if (!isTimeBlockPassed(date, TimeBlock::Morning)) {
+            ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Morning), static_cast<int>(TimeBlock::Morning));
+        }
+        if (!isTimeBlockPassed(date, TimeBlock::Afternoon)) {
+            ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Afternoon), static_cast<int>(TimeBlock::Afternoon));
+        }
+        if (!isTimeBlockPassed(date, TimeBlock::Evening)) {
+            ui->timeBlockComboBox->addItem(timeBlockToString(TimeBlock::Evening), static_cast<int>(TimeBlock::Evening));
+        }
+    });
 
     connect(ui->commentsEdit, &QTextEdit::textChanged, this, [this]() {
         if (ui->commentsEdit->toPlainText().length() > 100) {
