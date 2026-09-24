@@ -38,7 +38,7 @@ void RestaurantReservationsDetailsDialog::setupLayout()
     // Left panel
     QWidget *leftWidget = new QWidget();
     QVBoxLayout *leftLayout = new QVBoxLayout(leftWidget);
-    QLabel *todayLabel = new QLabel("Reserveringen (vandaag)");
+    QLabel *todayLabel = new QLabel("Today's Reservations");
     todayLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
     leftLayout->addWidget(todayLabel);
     setupTodayTable();
@@ -48,7 +48,7 @@ void RestaurantReservationsDetailsDialog::setupLayout()
     // Right panel
     QWidget *rightWidget = new QWidget();
     QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);
-    QLabel *upcomingLabel = new QLabel("Aankomende reserveringen");
+    QLabel *upcomingLabel = new QLabel("Upcoming Reservations");
     upcomingLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
     rightLayout->addWidget(upcomingLabel);
     setupUpcomingTable();
@@ -67,7 +67,7 @@ void RestaurantReservationsDetailsDialog::setupSearchBar()
 {
     searchLayout = new QHBoxLayout();
 
-    QLabel *searchLabel = new QLabel("Zoeken:");
+    QLabel *searchLabel = new QLabel("Search:");
     searchField = new QLineEdit();
     searchField->setPlaceholderText("Search on Name or Hotel Room...");
 
@@ -95,7 +95,7 @@ void RestaurantReservationsDetailsDialog::setupTodayTable()
 {
     todayTable = new QTableWidget();
     todayTable->setColumnCount(3);
-    todayTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Dagdeel");
+    todayTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot");
 
     QHeaderView *header = todayTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -113,7 +113,7 @@ void RestaurantReservationsDetailsDialog::setupUpcomingTable()
 {
     upcomingTable = new QTableWidget();
     upcomingTable->setColumnCount(4);
-    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Dagdeel" << "Datum");
+    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Date");
 
     QHeaderView *header = upcomingTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
