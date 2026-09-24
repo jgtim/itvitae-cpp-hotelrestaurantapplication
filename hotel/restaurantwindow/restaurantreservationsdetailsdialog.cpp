@@ -147,9 +147,11 @@ void RestaurantReservationsDetailsDialog::populateTables()
             todayTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
             todayTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
         } else if (resDate > today) {
-            // Filter by selected date
             QDate selectedDate = dateFilter->date();
-            if (resDate == selectedDate) {
+            // Show all future if today selected, or matching date if future date selected
+            bool showReservation = (selectedDate == today) || (resDate == selectedDate);
+
+            if (showReservation) {
                 int row = upcomingTable->rowCount();
                 upcomingTable->insertRow(row);
                 upcomingTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
