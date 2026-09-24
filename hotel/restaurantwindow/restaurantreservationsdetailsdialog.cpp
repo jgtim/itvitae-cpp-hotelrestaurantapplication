@@ -95,7 +95,7 @@ void RestaurantReservationsDetailsDialog::setupTodayTable()
 {
     todayTable = new QTableWidget();
     todayTable->setColumnCount(4);
-    todayTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Hotelkamer" << "Tijd");
+    todayTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Hotelkamer" << "Dagdeel");
 
     QHeaderView *header = todayTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -113,7 +113,7 @@ void RestaurantReservationsDetailsDialog::setupUpcomingTable()
 {
     upcomingTable = new QTableWidget();
     upcomingTable->setColumnCount(5);
-    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Hotelkamer" << "Tijd" << "Datum");
+    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Naam" << "Tafel nummer" << "Hotelkamer" << "Dagdeel" << "Datum");
 
     QHeaderView *header = upcomingTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -142,7 +142,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
         // Filter by search text
         QString searchText = searchField->text().toLower();
         bool matchesSearch = res.guestName.toLower().contains(searchText) ||
-                             res.roomNumber.toLower().contains(searchText);
+                             res.roomNumber.toLower().contains(searchText) ||
                              QString::number(res.tableNumber).contains(searchText);
         if (!matchesSearch) continue;
 
@@ -159,7 +159,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
             upcomingTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
             upcomingTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
             upcomingTable->setItem(row, 2, new QTableWidgetItem(res.roomNumber));
-            upcomingTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("HH:mm")));
+            upcomingTable->setItem(row, 3, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
             upcomingTable->setItem(row, 4, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
         }
     }
