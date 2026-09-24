@@ -33,13 +33,13 @@ int TableCanvas::getSelectedTable() {
 }
 
 QVector<Table>* TableCanvas::getTables() {
-    //TODO check if file exists and either create it (check mock tables function) or read the data from loadTables
     struct stat buffer;
     if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) == 0){
+        qDebug() << "LOADING EXISTING FILE";
         tables = loadTables();
-    }else
+    }else //create new table file
     {
-        //TODO create tables vector & save that to the file using saveTables
+        qDebug() << "CREATING NEW FILE";
         tables.clear();
 
         const int columns = 5;
@@ -77,7 +77,18 @@ QVector<Table>* TableCanvas::getTables() {
             TableStatus status = TableStatus::OUT_OF_SERVICE;
 
             tables.append(Table(i, x, y, status));
-            saveTables(tables);
+            QFile file;
+            file.setFileName("hotel/restaurantwindow/TableCanvas/tables.bin");
+            if(file.open(QIODevice::WriteOnly|QIODevice::Text))
+            {
+                qDebug("Success!");
+            }
+            else
+            {
+                qDebug("Failed!");
+            }
+            file.close();
+            updateTables(tables);
         }
     }
     return &tables;
@@ -179,9 +190,11 @@ void TableCanvas::paintTable(const Table& table, QPainter& painter) {
 }
 
 void TableCanvas::saveTables(const QVector<Table> &vector) {
+    qDebug() << "SAVING TABLES";
     QFile file("hotel/restaurantwindow/TableCanvas/tables.bin");
 
     if (file.open(QIODevice::WriteOnly)) {
+        qDebug() << "WRITING TO FILE";
         QDataStream out(&file);
 
         // Pass a version to guarantee cross-platform compatibility

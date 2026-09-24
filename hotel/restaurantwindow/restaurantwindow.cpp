@@ -23,8 +23,9 @@
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent), ui(nullptr)
 {
-    loadMockTables();
+    //loadMockTables();
     setupLayout();
+    getTables();
 }
 
 RestaurantWindow::~RestaurantWindow()
