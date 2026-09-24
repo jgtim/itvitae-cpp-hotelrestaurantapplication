@@ -76,18 +76,12 @@ void RestaurantReservationsDetailsDialog::setupSearchBar()
     dateFilter->setDate(QDate::currentDate());
     dateFilter->setCalendarPopup(true);
 
-    resetBtn = new QPushButton("Reset");
-    resetBtn->setFixedWidth(80);
-
     connect(searchField, &QLineEdit::textChanged, this, &RestaurantReservationsDetailsDialog::onSearchTextChanged);
     connect(dateFilter, &QDateEdit::dateChanged, this, &RestaurantReservationsDetailsDialog::onDateFilterChanged);
-    connect(resetBtn, &QPushButton::clicked, this, &RestaurantReservationsDetailsDialog::onResetClicked);
-
     searchLayout->addWidget(searchLabel);
     searchLayout->addWidget(searchField, 1);
     searchLayout->addWidget(dateLabel);
     searchLayout->addWidget(dateFilter);
-    searchLayout->addWidget(resetBtn);
     searchLayout->addStretch();
 }
 
@@ -153,12 +147,16 @@ void RestaurantReservationsDetailsDialog::populateTables()
             todayTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
             todayTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
         } else if (resDate > today) {
-            int row = upcomingTable->rowCount();
-            upcomingTable->insertRow(row);
-            upcomingTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
-            upcomingTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
-            upcomingTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
-            upcomingTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
+            // Filter by selected date
+            QDate selectedDate = dateFilter->date();
+            if (resDate == selectedDate) {
+                int row = upcomingTable->rowCount();
+                upcomingTable->insertRow(row);
+                upcomingTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
+                upcomingTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
+                upcomingTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
+                upcomingTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
+            }
         }
     }
 }
@@ -170,12 +168,5 @@ void RestaurantReservationsDetailsDialog::onSearchTextChanged(const QString &tex
 
 void RestaurantReservationsDetailsDialog::onDateFilterChanged()
 {
-    populateTables();
-}
-
-void RestaurantReservationsDetailsDialog::onResetClicked()
-{
-    searchField->clear();
-    dateFilter->setDate(QDate::currentDate());
     populateTables();
 }

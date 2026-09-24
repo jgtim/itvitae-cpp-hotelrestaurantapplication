@@ -24,7 +24,6 @@ private:
     QTableWidget *upcomingTable;
     QLineEdit *searchField;
     QDateEdit *dateFilter;
-    QPushButton *resetBtn;
     QHBoxLayout *searchLayout;
 
     // Data shiz
@@ -40,7 +39,6 @@ private:
 private slots:
     void onSearchTextChanged(const QString &text);
     void onDateFilterChanged();
-    void onResetClicked();
 };
 
 #endif
