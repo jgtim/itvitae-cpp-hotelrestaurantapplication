@@ -48,7 +48,6 @@ ReservationsTab::ReservationsTab(QWidget *parent)
             this, &ReservationsTab::handleViewReservation);
 
     connect(ui->ReservationTabEditButton, &QPushButton::clicked, this, &ReservationsTab::handleEditReservation);
-    connect(ui->ReservationTabCancelButton, &QPushButton::clicked, this, &ReservationsTab::handleCancelReservation);
 
     db.setDatabaseName("model.db");
     db.open();

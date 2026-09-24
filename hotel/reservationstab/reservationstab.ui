@@ -66,6 +66,26 @@
       <number>9</number>
      </property>
      <item>
+      <spacer name="ReservationsTabButtonSpacerLeft">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="ReservationsTabNewReservationButton">
+       <property name="text">
+        <string>New reservation</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="ReservationTabEditSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -82,13 +102,6 @@
       <widget class="QPushButton" name="ReservationTabEditButton">
        <property name="text">
         <string>Edit  Reservation</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="ReservationTabCancelButton">
-       <property name="text">
-        <string>Cancel Reservation</string>
        </property>
       </widget>
      </item>
@@ -118,39 +131,6 @@
      <property name="bottomMargin">
       <number>9</number>
      </property>
-     <item>
-      <spacer name="ReservationsTabButtonSpacerLeft">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="ReservationsTabNewReservationButton">
-       <property name="text">
-        <string>New reservation</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="ReservationsTabButtonSpacerRight">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
     </layout>
    </item>
   </layout>
