@@ -22,6 +22,7 @@ void TableCanvas::updateCanvasSize() {
 }
 
 void TableCanvas::updateTables(QVector<Table> newTables) {
+    //TODO use saveTables function to save to the database
     tables = newTables;
 }
 
@@ -30,6 +31,7 @@ int TableCanvas::getSelectedTable() {
 }
 
 QVector<Table>* TableCanvas::getTables() {
+    //TODO check if file exists and either create it (check mock tables function) or read the data from loadTables
     return &tables;
 }
 
@@ -128,8 +130,8 @@ void TableCanvas::paintTable(const Table& table, QPainter& painter) {
                          QString::number(table.getNumber()));
 }
 
-void saveTables(const QVector<Table> &vector, const QString &filePath) {
-    QFile file(filePath);
+void saveTables(const QVector<Table> &vector) {
+    QFile file("hotel/restaurantwindow/TableCanvas/tables.bin");
 
     if (file.open(QIODevice::WriteOnly)) {
         QDataStream out(&file);
@@ -144,9 +146,9 @@ void saveTables(const QVector<Table> &vector, const QString &filePath) {
     }
 }
 
-QVector<Table> loadCustomVector(const QString &filePath) {
-    QVector<Table> vector;
-    QFile file(filePath);
+QVector<Table> loadTables() {
+    QVector<Table> tables;
+    QFile file("hotel/restaurantwindow/TableCanvas/tables.bin");
 
     if (file.open(QIODevice::ReadOnly)) {
         QDataStream in(&file);
@@ -155,12 +157,12 @@ QVector<Table> loadCustomVector(const QString &filePath) {
         in.setVersion(QDataStream::Qt_6_0);
 
         // Read the entire vector back from the file
-        in >> vector;
+        in >> tables;
 
         file.close();
     } else {
         qWarning() << "Could not open file for reading:" << file.errorString();
     }
 
-    return vector;
+    return tables;
 }
