@@ -47,11 +47,9 @@ QVector<Table>* TableCanvas::getTables() {
     QFile file(getTableFilePath());
     //if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) == 0){
     if(file.exists()){
-        qDebug() << "LOADING EXISTING FILE";
         tables = loadTables();
     }else
     {
-        qDebug() << "CREATING NEW FILE";
         tables.clear();
 
         const int columns = 5;
@@ -196,11 +194,9 @@ void TableCanvas::paintTable(const Table& table, QPainter& painter) {
 }
 
 void TableCanvas::saveTables(const QVector<Table> &vector) {
-    qDebug() << "SAVING TABLES";
     QFile file(getTableFilePath());
 
     if (file.open(QIODevice::WriteOnly)) {
-        qDebug() << "WRITING TO FILE";
         QDataStream out(&file);
 
         // Pass a version to guarantee cross-platform compatibility
@@ -214,8 +210,6 @@ void TableCanvas::saveTables(const QVector<Table> &vector) {
 }
 
 QVector<Table> TableCanvas::loadTables() {
-    qDebug() << "LOADTABLES";
-    //QVector<Table> tables;
     QFile file(getTableFilePath());
 
     if (file.open(QIODevice::ReadOnly)) {
@@ -231,10 +225,5 @@ QVector<Table> TableCanvas::loadTables() {
     } else {
         qWarning() << "Could not open file for reading:" << file.errorString();
     }
-    for (Table &table : tables) {
-        qDebug() << "table.getNumber()";
-        qDebug() << table.getNumber();
-    }
-
     return tables;
 }

@@ -288,13 +288,10 @@ void RestaurantWindow::onViewReservationClicked()
 
 void RestaurantWindow::onSetFreeClicked()
 {
-    qDebug() << "IT IS OCCUPIED";
     int selectedTable = canvasPointer->getSelectedTable();
-    qDebug() << selectedTable;
     if(selectedTable > 0){
 
         for (Table &table : tables) {
-            qDebug() << table.getNumber();
             if (table.getNumber() == selectedTable) {
                 for(int r = 0; r < reservationTable->model()->rowCount(); r++){
                     int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
@@ -321,11 +318,7 @@ void RestaurantWindow::onSetFreeClicked()
 
 void RestaurantWindow::onSetOccupiedClicked()
 {
-    qDebug() << "TEST";
     int selectedTable = canvasPointer->getSelectedTable();
-    for (Table &table : tables) {
-        qDebug() << table.getNumber();
-    }
     if(selectedTable > 0){
         tables[selectedTable - 1].setStatus(TableStatus::OCCUPIED);
         canvasPointer->updateTables(tables);
