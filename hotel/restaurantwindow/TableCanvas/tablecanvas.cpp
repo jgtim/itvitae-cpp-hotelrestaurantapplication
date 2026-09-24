@@ -8,7 +8,10 @@
 #include <QVector>
 #include <QDebug>
 
-#include <sys/stat.h>
+//#include <sys/stat.h>
+
+#include <QDir>
+#include <QCoreApplication>
 
 
 void TableCanvas::updateCanvasSize() {
@@ -32,12 +35,22 @@ int TableCanvas::getSelectedTable() {
     return selectedTable;
 }
 
+QString TableCanvas::getTableFilePath(){
+    QString dirPath = QCoreApplication::applicationDirPath();
+    QDir dir(dirPath);
+    QString filePath = dir.filePath("tables.bin");
+    qDebug() << filePath;
+    return filePath;
+}
+
 QVector<Table>* TableCanvas::getTables() {
     struct stat buffer;
-    if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) == 0){
+    QFile file(getTableFilePath());
+    //if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) == 0){
+    if(file.exists()){
         qDebug() << "LOADING EXISTING FILE";
         tables = loadTables();
-    }else //create new table file
+    }else
     {
         qDebug() << "CREATING NEW FILE";
         tables.clear();
@@ -88,6 +101,11 @@ QVector<Table>* TableCanvas::getTables() {
             //     qDebug("Failed!");
             // }
             // file.close();
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                qDebug() << "File created successfully";
+            } else {
+                qWarning() << "Failed to create file:" << file.errorString();
+            }
             updateTables(tables);
         }
     }
@@ -191,7 +209,7 @@ void TableCanvas::paintTable(const Table& table, QPainter& painter) {
 
 void TableCanvas::saveTables(const QVector<Table> &vector) {
     qDebug() << "SAVING TABLES";
-    QFile file("hotel/restaurantwindow/TableCanvas/tables.bin");
+    QFile file(getTableFilePath());
 
     if (file.open(QIODevice::WriteOnly)) {
         qDebug() << "WRITING TO FILE";
@@ -209,7 +227,7 @@ void TableCanvas::saveTables(const QVector<Table> &vector) {
 
 QVector<Table> TableCanvas::loadTables() {
     QVector<Table> tables;
-    QFile file("hotel/restaurantwindow/TableCanvas/tables.bin");
+    QFile file(getTableFilePath());
 
     if (file.open(QIODevice::ReadOnly)) {
         QDataStream in(&file);

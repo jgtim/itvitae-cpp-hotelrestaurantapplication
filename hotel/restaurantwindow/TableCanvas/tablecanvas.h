@@ -27,6 +27,7 @@ private:
     void paintTable(const Table& table, QPainter& painter);
     void saveTables(const QVector<Table> &vector);
     QVector<Table> loadTables();
+    QString getTableFilePath();
 };
 
 #endif // TABLECANVAS_H
