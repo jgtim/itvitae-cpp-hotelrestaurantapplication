@@ -25,7 +25,6 @@ void TableCanvas::updateCanvasSize() {
 }
 
 void TableCanvas::updateTables(QVector<Table> newTables) {
-    //TODO use saveTables function to save to the database
     saveTables(newTables);
     tables = newTables;
 }
@@ -36,7 +35,10 @@ int TableCanvas::getSelectedTable() {
 QVector<Table>* TableCanvas::getTables() {
     //TODO check if file exists and either create it (check mock tables function) or read the data from loadTables
     struct stat buffer;
-    if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) != 0){
+    if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) == 0){
+        tables = loadTables();
+    }else
+    {
         //TODO create tables vector & save that to the file using saveTables
         tables.clear();
 
@@ -75,6 +77,7 @@ QVector<Table>* TableCanvas::getTables() {
             TableStatus status = TableStatus::OUT_OF_SERVICE;
 
             tables.append(Table(i, x, y, status));
+            saveTables(tables);
         }
     }
     return &tables;
