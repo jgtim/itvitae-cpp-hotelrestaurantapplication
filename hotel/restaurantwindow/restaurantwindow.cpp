@@ -302,7 +302,7 @@ void RestaurantWindow::onSetFreeClicked()
         }
 
         // Sets table to Reserved if there is a reservation, otherwise set it to Free
-        tables[selectedTable - 1].setStatus(hasReservation ? TableStatus::RESERVED : TableStatus::FREE);
+        tables[selectedTable - 1].setStatus(hasReservationSoon ? TableStatus::RESERVED : TableStatus::FREE);
         canvasPointer->updateTables(tables);
         canvasPointer->update();
     }else{
