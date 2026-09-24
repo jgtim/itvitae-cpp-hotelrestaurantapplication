@@ -2,6 +2,8 @@
 #define TABLE_H
 
 #include <QString>
+#include <string>
+#include <QDataStream>
 
 enum class TableStatus {
     FREE,       // Groen
@@ -22,6 +24,18 @@ public:
     TableStatus getStatus() const { return status; }
 
     void setStatus(TableStatus newStatus) { status = newStatus; }
+
+    // Overload the operator to allow saving to a stream
+    friend QDataStream &operator<<(QDataStream &out, const Table &table) {
+        out << table.number << table.x << table.y << table.status;
+        return out;
+    }
+
+    // Overload the operator to allow loading from a stream
+    friend QDataStream &operator>>(QDataStream &in, Table &table) {
+        in >> table.number >> table.x >> table.y >> table.status;
+        return in;
+    }
 
 private:
     int number;     // 1-31

@@ -3,6 +3,10 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+#include <QFile>
+#include <QDataStream>
+#include <QVector>
+
 void TableCanvas::updateCanvasSize() {
         int maxX = 0;
         int maxY = 0;
@@ -121,4 +125,20 @@ void TableCanvas::paintTable(const Table& table, QPainter& painter) {
         painter.drawText(table.getX(), table.getY(), 50, 50,
                          Qt::AlignCenter,
                          QString::number(table.getNumber()));
+}
+
+void saveTables(const QVector<Table> &vector, const QString &filePath) {
+    QFile file(filePath);
+
+    if (file.open(QIODevice::WriteOnly)) {
+        QDataStream out(&file);
+
+        // Pass a version to guarantee cross-platform compatibility
+        out.setVersion(QDataStream::Qt_6_0);
+
+        // Write the entire vector at once
+        out << vector;
+
+        file.close();
+    }
 }
