@@ -292,7 +292,15 @@ void RestaurantWindow::onViewReservationClicked()
 void RestaurantWindow::onSetFreeClicked()
 {
     int selectedTable = canvasPointer->getSelectedTable();
-    if(selectedTable > 0){
+
+    if(selectedTable > 0 && tables[selectedTable - 1].getStatus() == TableStatus::OUT_OF_SERVICE){
+        QMessageBox::warning(
+            this,
+            "Can't set to Free",
+            "This table is out of service."
+            );
+    }
+    else if(selectedTable > 0){
         bool hasReservationSoon = false;
         for(int r = 0; r < reservationTable->model()->rowCount(); r++){
 
@@ -313,7 +321,8 @@ void RestaurantWindow::onSetFreeClicked()
         tables[selectedTable - 1].setStatus(hasReservationSoon ? TableStatus::RESERVED : TableStatus::FREE);
         canvasPointer->updateTables(tables);
         canvasPointer->update();
-    }else{
+    }
+    else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
 }
@@ -321,14 +330,20 @@ void RestaurantWindow::onSetFreeClicked()
 void RestaurantWindow::onSetOccupiedClicked()
 {
     int selectedTable = canvasPointer->getSelectedTable();
-    if(selectedTable > 0){
+    if(selectedTable > 0 && tables[selectedTable - 1].getStatus() == TableStatus::OUT_OF_SERVICE){
+        QMessageBox::warning(
+            this,
+            "Can't set to Occupied",
+            "This table is out of service."
+            );
+    }
+    else if(selectedTable > 0){
         tables[selectedTable - 1].setStatus(TableStatus::OCCUPIED);
         canvasPointer->updateTables(tables);
         canvasPointer->update();
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
-    }
-
+    } 
 }
 
 void RestaurantWindow::onSetOutOfServiceClicked()
