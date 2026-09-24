@@ -378,7 +378,14 @@ void RestaurantWindow::onReservationTableClicked()
         dialog.setTable(selectedTable);
     }
 
-    if (dialog.exec() == QDialog::Accepted) {
+    if(selectedTable > 0 && tables[selectedTable - 1].getStatus() == TableStatus::OUT_OF_SERVICE){
+        QMessageBox::warning(
+            this,
+            "Reserving not possible",
+            "This table is out of service."
+            );
+    }
+    else if (dialog.exec() == QDialog::Accepted) {
         std::vector<QString> data = dialog.getdata();
         // Index 0: Name, 1: Table, 2: Guests, 3: Date, 4: TimeBlock
 
