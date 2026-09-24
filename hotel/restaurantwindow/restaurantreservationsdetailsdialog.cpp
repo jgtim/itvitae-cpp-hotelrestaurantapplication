@@ -88,14 +88,15 @@ void RestaurantReservationsDetailsDialog::setupSearchBar()
 void RestaurantReservationsDetailsDialog::setupTodayTable()
 {
     todayTable = new QTableWidget();
-    todayTable->setColumnCount(4);
-    todayTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Room Number");
+    todayTable->setColumnCount(5);
+    todayTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Room Number" << "Notes");
 
     QHeaderView *header = todayTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(4, QHeaderView::Stretch);
 
 
     todayTable->verticalHeader()->setVisible(false);
@@ -107,8 +108,8 @@ void RestaurantReservationsDetailsDialog::setupTodayTable()
 void RestaurantReservationsDetailsDialog::setupUpcomingTable()
 {
     upcomingTable = new QTableWidget();
-    upcomingTable->setColumnCount(5);
-    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Date" << "Room Number");
+    upcomingTable->setColumnCount(6);
+    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Date" << "Room Number" << "Notes");
 
     QHeaderView *header = upcomingTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -116,6 +117,7 @@ void RestaurantReservationsDetailsDialog::setupUpcomingTable()
     header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(4, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(5, QHeaderView::Stretch);
 
     upcomingTable->verticalHeader()->setVisible(false);
     upcomingTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -148,6 +150,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
             todayTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
             todayTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
             todayTable->setItem(row, 3, new QTableWidgetItem(res.roomNumber));
+            todayTable->setItem(row, 4, new QTableWidgetItem(res.notes));
 
         } else if (resDate > today) {
             QDate selectedDate = dateFilter->date();
@@ -162,6 +165,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
                 upcomingTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
                 upcomingTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
                 upcomingTable->setItem(row, 4, new QTableWidgetItem(res.roomNumber));
+                upcomingTable->setItem(row, 5, new QTableWidgetItem(res.notes));
             }
         }
     }
