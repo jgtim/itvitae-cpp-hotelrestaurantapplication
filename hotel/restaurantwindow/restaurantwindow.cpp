@@ -343,7 +343,7 @@ void RestaurantWindow::onSetOutOfServiceClicked()
             int tableNumber = reservationTable->item(r, 1)->text().toInt();
 
             if (selectedTable == tableNumber) {
-                QDate resDate = QDate::fromString(reservationTable->item(r, 3)->text(), "yyyy-MM-dd");
+                QDate resDate = QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyyy");
                 TimeBlock resBlock = stringToTimeBlock(reservationTable->item(r, 4)->text());
 
                 // if table == expired, ignore it
