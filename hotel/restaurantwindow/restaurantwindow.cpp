@@ -287,27 +287,18 @@ void RestaurantWindow::onSetFreeClicked()
 {
     int selectedTable = canvasPointer->getSelectedTable();
     if(selectedTable > 0){
-
-        for (Table &table : tables) {
-            if (table.getNumber() == selectedTable) {
-                for(int r = 0; r < reservationTable->model()->rowCount(); r++){
-                    int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
-                    if(selectedTable == tableNumber){
-                        table.setStatus(TableStatus::RESERVED);
-                        canvasPointer->updateTables(tables);
-                        canvasPointer->update();
-                        break;
-                    }
-                }
-                if(tables[selectedTable - 1].getStatus() == TableStatus::OCCUPIED){
-                    table.setStatus(TableStatus::FREE);
-                    canvasPointer->updateTables(tables);
-                    canvasPointer->update();
-                }
-                break;
+        bool hasReservationSoon = false;
+        for(int r = 0; r < reservationTable->model()->rowCount(); r++){
+            int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+            if(selectedTable == tableNumber){
+                hasReservationSoon = true;
             }
         }
 
+        // Sets table to Reserved if there is a reservation, otherwise set it to Free
+        tables[selectedTable - 1].setStatus(hasReservation ? TableStatus::RESERVED : TableStatus::FREE);
+        canvasPointer->updateTables(tables);
+        canvasPointer->update();
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
     }
@@ -346,18 +337,25 @@ void RestaurantWindow::onSetOutOfServiceClicked()
             }
         }
 
-        // Table is not reserved, ask for confirmation
-        QMessageBox::StandardButton reply = QMessageBox::question(
-            this,
-            "Out of Service",
-            "Are you sure this table is out of service?",
-            QMessageBox::Yes | QMessageBox::No
-            );
-
-        if(reply == QMessageBox::Yes){
-            tables[selectedTable - 1].setStatus(TableStatus::OUT_OF_SERVICE);
+        if(tables[selectedTable - 1].getStatus() == TableStatus::OUT_OF_SERVICE){
+            tables[selectedTable - 1].setStatus(TableStatus::FREE);
             canvasPointer->updateTables(tables);
             canvasPointer->update();
+        }
+        else{
+            // Table is not reserved, ask for confirmation
+            QMessageBox::StandardButton reply = QMessageBox::question(
+                this,
+                "Out of Service",
+                "Are you sure this table is out of service?",
+                QMessageBox::Yes | QMessageBox::No
+                );
+
+            if(reply == QMessageBox::Yes){
+                tables[selectedTable - 1].setStatus(TableStatus::OUT_OF_SERVICE);
+                canvasPointer->updateTables(tables);
+                canvasPointer->update();
+            }
         }
 
     }else{
