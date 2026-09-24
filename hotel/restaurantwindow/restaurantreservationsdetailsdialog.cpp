@@ -89,7 +89,7 @@ void RestaurantReservationsDetailsDialog::setupTodayTable()
 {
     todayTable = new QTableWidget();
     todayTable->setColumnCount(5);
-    todayTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Room Number" << "Notes");
+    todayTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Room Number" << "Comments");
 
     QHeaderView *header = todayTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -109,7 +109,7 @@ void RestaurantReservationsDetailsDialog::setupUpcomingTable()
 {
     upcomingTable = new QTableWidget();
     upcomingTable->setColumnCount(6);
-    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Date" << "Room Number" << "Notes");
+    upcomingTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Date" << "Room Number" << "Comments");
 
     QHeaderView *header = upcomingTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -150,7 +150,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
             todayTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
             todayTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
             todayTable->setItem(row, 3, new QTableWidgetItem(res.roomNumber));
-            todayTable->setItem(row, 4, new QTableWidgetItem(res.notes));
+            todayTable->setItem(row, 4, new QTableWidgetItem(res.specialRequests));
 
         } else if (resDate > today) {
             QDate selectedDate = dateFilter->date();
@@ -165,7 +165,7 @@ void RestaurantReservationsDetailsDialog::populateTables()
                 upcomingTable->setItem(row, 2, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
                 upcomingTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
                 upcomingTable->setItem(row, 4, new QTableWidgetItem(res.roomNumber));
-                upcomingTable->setItem(row, 5, new QTableWidgetItem(res.notes));
+                upcomingTable->setItem(row, 5, new QTableWidgetItem(res.specialRequests));
             }
         }
     }
