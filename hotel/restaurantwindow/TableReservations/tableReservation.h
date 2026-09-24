@@ -24,7 +24,7 @@ struct TableReservation {
     int tableNumber = 1; // Should be between 1 and 31
     QDateTime reservationDateTime;
     TimeBlock timeBlock = TimeBlock::Evening;
-    int durationMinutes = 120; // default seating length, ASKED MAVI! WHATS ANSWER?
+    int durationMinutes = 120; // not needed but leave it in to not mess up other code
 
     std::optional<Reservation> hotelReservation;
 
@@ -34,7 +34,7 @@ struct TableReservation {
     QDateTime createdAt = QDateTime::currentDateTime();
 
     // Helper functions
-    QDateTime endDateTime() const {
+    QDateTime endDateTime() const { // not needed but leave it in to not mess up other code
         return reservationDateTime.addSecs(durationMinutes * 60);
     }
 };

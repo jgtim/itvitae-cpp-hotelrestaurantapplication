@@ -511,14 +511,16 @@ void RoomsWindow::loadReservationsForRoom(const QString& roomNumber)
 
     const QList<Reservation> roomReservations = getReservationsForRoom(db, roomNumber);
 
-    if (roomReservations.isEmpty()) {
-        auto *emptyItem = new QListWidgetItem("No reservations for this room.");
-        emptyItem->setFlags(Qt::NoItemFlags); // not selectable/clickable, just an empty-state message
-        reservationsListWidget->addItem(emptyItem);
-        return;
-    }
+    // track if we added any active/future reservations
+    int activeReservationCount = 0;
+    QDate today = QDate::currentDate();
 
     for (const Reservation &res : roomReservations) {
+        // filter out expired reservations
+        if (res.checkOut < today) {
+            continue;
+        }
+
         QString label = QString("#%1  —  %2  —  %3 to %4")
                             .arg(res.ReservationID,
                                  res.guest.name,
@@ -528,6 +530,15 @@ void RoomsWindow::loadReservationsForRoom(const QString& roomNumber)
         auto *item = new QListWidgetItem(label);
         item->setData(Qt::UserRole, QVariant::fromValue(res));
         reservationsListWidget->addItem(item);
+
+        activeReservationCount++;
+    }
+
+    // show empty state if there are no current or future reservations
+    if (activeReservationCount == 0) {
+        auto *emptyItem = new QListWidgetItem("No active reservations for this room.");
+        emptyItem->setFlags(Qt::NoItemFlags); // not clickable
+        reservationsListWidget->addItem(emptyItem);
     }
 }
 

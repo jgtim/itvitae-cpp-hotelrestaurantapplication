@@ -53,6 +53,7 @@ void RoomDetailsDialog::setDetails(const QList<QPair<QString, QString>> &details
 
     for (const QPair<QString, QString> &pair : details) {
         QString cleanHeader = pair.first.trimmed();
+
         QLineEdit *valueLineEdit = new QLineEdit(pair.second, this);
         formLayout->addRow(cleanHeader + ":", valueLineEdit);
     }

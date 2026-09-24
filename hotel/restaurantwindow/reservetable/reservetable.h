@@ -24,6 +24,7 @@ public:
     TimeBlock getSelectedTimeBlock() const;
     QDate getSelectedDate() const;
     static QList<TableReservation> getAllTableReservations();
+    void updateTimeBlockComboBox(const QDate &date);
 
 private slots:
     void on_tableSelectButton_clicked();
