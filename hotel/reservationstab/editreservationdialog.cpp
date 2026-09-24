@@ -37,6 +37,7 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
 
     // Setting minimum check-in date to today
     ui->checkInEdit->setMinimumDate(QDate::currentDate());
+    ui->checkOutEdit->setMinimumDate(QDate::currentDate().addDays(1));
 
     // Checking contact info text fields for maximum number of characters, while user is typing
     setupFieldLimit(ui->nameEdit, 50, "Name");
