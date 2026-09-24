@@ -77,17 +77,17 @@ QVector<Table>* TableCanvas::getTables() {
             TableStatus status = TableStatus::OUT_OF_SERVICE;
 
             tables.append(Table(i, x, y, status));
-            QFile file;
-            file.setFileName("hotel/restaurantwindow/TableCanvas/tables.bin");
-            if(file.open(QIODevice::WriteOnly|QIODevice::Text))
-            {
-                qDebug("Success!");
-            }
-            else
-            {
-                qDebug("Failed!");
-            }
-            file.close();
+            // QFile file;
+            // file.setFileName("hotel/restaurantwindow/TableCanvas/tables.bin");
+            // if(file.open(QIODevice::WriteOnly|QIODevice::Text))
+            // {
+            //     qDebug("Success!");
+            // }
+            // else
+            // {
+            //     qDebug("Failed!");
+            // }
+            // file.close();
             updateTables(tables);
         }
     }
