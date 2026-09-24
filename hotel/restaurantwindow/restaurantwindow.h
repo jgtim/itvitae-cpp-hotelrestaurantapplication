@@ -3,6 +3,7 @@
 
 #include "hotel/restaurantwindow/Restaurant/table.h"
 #include "hotel/restaurantwindow/TableReservations/tableReservation.h"
+#include "hotel/restaurantwindow/restaurantreservationsdetailsdialog.h"
 
 #include <QWidget>
 #include <QTableWidget>
@@ -46,6 +47,7 @@ private:
     QWidget *leftPanel;
     QTableWidget *reservationTable;
     QPushButton *viewReservationBtn;
+    RestaurantReservationsDetailsDialog *reservationDetailsDialog;
 
     // Right Panel - Canvas
     QWidget *rightPanel;
