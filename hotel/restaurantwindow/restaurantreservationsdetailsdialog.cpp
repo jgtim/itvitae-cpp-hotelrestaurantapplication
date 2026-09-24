@@ -8,6 +8,7 @@
 #include <QHeaderView>
 #include <QDate>
 #include <QMessageBox>
+#include <QPushButton>
 
 RestaurantReservationsDetailsDialog::RestaurantReservationsDetailsDialog(QWidget *parent)
     : QDialog(parent)
@@ -71,6 +72,8 @@ void RestaurantReservationsDetailsDialog::setupSearchBar()
     searchField = new QLineEdit();
     searchField->setPlaceholderText("Search on Name or Hotel Room...");
 
+    QPushButton *resetButton = new QPushButton("Reset");
+
     QLabel *dateLabel = new QLabel("Date:");
     dateFilter = new QDateEdit();
     dateFilter->setDate(QDate::currentDate());
@@ -78,8 +81,13 @@ void RestaurantReservationsDetailsDialog::setupSearchBar()
 
     connect(searchField, &QLineEdit::textChanged, this, &RestaurantReservationsDetailsDialog::onSearchTextChanged);
     connect(dateFilter, &QDateEdit::dateChanged, this, &RestaurantReservationsDetailsDialog::onDateFilterChanged);
+    connect(resetButton, &QPushButton::clicked, this, [this]() {
+        searchField->clear();
+        dateFilter->setDate(QDate::currentDate());
+    });
     searchLayout->addWidget(searchLabel);
     searchLayout->addWidget(searchField, 1);
+    searchLayout->addWidget(resetButton);
     searchLayout->addWidget(dateLabel);
     searchLayout->addWidget(dateFilter);
     searchLayout->addStretch();
