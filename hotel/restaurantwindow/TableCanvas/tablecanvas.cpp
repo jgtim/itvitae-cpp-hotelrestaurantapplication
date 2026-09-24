@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QDataStream>
 #include <QVector>
+#include <QDebug>
 
 void TableCanvas::updateCanvasSize() {
         int maxX = 0;
@@ -141,4 +142,25 @@ void saveTables(const QVector<Table> &vector, const QString &filePath) {
 
         file.close();
     }
+}
+
+QVector<Table> loadCustomVector(const QString &filePath) {
+    QVector<Table> vector;
+    QFile file(filePath);
+
+    if (file.open(QIODevice::ReadOnly)) {
+        QDataStream in(&file);
+
+        // Match the exact version used when saving (Qt_6_0)
+        in.setVersion(QDataStream::Qt_6_0);
+
+        // Read the entire vector back from the file
+        in >> vector;
+
+        file.close();
+    } else {
+        qWarning() << "Could not open file for reading:" << file.errorString();
+    }
+
+    return vector;
 }

@@ -15,6 +15,8 @@ enum class TableStatus {
 class Table
 {
 public:
+    Table() = default;
+
     Table(int number, int x, int y, TableStatus status = TableStatus::FREE)
         : number(number), x(x), y(y), status(status) {}
 
