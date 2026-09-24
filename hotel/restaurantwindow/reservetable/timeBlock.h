@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QMetaType>
+#include <QDate>
 
 enum class TimeBlock {
     Morning,
@@ -30,5 +31,8 @@ inline TimeBlock stringToTimeBlock(const QString &str) {
 
     return TimeBlock::Morning;
 }
+
+bool isTimeBlockPassed(const QDate &date, TimeBlock block);
+TimeBlock getCurrentTimeBlock();
 
 #endif // TIMEBLOCK_H

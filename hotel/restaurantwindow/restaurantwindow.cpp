@@ -166,12 +166,12 @@ void RestaurantWindow::setupRightPanel()
 void RestaurantWindow::populateReservationTable(const QVector<TableReservation>& reservations)
 {
     reservationTable->setRowCount(0);
-    QDate currentDate = QDate::currentDate();
 
-    // Checking reservation for current date
     for (const TableReservation& res : reservations) {
-        if (res.reservationDateTime.date() < currentDate) {
-            continue; // Skip the past reservations
+        QDate resDate = res.reservationDateTime.date();
+
+        if (isTimeBlockPassed(resDate, res.timeBlock)) {
+            continue;
         }
 
         int row = reservationTable->rowCount();
@@ -179,7 +179,7 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
         reservationTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
         reservationTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
         reservationTable->setItem(row, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
-        reservationTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
+        reservationTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("yyyy-MM-dd")));
         reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
     }
 }
@@ -338,11 +338,19 @@ void RestaurantWindow::onSetOutOfServiceClicked()
 
     if(selectedTable > 0){
 
-        // Check if this table has a reservation
-        for(int r = 0; r < reservationTable->model()->rowCount(); r++){
-            int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+        // Check if this table has an active (non-expired) reservation
+        for (int r = 0; r < reservationTable->rowCount(); r++) {
+            int tableNumber = reservationTable->item(r, 1)->text().toInt();
 
-            if(selectedTable == tableNumber){
+            if (selectedTable == tableNumber) {
+                QDate resDate = QDate::fromString(reservationTable->item(r, 3)->text(), "yyyy-MM-dd");
+                TimeBlock resBlock = stringToTimeBlock(reservationTable->item(r, 4)->text());
+
+                // if table == expired, ignore it
+                if (isTimeBlockPassed(resDate, resBlock)) {
+                    continue;
+                }
+
                 QMessageBox::warning(
                     this,
                     "Table Reserved",
@@ -393,7 +401,15 @@ void RestaurantWindow::onReservationTableClicked()
     }
     else if (dialog.exec() == QDialog::Accepted) {
         std::vector<QString> data = dialog.getdata();
-        // Index 0: Name, 1: Table, 2: Guests, 3: Date, 4: TimeBlock
+        // Index 0: Name, 1: Table, 2: Guests, 3: Date (yyy-MM-dd), 4: TimeBlock
+
+        QDate resDate = QDate::fromString(data[3], "yyyy-MM-dd");
+        TimeBlock resBlock = stringToTimeBlock(data[4]);
+
+        if (isTimeBlockPassed(resDate, resBlock)) {
+            QMessageBox::warning(this, "Invalid Time", "Cannot create a reservation for a time block that has already passed.");
+            return;
+        }
 
         int row = reservationTable->rowCount();
         reservationTable->insertRow(row);
