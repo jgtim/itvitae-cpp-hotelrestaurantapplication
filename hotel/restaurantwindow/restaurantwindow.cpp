@@ -280,7 +280,8 @@ void RestaurantWindow::onDataChanged()
 
 void RestaurantWindow::onViewReservationClicked()
 {
-    // TODO: Implementatie
+    reservationDetailsDialog = new RestaurantReservationsDetailsDialog(this);
+    reservationDetailsDialog->show();
 }
 
 void RestaurantWindow::onSetFreeClicked()
