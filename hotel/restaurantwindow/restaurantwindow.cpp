@@ -295,9 +295,17 @@ void RestaurantWindow::onSetFreeClicked()
     if(selectedTable > 0){
         bool hasReservationSoon = false;
         for(int r = 0; r < reservationTable->model()->rowCount(); r++){
-            int tableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
-            if(selectedTable == tableNumber){
+
+            int reservationTableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
+            QDate reservationDate = QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyyy");
+            TimeBlock reservationTimeBlock = stringToTimeBlock(reservationTable->item(r, 4)->text());
+
+            if(selectedTable == reservationTableNumber &&
+                QDate::currentDate() == reservationDate &&
+                getCurrentTimeBlock() == reservationTimeBlock){
+
                 hasReservationSoon = true;
+                break;
             }
         }
 
