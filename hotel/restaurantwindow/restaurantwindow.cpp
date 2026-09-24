@@ -9,6 +9,7 @@
 #include <QHeaderView>
 #include <QRandomGenerator>
 #include <QPainter>
+#include <QDate>
 
 #include <QMessageBox>
 #include <cmath>
@@ -165,16 +166,21 @@ void RestaurantWindow::setupRightPanel()
 void RestaurantWindow::populateReservationTable(const QVector<TableReservation>& reservations)
 {
     reservationTable->setRowCount(0);
+    QDate currentDate = QDate::currentDate();
 
-    for (int i = 0; i < reservations.size(); ++i) {
-        const TableReservation& res = reservations[i];
+    // Checking reservation for current date
+    for (const TableReservation& res : reservations) {
+        if (res.reservationDateTime.date() < currentDate) {
+            continue; // Skip the past reservations
+        }
 
-        reservationTable->insertRow(i);
-        reservationTable->setItem(i, 0, new QTableWidgetItem(res.guestName));
-        reservationTable->setItem(i, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
-        reservationTable->setItem(i, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
-        reservationTable->setItem(i, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
-        reservationTable->setItem(i, 4, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
+        int row = reservationTable->rowCount();
+        reservationTable->insertRow(row);
+        reservationTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
+        reservationTable->setItem(row, 1, new QTableWidgetItem(QString::number(res.tableNumber)));
+        reservationTable->setItem(row, 2, new QTableWidgetItem(QString::number(res.numberOfGuests)));
+        reservationTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
+        reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
     }
 }
 
