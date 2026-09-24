@@ -100,6 +100,8 @@ void RestaurantWindow::setupLeftPanel()
 
     setupReservationTable();
     leftLayout->addWidget(reservationTable);
+    connect(reservationTable, &QTableWidget::doubleClicked, this, &RestaurantWindow::onViewReservationClicked);
+
 
     // === Bekijk Reservering Details Button ===
     viewReservationBtn = new QPushButton("Reservation Details");
@@ -286,7 +288,8 @@ void RestaurantWindow::onDataChanged()
 
 void RestaurantWindow::onViewReservationClicked()
 {
-    // TODO: Implementatie
+    reservationDetailsDialog = new RestaurantReservationsDetailsDialog(this);
+    reservationDetailsDialog->show();
 }
 
 void RestaurantWindow::onSetFreeClicked()
