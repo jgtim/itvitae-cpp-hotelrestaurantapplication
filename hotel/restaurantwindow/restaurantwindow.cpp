@@ -81,13 +81,6 @@ void RestaurantWindow::setupLeftPanel()
     leftLayout->setContentsMargins(10, 10, 10, 10);
     leftLayout->setSpacing(10);
 
-    // // === Menukaart Header ===
-    // QLabel *menuLabel = new QLabel("Menu");
-    // menuLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-    // menuLabel->setAlignment(Qt::AlignCenter);
-    // menuLabel->setFixedHeight(40);
-    // leftLayout->addWidget(menuLabel);
-
     // === Reserveringen Tabel ===
     QLabel *reserveLabel = new QLabel("Reservations");
     reserveLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
@@ -183,29 +176,38 @@ void RestaurantWindow::setupRightPanel()
 void RestaurantWindow::populateReservationTable(const QVector<TableReservation>& reservations)
 {
     reservationTable->setRowCount(0);
-    QDate today = QDate::currentDate();
 
-    QSet<int> todayActiveReservedTables;
-
-    // Sorting TableReservations before populating table
     QVector<TableReservation> sortedReservations = reservations;
-    std::sort(sortedReservations.begin(), sortedReservations.end(), [](const TableReservation& a, const TableReservation& b) {
-            QDate dateA = a.reservationDateTime.date();
-            QDate dateB = b.reservationDateTime.date();
+    std::sort(sortedReservations.begin(), sortedReservations.end(),
+              [](const TableReservation& a, const TableReservation& b) {
+                  QDate dateA = a.reservationDateTime.date();
+                  QDate dateB = b.reservationDateTime.date();
 
-        if (dateA != dateB) {
-            return dateA < dateB; // Earlier date first
+                  if (dateA != dateB) {
+                      return dateA < dateB;
+                  }
+                  return static_cast<int>(a.timeBlock) < static_cast<int>(b.timeBlock);
+              }
+              );
+
+    // Reset active tables to FREE (preserve OCCUPIED and OUT_OF_SERVICE)
+    for (Table &table : tables) {
+        if (table.getStatus() != TableStatus::OCCUPIED &&
+            table.getStatus() != TableStatus::OUT_OF_SERVICE) {
+            table.setStatus(TableStatus::FREE);
         }
-        return static_cast<int>(a.timeBlock) < static_cast<int>(b.timeBlock);
-    });
+    }
 
+    //  Mark table as RESERVED ONLY if date IS today AND block IS current block
     for (const TableReservation& res : sortedReservations) {
         QDate resDate = res.reservationDateTime.date();
 
+        // Skip reservations where the time block has already passed
         if (isTimeBlockPassed(resDate, res.timeBlock)) {
             continue;
         }
 
+        // Insert row into the UI reservationTable
         int row = reservationTable->rowCount();
         reservationTable->insertRow(row);
         reservationTable->setItem(row, 0, new QTableWidgetItem(res.guestName));
@@ -214,25 +216,19 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
         reservationTable->setItem(row, 3, new QTableWidgetItem(res.reservationDateTime.toString("dd-MM-yyyy")));
         reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
 
-        if (resDate == today) {
-            todayActiveReservedTables.insert(res.tableNumber);
+        // Set physical table to RESERVED ONLY if it is active right now
+        if (isReservationActiveNow(resDate, res.timeBlock)) {
+            int tableIndex = res.tableNumber - 1;
+            if (tableIndex >= 0 && tableIndex < tables.size()) {
+                if (tables[tableIndex].getStatus() != TableStatus::OCCUPIED &&
+                    tables[tableIndex].getStatus() != TableStatus::OUT_OF_SERVICE) {
+                    tables[tableIndex].setStatus(TableStatus::RESERVED);
+                }
+            }
         }
     }
 
-    for (Table& table : tables) {
-        // Skip tables that are occupied or out of service
-        if (table.getStatus() == TableStatus::OCCUPIED ||
-            table.getStatus() == TableStatus::OUT_OF_SERVICE) {
-            continue;
-        }
-
-        if (todayActiveReservedTables.contains(table.getNumber())) {
-            table.setStatus(TableStatus::RESERVED);
-        } else {
-            table.setStatus(TableStatus::FREE);
-        }
-    }
-
+    // Persist and refresh canvas UI
     if (canvasPointer) {
         canvasPointer->updateTables(tables);
         canvasPointer->update();
@@ -475,34 +471,40 @@ void RestaurantWindow::onReservationTableClicked()
             return;
         }
 
-        // int row = reservationTable->rowCount();
-        // reservationTable->insertRow(row);
-        // reservationTable->setItem(row, 0, new QTableWidgetItem(data[0])); // Name
-        // reservationTable->setItem(row, 1, new QTableWidgetItem(data[1])); // Table
-        // reservationTable->setItem(row, 2, new QTableWidgetItem(data[2])); // Guests
-        // reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
-        // reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
+        int row = reservationTable->rowCount();
+        reservationTable->insertRow(row);
+        reservationTable->setItem(row, 0, new QTableWidgetItem(data[0])); // Name
+        reservationTable->setItem(row, 1, new QTableWidgetItem(data[1])); // Table
+        reservationTable->setItem(row, 2, new QTableWidgetItem(data[2])); // Guests
+        reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
+        reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
 
-        setupReservationTable();
+        // setupReservationTable();
 
         // Only mark table as RESERVED if it is today and the block has not passed
-        if (resDate == QDate::currentDate() && !isTimeBlockPassed(resDate, resBlock)) {
+        if (isReservationActiveNow(resDate, resBlock)) {
             tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
         } else {
-            // Keep status as FREE if table wasn't already occupied or out of service
+            // For future dates or later time blocks today, keep it FREE (unless OCCUPIED/OUT_OF_SERVICE)
             if (tables[selectedTable - 1].getStatus() != TableStatus::OCCUPIED &&
                 tables[selectedTable - 1].getStatus() != TableStatus::OUT_OF_SERVICE) {
                 tables[selectedTable - 1].setStatus(TableStatus::FREE);
             }
         }
-        canvasPointer->updateTables(tables);
 
-        // Sync local window copy to canvas and force canvas repaint
-        if (canvasPointer && canvasPointer->getTables()) {
-            tables = *(canvasPointer->getTables());
-            canvasPointer->update();
-        }
+        canvasPointer->updateTables(tables);
+        canvasPointer->update();
     }
+}
+
+bool RestaurantWindow::isReservationActiveNow(const QDate &date, TimeBlock block)
+{
+    // Must be today
+    if (date != QDate::currentDate()) {
+        return false;
+    }
+    // Must match current time block
+    return block == getCurrentTimeBlock();
 }
 
 #include "restaurantwindow.moc"

@@ -29,6 +29,7 @@ public:
     TableCanvas* canvasPointer = nullptr;
     QVector<Table>* getTables();
     QTableWidget* getReservationTable();
+    bool isReservationActiveNow(const QDate &date, TimeBlock block);
 
 public slots:
     void onDataChanged();
