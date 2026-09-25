@@ -10,6 +10,7 @@
 #include <QRandomGenerator>
 #include <QPainter>
 #include <QDate>
+#include <QTimer>
 
 #include <QMessageBox>
 #include <cmath>
@@ -25,10 +26,21 @@
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent), ui(nullptr)
-{
+{   
     //loadMockTables();
     setupLayout();
     tables = *(canvasPointer->getTables());
+    setupReservationTable();
+
+    // Timer for periodic refresh every 60 seconds
+    QTimer *refreshTimer = new QTimer(this);
+    connect(refreshTimer, &QTimer::timeout, this, [this]() {
+        auto reservations = reservetable::getAllTableReservations();
+        populateReservationTable(reservations);
+    });
+    refreshTimer->start(60000);
+
+
 }
 
 RestaurantWindow::~RestaurantWindow()
@@ -173,7 +185,7 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
     reservationTable->setRowCount(0);
     QDate today = QDate::currentDate();
 
-    QSet<int> todayReservedTableNumbers;
+    QSet<int> todayActiveReservedTables;
 
     for (const TableReservation& res : reservations) {
         QDate resDate = res.reservationDateTime.date();
@@ -191,17 +203,18 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
         reservationTable->setItem(row, 4, new QTableWidgetItem(timeBlockToString(res.timeBlock)));
 
         if (resDate == today) {
-            todayReservedTableNumbers.insert(res.tableNumber);
+            todayActiveReservedTables.insert(res.tableNumber);
         }
     }
 
     for (Table& table : tables) {
         // Skip tables that are occupied or out of service
-        if (table.getStatus() == TableStatus::OCCUPIED || table.getStatus() == TableStatus::OUT_OF_SERVICE) {
+        if (table.getStatus() == TableStatus::OCCUPIED ||
+            table.getStatus() == TableStatus::OUT_OF_SERVICE) {
             continue;
         }
 
-        if (todayReservedTableNumbers.contains(table.getNumber())) {
+        if (todayActiveReservedTables.contains(table.getNumber())) {
             table.setStatus(TableStatus::RESERVED);
         } else {
             table.setStatus(TableStatus::FREE);
@@ -315,25 +328,24 @@ void RestaurantWindow::onSetFreeClicked()
             );
     }
     else if(selectedTable > 0){
-        bool hasReservationToday = false;
+        bool hasActiveReservationToday = false;
 
         for(int r = 0; r < reservationTable->model()->rowCount(); r++){
             int reservationTableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
             QDate reservationDate = QDate::fromString(reservationTable->item(r, 3)->text(), "dd-MM-yyyy");
+            TimeBlock reservationTimeBlock = stringToTimeBlock(reservationTable->item(r, 4)->text());
 
-            // TimeBlock reservationTimeBlock = stringToTimeBlock(reservationTable->item(r, 4)->text());
+            if (selectedTable == reservationTableNumber &&
+                reservationDate == QDate::currentDate() &&
+                !isTimeBlockPassed(reservationDate, reservationTimeBlock)) {
 
-            if(selectedTable == reservationTableNumber &&
-                QDate::currentDate() == reservationDate) {
-                // && getCurrentTimeBlock() == reservationTimeBlock){
-
-                hasReservationToday = true;
+                hasActiveReservationToday = true;
                 break;
             }
         }
 
         // Sets table to Reserved if there is a reservation, otherwise set it to Free
-        tables[selectedTable - 1].setStatus(hasReservationToday ? TableStatus::RESERVED : TableStatus::FREE);
+        tables[selectedTable - 1].setStatus(hasActiveReservationToday ? TableStatus::RESERVED : TableStatus::FREE);
         canvasPointer->updateTables(tables);
         canvasPointer->update();
     }
@@ -459,8 +471,8 @@ void RestaurantWindow::onReservationTableClicked()
         reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
         reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
 
-        // Only mark table as RESERVED if the reservation date is for today
-        if (resDate == QDate::currentDate()) {
+        // Only mark table as RESERVED if it is today and the block has not passed
+        if (resDate == QDate::currentDate() && !isTimeBlockPassed(resDate, resBlock)) {
             tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
         } else {
             // Keep status as FREE if table wasn't already occupied or out of service
