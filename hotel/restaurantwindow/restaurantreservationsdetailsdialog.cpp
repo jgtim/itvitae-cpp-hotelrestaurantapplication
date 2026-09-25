@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 
+#include <QDebug>
+
 RestaurantReservationsDetailsDialog::RestaurantReservationsDetailsDialog(QWidget *parent)
     : QDialog(parent)
 {
@@ -45,6 +47,7 @@ void RestaurantReservationsDetailsDialog::setupLayout()
     setupTodayTable();
     leftLayout->addWidget(todayTable);
     leftWidget->setLayout(leftLayout);
+    connect(dateFilter, &QDateEdit::dateChanged, this, &RestaurantReservationsDetailsDialog::onDateFilterChanged);
 
     // Right panel
     QWidget *rightWidget = new QWidget();
@@ -79,7 +82,6 @@ void RestaurantReservationsDetailsDialog::setupSearchBar()
     dateFilter->setDate(QDate::currentDate());
     dateFilter->setCalendarPopup(true);
 
-    connect(searchField, &QLineEdit::textChanged, this, &RestaurantReservationsDetailsDialog::onSearchTextChanged);
     connect(dateFilter, &QDateEdit::dateChanged, this, &RestaurantReservationsDetailsDialog::onDateFilterChanged);
     connect(resetButton, &QPushButton::clicked, this, [this]() {
         searchField->clear();
@@ -98,6 +100,7 @@ void RestaurantReservationsDetailsDialog::setupTodayTable()
     todayTable = new QTableWidget();
     todayTable->setColumnCount(5);
     todayTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Room Number" << "Comments");
+    connect(todayTable, &QTableWidget::doubleClicked, this, &RestaurantReservationsDetailsDialog::onTodayTableDoubleClicked);
 
     QHeaderView *header = todayTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -118,6 +121,7 @@ void RestaurantReservationsDetailsDialog::setupUpcomingTable()
     upcomingTable = new QTableWidget();
     upcomingTable->setColumnCount(6);
     upcomingTable->setHorizontalHeaderLabels(QStringList() << "Name" << "Table Number" << "Time Slot" << "Date" << "Room Number" << "Comments");
+    connect(upcomingTable, &QTableWidget::doubleClicked, this, &RestaurantReservationsDetailsDialog::onUpcomingTableDoubleClicked);
 
     QHeaderView *header = upcomingTable->horizontalHeader();
     header->setSectionResizeMode(0, QHeaderView::Stretch);
@@ -188,3 +192,30 @@ void RestaurantReservationsDetailsDialog::onDateFilterChanged()
 {
     populateTables();
 }
+
+void RestaurantReservationsDetailsDialog::onTodayTableDoubleClicked()
+{
+    getTableDetails(todayTable);
+
+}
+
+void RestaurantReservationsDetailsDialog::onUpcomingTableDoubleClicked()
+{
+    getTableDetails(upcomingTable);
+}
+
+void RestaurantReservationsDetailsDialog::getTableDetails(QTableWidget* table){
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Notification");
+    QString messagetext = "";
+    msgBox.setIcon(QMessageBox::Information);
+    int currentRow = table->currentRow();
+    for (int col = 0; col < table->columnCount(); ++col) {
+        messagetext += "<b>" + table->horizontalHeaderItem(col)->text() + "</b> ";
+        messagetext += table->item(currentRow, col)->text() + "<br>";
+    }
+    msgBox.setText(messagetext);
+    msgBox.exec();
+}
+
+

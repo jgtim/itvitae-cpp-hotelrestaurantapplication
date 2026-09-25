@@ -35,10 +35,13 @@ private:
     void setupSearchBar();
     void populateTables();
     void filterReservations();
+    void getTableDetails(QTableWidget* table);
 
 private slots:
     void onSearchTextChanged(const QString &text);
     void onDateFilterChanged();
+    void onTodayTableDoubleClicked();
+    void onUpcomingTableDoubleClicked();
 };
 
 #endif
