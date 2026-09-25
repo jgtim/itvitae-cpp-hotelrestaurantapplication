@@ -481,7 +481,7 @@ void RestaurantWindow::onReservationTableClicked()
 
         // setupReservationTable();
 
-        // Only mark table as RESERVED if it is today and the block has not passed
+// Only mark table as RESERVED if it is today and the block has not passed
         if (isReservationActiveNow(resDate, resBlock)) {
             tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
         } else {

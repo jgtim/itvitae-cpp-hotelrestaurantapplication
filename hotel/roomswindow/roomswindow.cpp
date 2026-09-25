@@ -49,6 +49,7 @@ RoomsWindow::RoomsWindow(QWidget *parent)
 
     QStringList roomTypes = { "Economy", "Standard", "Luxurious", "Unknown" };
     ui->RoomTypeEdit->addItems(roomTypes);
+    ui->RoomTypeEdit->setDisabled(true);
 
     QStringList roomStatuses = { "Available", "Occupied", "Reserved", "Maintenance" };
     ui->StatusEdit->addItems(roomStatuses);
@@ -464,8 +465,6 @@ void RoomsWindow::setEditMode(bool readMode){
     const QString newEditButtonText = (readMode) ? "Edit" : "Save";
     ui->EditButton->setText(newEditButtonText);
     ui->CancelButton->setVisible(!readMode);
-    ui->RoomTypeEdit->setDisabled(readMode);
-    ui->CapacityEdit->setReadOnly(readMode);
     ui->StatusEdit->setDisabled(readMode);
     ui->CleaningEdit->setDisabled(readMode);
     ui->NotesEdit->setReadOnly(readMode);
