@@ -141,15 +141,39 @@ void RestaurantReservationsDetailsDialog::populateTables()
     todayTable->setRowCount(0);
     upcomingTable->setRowCount(0);
 
-    for (const TableReservation &res : allReservations) {
+    QVector<TableReservation> sortedReservations = allReservations;
+
+    // Sort reservations by Date ascending, then TimeBlock ascending
+    std::sort(sortedReservations.begin(), sortedReservations.end(),
+              [](const TableReservation &a, const TableReservation &b) {
+                  QDate dateA = a.reservationDateTime.date();
+                  QDate dateB = b.reservationDateTime.date();
+
+                  if (dateA != dateB) {
+                      return dateA < dateB;
+                  }
+                  // If dates are identical, compare by timeBlock
+                  return static_cast<int>(a.timeBlock) < static_cast<int>(b.timeBlock);
+              }
+              );
+
+    for (const TableReservation &res : sortedReservations) {
         QDate resDate = res.reservationDateTime.date();
+
+        if (isTimeBlockPassed(resDate, res.timeBlock)) {
+            continue;
+        }
 
         // Filter by search text
         QString searchText = searchField->text().toLower();
-        bool matchesSearch = res.guestName.toLower().contains(searchText) ||
-                             res.roomNumber.toLower().contains(searchText) ||
-                             QString::number(res.tableNumber).contains(searchText);
-        if (!matchesSearch) continue;
+        if (!searchText.isEmpty()) {
+            bool matchesSearch = res.guestName.toLower().contains(searchText) ||
+                                 res.roomNumber.toLower().contains(searchText) ||
+                                 QString::number(res.tableNumber).contains(searchText);
+            if (!matchesSearch) {
+                continue;
+            }
+        }
 
         if (resDate == today) {
             int row = todayTable->rowCount();
@@ -161,9 +185,8 @@ void RestaurantReservationsDetailsDialog::populateTables()
             todayTable->setItem(row, 4, new QTableWidgetItem(res.specialRequests));
 
         } else if (resDate > today) {
-            QDate selectedDate = dateFilter->date();
-            // Show all future if today selected, or matching date if future date selected
-            bool showReservation = (selectedDate == today) || (resDate == selectedDate);
+            bool showReservation = (filterDate == today) ||
+                                   (resDate == filterDate);
 
             if (showReservation) {
                 int row = upcomingTable->rowCount();
