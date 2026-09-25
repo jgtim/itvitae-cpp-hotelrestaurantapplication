@@ -21,11 +21,14 @@
 
 #include <QScrollArea>
 
+#include <QDebug>
+
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent), ui(nullptr)
 {
-    loadMockTables();
+    //loadMockTables();
     setupLayout();
+    tables = *(canvasPointer->getTables());
 }
 
 RestaurantWindow::~RestaurantWindow()
@@ -442,6 +445,9 @@ void RestaurantWindow::onReservationTableClicked()
         reservationTable->setItem(row, 2, new QTableWidgetItem(data[2])); // Guests
         reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
         reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
+
+        tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
+        canvasPointer->updateTables(tables);
 
         // Sync local window copy to canvas and force canvas repaint
         if (canvasPointer && canvasPointer->getTables()) {

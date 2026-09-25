@@ -3,6 +3,17 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+#include <QFile>
+#include <QDataStream>
+#include <QVector>
+#include <QDebug>
+
+//#include <sys/stat.h>
+
+#include <QDir>
+#include <QCoreApplication>
+
+
 void TableCanvas::updateCanvasSize() {
         int maxX = 0;
         int maxY = 0;
@@ -17,14 +28,71 @@ void TableCanvas::updateCanvasSize() {
 }
 
 void TableCanvas::updateTables(QVector<Table> newTables) {
+    saveTables(newTables);
     tables = newTables;
 }
-
 int TableCanvas::getSelectedTable() {
     return selectedTable;
 }
 
+QString TableCanvas::getTableFilePath(){
+    QString dirPath = QCoreApplication::applicationDirPath();
+    QDir dir(dirPath);
+    QString filePath = dir.filePath("tables.bin");
+    return filePath;
+}
+
 QVector<Table>* TableCanvas::getTables() {
+    QFile file(getTableFilePath());
+    if(file.exists()){
+        tables = loadTables();
+    }else
+    {
+        tables.clear();
+
+        const int columns = 5;
+        const int itemSpacingX = 75;
+        const int itemSpacingY = 55;
+
+        // =========================
+        // BINNEN - tafels 1 t/m 15
+        // =========================
+        for (int i = 1; i <= 15; ++i) {
+
+            int index = i - 1;
+
+            int x = 30 + (index % columns) * itemSpacingX;
+            int y = 50 + (index / columns) * itemSpacingY;
+
+            TableStatus status;
+
+            status = TableStatus::FREE;
+
+            tables.append(Table(i, x, y, status));
+        }
+
+
+        // =========================
+        // TERRAS - tafels 16 t/m 31
+        // =========================
+        for (int i = 16; i <= 31; ++i) {
+
+            int index = i - 16;
+
+            int x = 30 + (index % columns) * itemSpacingX;
+            int y = 250 + (index / columns) * itemSpacingY;
+
+            TableStatus status = TableStatus::OUT_OF_SERVICE;
+
+            tables.append(Table(i, x, y, status));
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                qDebug() << "File created successfully";
+            } else {
+                qWarning() << "Failed to create file:" << file.errorString();
+            }
+            updateTables(tables);
+        }
+    }
     return &tables;
 }
 
@@ -121,4 +189,39 @@ void TableCanvas::paintTable(const Table& table, QPainter& painter) {
         painter.drawText(table.getX(), table.getY(), 50, 50,
                          Qt::AlignCenter,
                          QString::number(table.getNumber()));
+}
+
+void TableCanvas::saveTables(const QVector<Table> &vector) {
+    QFile file(getTableFilePath());
+
+    if (file.open(QIODevice::WriteOnly)) {
+        QDataStream out(&file);
+
+        // Pass a version to guarantee cross-platform compatibility
+        out.setVersion(QDataStream::Qt_6_0);
+
+        // Write the entire vector at once
+        out << vector;
+
+        file.close();
+    }
+}
+
+QVector<Table> TableCanvas::loadTables() {
+    QFile file(getTableFilePath());
+
+    if (file.open(QIODevice::ReadOnly)) {
+        QDataStream in(&file);
+
+        // Match the exact version used when saving (Qt_6_0)
+        in.setVersion(QDataStream::Qt_6_0);
+
+        // Read the entire vector back from the file
+        in >> tables;
+
+        file.close();
+    } else {
+        qWarning() << "Could not open file for reading:" << file.errorString();
+    }
+    return tables;
 }
