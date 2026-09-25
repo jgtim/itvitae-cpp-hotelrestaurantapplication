@@ -26,7 +26,7 @@
 
 RestaurantWindow::RestaurantWindow(QWidget *parent)
     : QWidget(parent), ui(nullptr)
-{   
+{
     //loadMockTables();
     setupLayout();
     tables = *(canvasPointer->getTables());
@@ -378,7 +378,7 @@ void RestaurantWindow::onSetOccupiedClicked()
         canvasPointer->update();
     }else{
         QMessageBox::warning(this, "No Table Selected", "Please select a table first.");
-    } 
+    }
 }
 
 void RestaurantWindow::onSetOutOfServiceClicked()
@@ -481,15 +481,10 @@ void RestaurantWindow::onReservationTableClicked()
 
         setupReservationTable();
 
-        if (isReservationActiveNow(resDate, resBlock)) {
-            tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
-        } else if (tables[selectedTable - 1].getStatus() != TableStatus::OCCUPIED &&
-                   tables[selectedTable - 1].getStatus() != TableStatus::OUT_OF_SERVICE) {
-            tables[selectedTable - 1].setStatus(TableStatus::FREE);
+        if (canvasPointer && canvasPointer->getTables()) {
+            tables = *(canvasPointer->getTables());
+            canvasPointer->update();
         }
-
-        canvasPointer->updateTables(tables);
-        canvasPointer->update();
     }
 }
 
