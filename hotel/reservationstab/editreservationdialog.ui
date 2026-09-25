@@ -42,7 +42,7 @@
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QLineEdit" name="addressEdit1">
+    <widget class="QLineEdit" name="addressStreetNumberEdit">
      <property name="text">
       <string/>
      </property>
@@ -52,7 +52,7 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QLineEdit" name="addressEdit2">
+    <widget class="QLineEdit" name="addressOptionalEdit">
      <property name="text">
       <string/>
      </property>
@@ -62,7 +62,7 @@
     </widget>
    </item>
    <item row="5" column="1">
-    <widget class="QLineEdit" name="addressEdit3">
+    <widget class="QLineEdit" name="addressCityEdit">
      <property name="text">
       <string/>
      </property>
@@ -72,7 +72,7 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QLineEdit" name="addressEdit4">
+    <widget class="QLineEdit" name="addressStateRegionEdit">
      <property name="text">
       <string/>
      </property>
@@ -82,7 +82,7 @@
     </widget>
    </item>
    <item row="7" column="1">
-    <widget class="QLineEdit" name="addressEdit5">
+    <widget class="QLineEdit" name="addressPostalEdit">
      <property name="text">
       <string/>
      </property>
@@ -92,7 +92,7 @@
     </widget>
    </item>
    <item row="8" column="1">
-    <widget class="QLineEdit" name="addressEdit6">
+    <widget class="QLineEdit" name="addressCountryEdit">
      <property name="text">
       <string/>
      </property>
