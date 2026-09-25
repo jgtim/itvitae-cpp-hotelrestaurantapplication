@@ -45,12 +45,12 @@ EditReservationDialog::EditReservationDialog(QWidget *parent)
     setupFieldLimit(ui->phoneNumberEdit, 15, "Phone number");
 
     // Checking address info fields for max length
-    setupFieldLimit(ui->addressEdit1, 100, "Street and number");
-    setupFieldLimit(ui->addressEdit2, 100, "Optional house information");
-    setupFieldLimit(ui->addressEdit3, 50, "City");
-    setupFieldLimit(ui->addressEdit4, 50, "State, region or province");
-    setupFieldLimit(ui->addressEdit5, 12, "Postal code");
-    setupFieldLimit(ui->addressEdit6, 50, "Country");
+    setupFieldLimit(ui->addressStreetNumberEdit, 100, "Street and number");
+    setupFieldLimit(ui->addressOptionalEdit, 100, "Optional house information");
+    setupFieldLimit(ui->addressCityEdit, 50, "City");
+    setupFieldLimit(ui->addressStateRegionEdit, 50, "State, region or province");
+    setupFieldLimit(ui->addressPostalEdit, 12, "Postal code");
+    setupFieldLimit(ui->addressCountryEdit, 50, "Country");
 
     ui->genderComboBox->clear();
     ui->genderComboBox->addItem("Unspecified", QVariant::fromValue(Gender::Unspecified));
@@ -90,12 +90,12 @@ void EditReservationDialog::setReservationData(const Reservation &res)
     ui->phoneNumberEdit->setText(res.guest.phoneNumber);
     ui->emailEdit->setText(res.guest.email);
 
-    ui->addressEdit1->setText(res.guest.address.streetLine1);
-    ui->addressEdit2->setText(res.guest.address.streetLine2);
-    ui->addressEdit3->setText(res.guest.address.city);
-    ui->addressEdit4->setText(res.guest.address.stateRegion);
-    ui->addressEdit5->setText(res.guest.address.postalCode);
-    ui->addressEdit6->setText(res.guest.address.country);
+    ui->addressStreetNumberEdit->setText(res.guest.address.streetLine1);
+    ui->addressOptionalEdit->setText(res.guest.address.streetLine2);
+    ui->addressCityEdit->setText(res.guest.address.city);
+    ui->addressStateRegionEdit->setText(res.guest.address.stateRegion);
+    ui->addressPostalEdit->setText(res.guest.address.postalCode);
+    ui->addressCountryEdit->setText(res.guest.address.country);
 
     ui->dateOfBirthEdit->setDate(res.guest.dateOfBirth);
 
@@ -159,12 +159,12 @@ Reservation EditReservationDialog::getReservationData() const
     res.guest.email = ui->emailEdit->text();
 
     // Address
-    res.guest.address.streetLine1 = ui->addressEdit1->text();
-    res.guest.address.streetLine2 = ui->addressEdit2->text();
-    res.guest.address.city = ui->addressEdit3->text();
-    res.guest.address.stateRegion = ui->addressEdit4->text();
-    res.guest.address.postalCode = ui->addressEdit5->text();
-    res.guest.address.country = ui->addressEdit6->text();
+    res.guest.address.streetLine1 = ui->addressStreetNumberEdit->text();
+    res.guest.address.streetLine2 = ui->addressOptionalEdit->text();
+    res.guest.address.city = ui->addressCityEdit->text();
+    res.guest.address.stateRegion = ui->addressStateRegionEdit->text();
+    res.guest.address.postalCode = ui->addressPostalEdit->text();
+    res.guest.address.country = ui->addressCountryEdit->text();
 
     // Date of Birth
     res.guest.dateOfBirth = ui->dateOfBirthEdit->date();
@@ -217,10 +217,10 @@ void EditReservationDialog::accept() {
     }
 
     // Address
-    bool missingStreet = ui->addressEdit1->text().trimmed().isEmpty();
-    bool missingCity   = ui->addressEdit3->text().trimmed().isEmpty();
-    bool missingPostal = ui->addressEdit5->text().trimmed().isEmpty();
-    bool missingCountry= ui->addressEdit6->text().trimmed().isEmpty();
+    bool missingStreet = ui->addressStreetNumberEdit->text().trimmed().isEmpty();
+    bool missingCity   = ui->addressCityEdit->text().trimmed().isEmpty();
+    bool missingPostal = ui->addressPostalEdit->text().trimmed().isEmpty();
+    bool missingCountry= ui->addressCountryEdit->text().trimmed().isEmpty();
 
     if (missingStreet || missingCity || missingPostal || missingCountry) {
         QMessageBox::warning(
@@ -231,10 +231,10 @@ void EditReservationDialog::accept() {
             "• Postal code\n"
             "• Country"
             );
-        if (missingStreet) ui->addressEdit1->setFocus();
-        else if (missingCity) ui->addressEdit3->setFocus();
-        else if (missingPostal) ui->addressEdit5->setFocus();
-        else if (missingCountry) ui->addressEdit6->setFocus();
+        if (missingStreet) ui->addressStreetNumberEdit->setFocus();
+        else if (missingCity) ui->addressCityEdit->setFocus();
+        else if (missingPostal) ui->addressPostalEdit->setFocus();
+        else if (missingCountry) ui->addressCountryEdit->setFocus();
         return;
     }
 
@@ -273,12 +273,12 @@ void EditReservationDialog::setReadOnly(bool readOnly)
     ui->IDTypeComboBox->setEnabled(!readOnly);
     ui->paymentMethodComboBox->setEnabled(!readOnly);
 
-    ui->addressEdit1->setReadOnly(readOnly);
-    ui->addressEdit2->setReadOnly(readOnly);
-    ui->addressEdit3->setReadOnly(readOnly);
-    ui->addressEdit4->setReadOnly(readOnly);
-    ui->addressEdit5->setReadOnly(readOnly);
-    ui->addressEdit6->setReadOnly(readOnly);
+    ui->addressStreetNumberEdit->setReadOnly(readOnly);
+    ui->addressOptionalEdit->setReadOnly(readOnly);
+    ui->addressCityEdit->setReadOnly(readOnly);
+    ui->addressStateRegionEdit->setReadOnly(readOnly);
+    ui->addressPostalEdit->setReadOnly(readOnly);
+    ui->addressCountryEdit->setReadOnly(readOnly);
 
     ui->guestNumEdit->setReadOnly(readOnly);
     ui->roomEdit->setEnabled(!readOnly);
