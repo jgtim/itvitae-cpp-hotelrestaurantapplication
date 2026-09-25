@@ -485,18 +485,6 @@ void RestaurantWindow::onReservationTableClicked()
 
         setupReservationTable();
 
-        // Only mark table as RESERVED if it is today and the block has not passed
-        if (resDate == QDate::currentDate() && !isTimeBlockPassed(resDate, resBlock)) {
-            tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
-        } else {
-            // Keep status as FREE if table wasn't already occupied or out of service
-            if (tables[selectedTable - 1].getStatus() != TableStatus::OCCUPIED &&
-                tables[selectedTable - 1].getStatus() != TableStatus::OUT_OF_SERVICE) {
-                tables[selectedTable - 1].setStatus(TableStatus::FREE);
-            }
-        }
-        canvasPointer->updateTables(tables);
-
         // Sync local window copy to canvas and force canvas repaint
         if (canvasPointer && canvasPointer->getTables()) {
             tables = *(canvasPointer->getTables());
