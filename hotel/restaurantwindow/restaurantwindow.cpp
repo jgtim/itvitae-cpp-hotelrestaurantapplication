@@ -187,7 +187,19 @@ void RestaurantWindow::populateReservationTable(const QVector<TableReservation>&
 
     QSet<int> todayActiveReservedTables;
 
-    for (const TableReservation& res : reservations) {
+    // Sorting TableReservations before populating table
+    QVector<TableReservation> sortedReservations = reservations;
+    std::sort(sortedReservations.begin(), sortedReservations.end(), [](const TableReservation& a, const TableReservation& b) {
+            QDate dateA = a.reservationDateTime.date();
+            QDate dateB = b.reservationDateTime.date();
+
+        if (dateA != dateB) {
+            return dateA < dateB; // Earlier date first
+        }
+        return static_cast<int>(a.timeBlock) < static_cast<int>(b.timeBlock);
+    });
+
+    for (const TableReservation& res : sortedReservations) {
         QDate resDate = res.reservationDateTime.date();
 
         if (isTimeBlockPassed(resDate, res.timeBlock)) {
@@ -463,13 +475,15 @@ void RestaurantWindow::onReservationTableClicked()
             return;
         }
 
-        int row = reservationTable->rowCount();
-        reservationTable->insertRow(row);
-        reservationTable->setItem(row, 0, new QTableWidgetItem(data[0])); // Name
-        reservationTable->setItem(row, 1, new QTableWidgetItem(data[1])); // Table
-        reservationTable->setItem(row, 2, new QTableWidgetItem(data[2])); // Guests
-        reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
-        reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
+        // int row = reservationTable->rowCount();
+        // reservationTable->insertRow(row);
+        // reservationTable->setItem(row, 0, new QTableWidgetItem(data[0])); // Name
+        // reservationTable->setItem(row, 1, new QTableWidgetItem(data[1])); // Table
+        // reservationTable->setItem(row, 2, new QTableWidgetItem(data[2])); // Guests
+        // reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
+        // reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
+
+        setupReservationTable();
 
         // Only mark table as RESERVED if it is today and the block has not passed
         if (resDate == QDate::currentDate() && !isTimeBlockPassed(resDate, resBlock)) {
