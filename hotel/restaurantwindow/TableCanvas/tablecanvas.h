@@ -16,6 +16,7 @@ public:
     void updateTables(QVector<Table> newTables);
     int getSelectedTable();
     QVector<Table>* getTables();
+    void setTableToDefault();
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
