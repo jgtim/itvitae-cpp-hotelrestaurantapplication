@@ -159,6 +159,11 @@ void TableCanvas::onTableClicked(const Table& table) {
         update();
 }
 
+void TableCanvas::setTableToDefault(){
+    selectedTable = 1;
+    update();
+}
+
 void TableCanvas::paintTable(const Table& table, QPainter& painter) {
         QColor fillColor;
         QColor textColor = QColor("#F5F5F5");

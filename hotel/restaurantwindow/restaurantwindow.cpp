@@ -417,6 +417,10 @@ void RestaurantWindow::onReservationTableClicked()
     reservetable dialog(this);
     if (selectedTable > 0) {
         dialog.setTable(selectedTable);
+    }else{
+        tableCanvas->setTableToDefault();
+        selectedTable = 1;
+        dialog.setTable(1);
     }
 
     if(selectedTable > 0 && tables[selectedTable - 1].getStatus() == TableStatus::OUT_OF_SERVICE){
