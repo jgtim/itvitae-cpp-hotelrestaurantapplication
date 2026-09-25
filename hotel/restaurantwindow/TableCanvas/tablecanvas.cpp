@@ -43,9 +43,7 @@ QString TableCanvas::getTableFilePath(){
 }
 
 QVector<Table>* TableCanvas::getTables() {
-    struct stat buffer;
     QFile file(getTableFilePath());
-    //if(stat ("hotel/restaurantwindow/TableCanvas/tables.bin", &buffer) == 0){
     if(file.exists()){
         tables = loadTables();
     }else
