@@ -479,17 +479,13 @@ void RestaurantWindow::onReservationTableClicked()
         reservationTable->setItem(row, 3, new QTableWidgetItem(data[3])); // Date
         reservationTable->setItem(row, 4, new QTableWidgetItem(data[4])); // Time Block String
 
-        // setupReservationTable();
+        setupReservationTable();
 
-        // Only mark table as RESERVED if it is today and the block has not passed
         if (isReservationActiveNow(resDate, resBlock)) {
             tables[selectedTable - 1].setStatus(TableStatus::RESERVED);
-        } else {
-            // For future dates or later time blocks today, keep it FREE (unless OCCUPIED/OUT_OF_SERVICE)
-            if (tables[selectedTable - 1].getStatus() != TableStatus::OCCUPIED &&
-                tables[selectedTable - 1].getStatus() != TableStatus::OUT_OF_SERVICE) {
-                tables[selectedTable - 1].setStatus(TableStatus::FREE);
-            }
+        } else if (tables[selectedTable - 1].getStatus() != TableStatus::OCCUPIED &&
+                   tables[selectedTable - 1].getStatus() != TableStatus::OUT_OF_SERVICE) {
+            tables[selectedTable - 1].setStatus(TableStatus::FREE);
         }
 
         canvasPointer->updateTables(tables);
