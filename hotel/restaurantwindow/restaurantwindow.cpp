@@ -336,7 +336,7 @@ void RestaurantWindow::onSetFreeClicked()
             );
     }
     else if(selectedTable > 0){
-        bool hasActiveReservationToday = false;
+        bool hasActiveReservationNow = false;
 
         for(int r = 0; r < reservationTable->model()->rowCount(); r++){
             int reservationTableNumber = stoi(reservationTable->item(r, 1)->text().toStdString());
@@ -345,15 +345,15 @@ void RestaurantWindow::onSetFreeClicked()
 
             if (selectedTable == reservationTableNumber &&
                 reservationDate == QDate::currentDate() &&
-                !isTimeBlockPassed(reservationDate, reservationTimeBlock)) {
+                reservationTimeBlock == getCurrentTimeBlock()) {
 
-                hasActiveReservationToday = true;
+                hasActiveReservationNow = true;
                 break;
             }
         }
 
         // Sets table to Reserved if there is a reservation, otherwise set it to Free
-        tables[selectedTable - 1].setStatus(hasActiveReservationToday ? TableStatus::RESERVED : TableStatus::FREE);
+        tables[selectedTable - 1].setStatus(hasActiveReservationNow ? TableStatus::RESERVED : TableStatus::FREE);
         canvasPointer->updateTables(tables);
         canvasPointer->update();
     }
