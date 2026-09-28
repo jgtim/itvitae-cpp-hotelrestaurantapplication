@@ -119,7 +119,7 @@ void ReservationsTab::handleEditReservation()
         model->item(selectedRow, 3)->setData(
             updatedRes.roomNumber, Qt::DisplayRole);
 
-        model->item(selectedRow, 4)->setText(updatedRes.guest.name);
+        //model->item(selectedRow, 4)->setText(updatedRes.guest.guestID);
 
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
