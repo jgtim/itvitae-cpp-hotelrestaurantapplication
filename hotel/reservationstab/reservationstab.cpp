@@ -230,11 +230,6 @@ QList<Reservation> ReservationsTab::getAllReservations()
     QList<Reservation> reservations;
     QSqlQuery resQuery("SELECT * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
-    QSqlQuery testQuery("SELECT GuestID FROM reservations;");
-    while(testQuery.next()){
-        QString name = testQuery.value(0).toString();
-        qDebug() << name;
-    }
 
     int resIdIndex = resQuery.record().indexOf("ReservationID");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
