@@ -119,7 +119,7 @@ void ReservationsTab::handleEditReservation()
         model->item(selectedRow, 3)->setData(
             updatedRes.roomNumber, Qt::DisplayRole);
 
-        model->item(selectedRow, 4)->setText(updatedRes.guest.name);
+        //model->item(selectedRow, 4)->setText(updatedRes.guest.guestID);
 
         model->item(selectedRow, 0)->setData(
             QVariant::fromValue(updatedRes), Qt::UserRole);
@@ -230,6 +230,11 @@ QList<Reservation> ReservationsTab::getAllReservations()
     QList<Reservation> reservations;
     QSqlQuery resQuery("SELECT * FROM reservations;");
     QSqlQuery guestQuery("SELECT * FROM guests;");
+    QSqlQuery testQuery("SELECT GuestID FROM reservations;");
+    while(testQuery.next()){
+        QString name = testQuery.value(0).toString();
+        qDebug() << name;
+    }
 
     int resIdIndex = resQuery.record().indexOf("ReservationID");
     int guestIdIndex = resQuery.record().indexOf("GuestID");
