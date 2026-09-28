@@ -32,10 +32,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::onTabChanged(int index)
 {
-    // Check if the newly selected tab is the Reservations Tab (index 0)
-    if (index == 0) {
-        reservationsTab->onDataChanged();
-    }
+    // // Check if the newly selected tab is the Reservations Tab (index 0)
+    // if (index == 1) {
+    //     reservationsTab->onDataChanged();
+    // }
 }
 
 void MainWindow::handleDataChangedInMainWindow()
